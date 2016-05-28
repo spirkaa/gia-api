@@ -1,0 +1,25 @@
+{% extends 'base.html' %} {% load bootstrap3 %} {% block main %}
+<div class="dpad container-fluid">
+    <h1>{% block title %}Работники ППЭ в Москве (ГИА 2016){% endblock %}</h1> {% if exams %}
+    <ul>
+        {% for exam in exams %}
+        <li>{{exam.date.date}}, {{exam.level.level}}, {{exam.place.code}}, {{exam.place.name}}, {{exam.place.addr}}, {{exam.employee.position.name}}, {{exam.employee.name}}, {{exam.employee.org.name}}
+        </li>
+        {% endfor %}
+    </ul>
+    {% if is_paginated %}
+    <div class="pagination">
+        <span class="step-links">
+        {% if exams.has_previous %}
+            <a href="?page={{ exams.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ exams.number }} of {{ exams.paginator.num_pages }}.
+        </span> {% if exams.has_next %}
+        <a href="?page={{ exams.next_page_number }}">next</a> {% endif %}
+        </span>
+    </div>
+    {% endif %} {% endif %}
+</div>
+{% endblock %}

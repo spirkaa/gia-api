@@ -1,0 +1,15 @@
+dj-database-url==0.4.1
+django-configurations==1.0.0
+django-debug-toolbar==1.4.0
+django-dotenv==1.4.1
+django-extensions==1.6.7
+Django==1.9.6
+psycopg2==2.6.1
+django-bootstrap3
+django-crispy-forms
+django-filter
+django-tables2
+requests
+beautifulsoup4
+lxml
+openpyxl
