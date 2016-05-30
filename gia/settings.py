@@ -94,10 +94,19 @@ class Common(Configuration):
 
     # Database
     # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-    DATABASES = values.DatabaseURLValue(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
-    )
-
+    # DATABASES = values.DatabaseURLValue(
+    #     'sqlite:///{}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
+    # )
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            # 'PASSWORD': 'postgres',
+            'HOST': '192.168.99.100',
+            'PORT': 32777,
+        }
+    }
     # Password validation
     # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
     AUTH_PASSWORD_VALIDATORS = [

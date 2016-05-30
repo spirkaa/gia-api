@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<p><a class="btn btn-default" href="{% url 'rcoi:place_list' %}">Place Listing</a></p>
+<table class="table">
+<tr><td>code</td><td>{{ object.code }}</td></tr>
+<tr><td>name</td><td>{{ object.name }}</td></tr>
+<tr><td>addr</td><td>{{ object.addr }}</td></tr>
+<tr><td>slug</td><td>{{ object.slug }}</td></tr>
+</table>
+<a class="btn btn-primary" href="{{object.get_update_url}}">Edit Place</a>
+
+{% endblock %}

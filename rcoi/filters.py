@@ -2,17 +2,17 @@ from django.db import models
 import django_filters
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout
-from .models import ExamDate, ExamLevel, Organisation, Position, Employee, Territory, Place, Exam
+from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
 
 
 class EmployeeFilter(django_filters.FilterSet):
 
+    name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='ФИО сотрудника')
     org__name = django_filters.CharFilter(
         lookup_expr='icontains',
         label='Место работы')
-    position = django_filters.ModelChoiceFilter(
-        queryset=Position.objects.all(),
-        label='Должность в ППЭ')
 
     class Meta:
         model = Employee
@@ -26,7 +26,6 @@ class EmployeeFilter(django_filters.FilterSet):
         helper.layout = Layout(
             'name',
             'org__name',
-            'position',
             Submit('filter', 'Найти'))
         return helper
 
@@ -34,7 +33,6 @@ class EmployeeFilter(django_filters.FilterSet):
 class PlaceFilter(django_filters.FilterSet):
 
     code = django_filters.CharFilter(
-        lookup_expr='icontains',
         label='Код ППЭ')
     name = django_filters.CharFilter(
         lookup_expr='icontains',
@@ -43,7 +41,6 @@ class PlaceFilter(django_filters.FilterSet):
         lookup_expr='icontains',
         label='Адрес ППЭ')
     ate__code = django_filters.CharFilter(
-        lookup_expr='icontains',
         label='Код АТЕ')
     ate__name = django_filters.CharFilter(
         lookup_expr='icontains',
@@ -71,13 +68,12 @@ class PlaceFilter(django_filters.FilterSet):
 class ExamFilter(django_filters.FilterSet):
 
     date = django_filters.ModelChoiceFilter(
-        queryset=ExamDate.objects.all(),
+        queryset=Date.objects.all(),
         label='Дата экзамена')
     level = django_filters.ModelChoiceFilter(
-        queryset=ExamLevel.objects.all(),
+        queryset=Level.objects.all(),
         label='Уровень')
     place__code = django_filters.CharFilter(
-        lookup_expr='icontains',
         label='Код ППЭ')
     place__name = django_filters.CharFilter(
         lookup_expr='icontains',

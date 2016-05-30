@@ -2,14 +2,13 @@
 {% load bootstrap3 %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
-{% block main %}
-    {% include 'rcoi/nav.html' %}
-<div class="dpad container-fluid">
-    <h1>ГИА 2016 в Москве</h1>
-    <h4>{% block title %}Распределение сотрудников в ППЭ{% endblock %}</h4>
-    <div class="row bottom-buffer">
-        <button type="button" class="btn btn-default toggle-sidebar"> « Поиск</button>
-    </div>
+{% block page_header %}
+    <h1>{% block title %}Распределение сотрудников в ППЭ{% endblock %}<br /><small>Последнее обновление: 16:45, 25.05.2016</small></h1>
+{% endblock %}
+{% block content %}
+{#    <div class="row bottom-buffer">#}
+{#        <button type="button" class="btn btn-default toggle-sidebar"> « Поиск</button>#}
+{#    </div>#}
     <div class="row" id="row-main">
         <div class="col-md-2 text-center" id="sidebar">
             <div class="bottom-buffer">{% crispy filter.form filter.form.helper %}</div>
@@ -18,5 +17,4 @@
             <div id="table">{% render_table table 'table.html' %}</div>
         </div>
     </div>
-</div>
 {% endblock %}

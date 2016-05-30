@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_header %}
+    <h1>{% block title %}{{ object.name }}{% endblock %}<br /><small>Работники ППЭ от организации</small></h1>
+{% endblock %}
+{% block content %}
+<ol type="1">
+{% for employee in employees %}
+    <li><a href="{{employee.get_absolute_url}}">{{ employee.name }}</a></li>
+{% endfor %}
+</ol>
+{% endblock %}

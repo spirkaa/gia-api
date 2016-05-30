@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<p><a class="btn btn-default" href="{% url 'rcoi:examlevel_list' %}">ExamLevel Listing</a></p>
+<table class="table">
+<tr><td>level</td><td>{{ object.level }}</td></tr>
+</table>
+<a class="btn btn-primary" href="{{object.get_update_url}}">Edit ExamLevel</a>
+
+{% endblock %}

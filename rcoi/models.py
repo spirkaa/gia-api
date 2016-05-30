@@ -1,16 +1,13 @@
 from django.db import models
-from django_extensions.db import fields as extension_fields
+from django.core.urlresolvers import reverse
 from django_extensions.db.models import TimeStampedModel
-from .xls_to_db import get_files, parse_xls, path
-import os
-import glob
 import logging
-from time import time
+
 
 logger = logging.getLogger('rcoi.models')
 
 
-class ExamDate(TimeStampedModel):
+class Date(TimeStampedModel):
     date = models.DateField('Дата экзамена', unique=True, db_index=True)
 
     class Meta:
@@ -19,8 +16,14 @@ class ExamDate(TimeStampedModel):
     def __str__(self):
         return str(self.date)
 
+    def get_absolute_url(self):
+        return reverse('rcoi:examdate_detail', args=(self.id,))
 
-class ExamLevel(TimeStampedModel):
+    def get_update_url(self):
+        return reverse('rcoi:examdate_update', args=(self.id,))
+
+
+class Level(TimeStampedModel):
     level = models.CharField('Уровень экзамена', max_length=3, unique=True, db_index=True)
 
     class Meta:
@@ -29,15 +32,27 @@ class ExamLevel(TimeStampedModel):
     def __str__(self):
         return str(self.level)
 
+    def get_absolute_url(self):
+        return reverse('rcoi:examlevel_detail', args=(self.id,))
+
+    def get_update_url(self):
+        return reverse('rcoi:examlevel_update', args=(self.id,))
+
 
 class Organisation(TimeStampedModel):
-    name = models.CharField('Место работы', max_length=200, unique=True, db_index=True)
+    name = models.CharField('Место работы', max_length=500, unique=True, db_index=True)
 
     class Meta:
         ordering = ['name']
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('rcoi:organisation_detail', args=(self.id,))
+
+    def get_update_url(self):
+        return reverse('rcoi:organisation_update', args=(self.id,))
 
 
 class Position(TimeStampedModel):
@@ -49,24 +64,34 @@ class Position(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('rcoi:position_detail', args=(self.id,))
+
+    def get_update_url(self):
+        return reverse('rcoi:position_update', args=(self.id,))
+
 
 class Employee(TimeStampedModel):
-    name = models.CharField('ФИО', max_length=100, db_index=True)
-    org = models.ForeignKey(Organisation, on_delete=models.CASCADE)
-    position = models.ForeignKey(Position, on_delete=models.CASCADE)
+    name = models.CharField('ФИО', max_length=150, db_index=True)
+    org = models.ForeignKey(Organisation, related_name='employees', on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('name', 'org', 'position'),)
+        unique_together = (('name', 'org'),)
         ordering = ['name']
 
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('rcoi:employee_detail', args=(self.id,))
+
+    def get_update_url(self):
+        return reverse('rcoi:employee_update', args=(self.id,))
+
 
 class Territory(TimeStampedModel):
     code = models.CharField('Код АТЕ', max_length=5, unique=True, db_index=True)
-    name = models.CharField('Наименование АТЕ', max_length=100, db_index=True)
-    slug = extension_fields.AutoSlugField(populate_from='code', blank=True)
+    name = models.CharField('Наименование АТЕ', max_length=150, db_index=True)
 
     class Meta:
         verbose_name_plural = 'Territories'
@@ -75,60 +100,194 @@ class Territory(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('rcoi:territory_detail', args=(self.id,))
+
+    def get_update_url(self):
+        return reverse('rcoi:territory_update', args=(self.id,))
+
 
 class Place(TimeStampedModel):
     code = models.CharField('Код ППЭ', max_length=5, db_index=True)
-    name = models.CharField('Наименование ППЭ', max_length=200, db_index=True)
-    addr = models.CharField('Адрес ППЭ', max_length=150, db_index=True)
-    ate = models.ForeignKey(Territory, on_delete=models.CASCADE)
-    slug = extension_fields.AutoSlugField(populate_from='code', blank=True)
+    name = models.CharField('Наименование ППЭ', max_length=500, db_index=True)
+    addr = models.CharField('Адрес ППЭ', max_length=255, db_index=True)
+    ate = models.ForeignKey(Territory, related_name='places', on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('code', 'name'),)
-        ordering = ['code', 'name']
+        unique_together = (('code', 'name', 'addr'),)
+        # ordering = ['code', 'name']
 
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('rcoi:place_detail', args=(self.id,))
+
+    def get_update_url(self):
+        return reverse('rcoi:place_update', args=(self.id,))
+
 
 class Exam(TimeStampedModel):
-    date = models.ForeignKey(ExamDate, on_delete=models.CASCADE)
-    level = models.ForeignKey(ExamLevel, on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.ForeignKey(Date, related_name='exams', on_delete=models.CASCADE)
+    level = models.ForeignKey(Level, related_name='exams', on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, related_name='exams', on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, related_name='exams', on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, related_name='exams', on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('date', 'place', 'employee'),)
-        # ordering = ['date']
+        unique_together = (('date', 'level', 'place', 'employee'),)
+        ordering = ['date']
 
     def __str__(self):
         return str(self.date) + ', ' + str(self.place) + ', ' + str(self.employee)
 
+    def get_absolute_url(self):
+        return reverse('rcoi:exam_detail', args=(self.id,))
 
-def db_populate():
-    start = time()
-    # get_files()
+    def get_update_url(self):
+        return reverse('rcoi:exam_update', args=(self.id,))
+
+
+def initial_db_populate():
+    import os
+    import csv
+    from collections import defaultdict
+    from .xls_to_db import get_files, save_to_csv
+
+    path = 'data'
     os.chdir(path)
-    for file in glob.glob('*.xlsx')[5:6]:
-        data_file = parse_xls(file)
-        for line in data_file:
-            logger.debug(line)
-            date, c = ExamDate.objects.get_or_create(date='2016-{}'.format(line['date'][:5].replace('_', '-')))
-            level, c = ExamLevel.objects.get_or_create(level=line['level'])
-            ate, c = Territory.objects.get_or_create(code=line['ate_code'],
-                                                     defaults={'name': line['ate_name']})
-            place, c = Place.objects.get_or_create(code=line['ppe_code'],
-                                                   name=line['ppe_name'],
-                                                   defaults={'addr': line['ppe_addr'],
-                                                             'ate': ate})
-            org, c = Organisation.objects.get_or_create(name=line['org'])
-            position, c = Position.objects.get_or_create(name=line['position'])
-            employee, c = Employee.objects.get_or_create(name=line['name'],
-                                                         org=org,
-                                                         position=position)
-            exam, c = Exam.objects.get_or_create(date=date,
-                                                 level=level,
-                                                 place=place,
-                                                 employee=employee)
-            # logger.debug(exam)
-        logger.info(round(time() - start, 2))
+    get_files()
+    save_to_csv()
+
+    data = defaultdict(list)
+
+    with open('data.csv', encoding='utf-8') as f:
+        reader = csv.DictReader(f, delimiter=';')
+        for row in reader:
+            for (k, v) in row.items():
+                data[k].append(v)
+
+    # Date, Level, Position, Organisation
+    for key in ('date', 'level', 'position', 'organisation'):
+        values = sorted(list(set(data[key])))
+        stream = stream_file(values)
+        table = key
+        col = 'name'
+        if key == 'date' or key == 'level':
+            col = key
+        columns = (col, 'created', 'modified')
+        copy_from(stream, table, *columns)
+
+    # Territory
+    ate_code = data['ate_code'][:]
+    for i, v in enumerate(ate_code):
+        ate_code[i] = int(ate_code[i])
+    values = sorted(list(set(zip(ate_code,
+                                 data['ate_name']))))
+    stream = stream_file(values)
+    table = 'territory'
+    columns = ('code', 'name', 'created', 'modified')
+    copy_from(stream, table, *columns)
+
+    # Employee
+    organisation = Organisation.objects.all()
+    organisation_db = {org.name: org.id for org in organisation}
+
+    values = sorted(list(set(zip(data['name'],
+                                 data['organisation']))))
+    values_with_id = [[val[0], organisation_db.get(val[1])] for val in values]
+    stream = stream_file(values_with_id)
+    table = 'employee'
+    columns = ('name', 'org_id', 'created', 'modified')
+    copy_from(stream, table, *columns)
+
+    # Place
+    territory = Territory.objects.all()
+    territory_db = {ate.name: ate.id for ate in territory}
+    ppe_code = data['ppe_code'][:]
+    for i, v in enumerate(ppe_code):
+        ppe_code[i] = int(ppe_code[i])
+
+    values = sorted(list(set(zip(ppe_code,
+                                 data['ppe_name'],
+                                 data['ppe_addr'],
+                                 data['ate_name']))))
+    values_with_id = [[*val[:-1], territory_db.get(val[3])] for val in values]
+    stream = stream_file(values_with_id)
+    table = 'place'
+    columns = ('code', 'name', 'addr', 'ate_id', 'created', 'modified')
+    copy_from(stream, table, *columns)
+
+    # Exam
+    date = Date.objects.all()
+    date_db = {str(d.date): d.id for d in date}
+    date_id = data['date'][:]
+    replace_items(date_id, date_db)
+
+    level = Level.objects.all()
+    level_db = {lev.level: lev.id for lev in level}
+    level_id = data['level'][:]
+    replace_items(level_id, level_db)
+
+    position = Position.objects.all()
+    position_db = {pos.name: pos.id for pos in position}
+    position_id = data['position'][:]
+    replace_items(position_id, position_db)
+
+    place = Place.objects.all()
+    place_db = {(p.code, p.name, p.addr): p.id for p in place}
+    place_id = list(zip(data['ppe_code'],
+                        data['ppe_name'],
+                        data['ppe_addr'],))
+    replace_items(place_id, place_db)
+
+    employee = Employee.objects.all().select_related()
+    employee_db = {(emp.name, emp.org.name): emp.id for emp in employee}
+    employee_id = list(zip(data['name'],
+                           data['organisation'],))
+    replace_items(employee_id, employee_db)
+
+    exams = list(zip(date_id, level_id, place_id, employee_id, position_id))
+    stream = stream_file(exams)
+    table = 'exam'
+    columns = ('date_id', 'level_id', 'place_id',
+               'employee_id', 'position_id',
+               'created', 'modified')
+    copy_from(stream, table, *columns)
+
+
+def replace_items(s_list, s_dict):
+    for i, item in enumerate(s_list):
+        s_list[i] = s_dict.get(item)
+
+
+def stream_file(data):
+    import csv
+    import datetime
+    from io import StringIO
+
+    datetime_now = datetime.datetime.now()
+    created = [datetime_now, datetime_now]
+    stream = StringIO()
+    writer = csv.writer(stream, delimiter='\t', quotechar="'")
+    for row in data:
+        if isinstance(row, (list, tuple, set)):
+            row = list(row)
+            row.extend(created)
+        else:
+            row = [row]
+            row.extend(created)
+        writer.writerow(row)
+    stream.seek(0)
+    return stream
+
+
+def copy_from(file, table, *columns, sep='\t'):
+    from django.db import connection
+    with connection.cursor() as cursor:
+        cursor.copy_from(
+            file=file,
+            table='rcoi_' + table,
+            sep=sep,
+            columns=columns,
+        )

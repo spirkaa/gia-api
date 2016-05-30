@@ -1,17 +1,17 @@
 from django.contrib import admin
-from .models import ExamDate, ExamLevel, Organisation, Position, Employee, Territory, Place, Exam
+from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
 
 
-class ExamDateAdmin(admin.ModelAdmin):
+class DateAdmin(admin.ModelAdmin):
     list_display = ('date', 'created', 'modified', 'id')
     list_filter = ('date', 'created', 'modified')
-admin.site.register(ExamDate, ExamDateAdmin)
+admin.site.register(Date, DateAdmin)
 
 
-class ExamLevelAdmin(admin.ModelAdmin):
+class LevelAdmin(admin.ModelAdmin):
     list_display = ('level', 'created', 'modified', 'id')
     list_filter = ('level', 'created', 'modified')
-admin.site.register(ExamLevel, ExamLevelAdmin)
+admin.site.register(Level, LevelAdmin)
 
 
 class OrganisationAdmin(admin.ModelAdmin):
@@ -29,8 +29,8 @@ admin.site.register(Position, PositionAdmin)
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'org', 'position', 'created', 'modified', 'id')
-    list_filter = ('position', 'created', 'modified')
+    list_display = ('name', 'org', 'created', 'modified', 'id')
+    list_filter = ('created', 'modified')
     search_fields = ('name', 'org__name')
 admin.site.register(Employee, EmployeeAdmin)
 

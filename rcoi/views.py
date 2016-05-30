@@ -1,14 +1,15 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.views import generic
+# from django.views import generic
+from django.views.generic import TemplateView, DetailView, ListView, View
 from django_tables2 import RequestConfig
-from .models import Employee, Place, Exam
+from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
 from .filters import EmployeeFilter, PlaceFilter, ExamFilter
 from .tables import EmployeeTable, PlaceTable, ExamTable
 from django.http import HttpResponse
-from .models import db_populate
+from .models import initial_db_populate
 
 
-class EmployeeTableView(generic.TemplateView):
+class EmployeeTableView(TemplateView):
     template_name = 'rcoi/employee.html'
 
     def get_queryset(self, **kwargs):
@@ -26,7 +27,7 @@ class EmployeeTableView(generic.TemplateView):
         return context
 
 
-class PlaceTableView(generic.TemplateView):
+class PlaceTableView(TemplateView):
     template_name = 'rcoi/place.html'
 
     def get_queryset(self, **kwargs):
@@ -44,8 +45,8 @@ class PlaceTableView(generic.TemplateView):
         return context
 
 
-class ExamTableView(generic.TemplateView):
-    template_name = 'rcoi/index.html'
+class ExamTableView(TemplateView):
+    template_name = 'rcoi/exam.html'
 
     def get_queryset(self, **kwargs):
         return Exam.objects.select_related().all()
@@ -63,29 +64,108 @@ class ExamTableView(generic.TemplateView):
         return context
 
 
-class ListView(generic.ListView):
-    model = Exam
-    template_name = 'rcoi/list.html'
-    paginate_by = 50
+# class ExamListView(ListView):
+#     model = Exam
+#     paginate_by = 50
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(ExamListView, self).get_context_data(**kwargs)
+#         exams = Exam.objects.select_related().all()
+#         paginator = Paginator(exams, self.paginate_by)
+#         page = self.request.GET.get('page')
+#         try:
+#             exams = paginator.page(page)
+#         except PageNotAnInteger:
+#             exams = paginator.page(1)
+#         except EmptyPage:
+#             exams = paginator.page(paginator.num_pages)
+#
+#         context['exams'] = exams
+#         return context
+
+
+class ExamDateListView(ListView):
+    model = Date
+
+
+class ExamDateDetailView(DetailView):
+    model = Date
+
+
+class ExamLevelListView(ListView):
+    model = Level
+
+
+class ExamLevelDetailView(DetailView):
+    model = Level
+
+
+class OrganisationListView(ListView):
+    model = Organisation
+
+
+class OrganisationDetailView(DetailView):
+    model = Organisation
+
+    def get_queryset(self):
+        return super(OrganisationDetailView, self).get_queryset().select_related()
 
     def get_context_data(self, **kwargs):
-        context = super(ListView, self).get_context_data(**kwargs)
-        exams = Exam.objects.select_related().all()
-        paginator = Paginator(exams, self.paginate_by)
-        page = self.request.GET.get('page')
-        try:
-            exams = paginator.page(page)
-        except PageNotAnInteger:
-            exams = paginator.page(1)
-        except EmptyPage:
-            exams = paginator.page(paginator.num_pages)
-
-        context['exams'] = exams
+        context = super(OrganisationDetailView, self).get_context_data(**kwargs)
+        context['employees'] = self.object.employees.select_related()
         return context
 
 
-# class IndexView(generic.View):
-#
-#     def get(self, request):
-#         # db_populate()
-#         return HttpResponse("It's work!")
+class PositionListView(ListView):
+    model = Position
+
+
+class PositionDetailView(DetailView):
+    model = Position
+
+
+class EmployeeListView(ListView):
+    model = Employee
+
+
+class EmployeeDetailView(DetailView):
+    model = Employee
+
+    def get_queryset(self):
+        return super(EmployeeDetailView, self).get_queryset().select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super(EmployeeDetailView, self).get_context_data(**kwargs)
+        context['exams'] = self.object.exams.select_related()
+        return context
+
+
+class TerritoryListView(ListView):
+    model = Territory
+
+
+class TerritoryDetailView(DetailView):
+    model = Territory
+
+
+class PlaceListView(ListView):
+    model = Place
+
+
+class PlaceDetailView(DetailView):
+    model = Place
+
+
+class ExamListView(ListView):
+    model = Exam
+
+
+class ExamDetailView(DetailView):
+    model = Exam
+
+
+class IndexView(View):
+
+    def get(self, request):
+        initial_db_populate()
+        return HttpResponse("It's work!")
