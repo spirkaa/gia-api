@@ -24,6 +24,8 @@ class EmployeeTableView(TemplateView):
         RequestConfig(self.request, paginate={'per_page': 50}).configure(table)
         context['filter'] = filter
         context['table'] = table
+        last_update = Exam.objects.latest('modified')
+        context['last_update'] = last_update.modified
         return context
 
 
@@ -42,6 +44,8 @@ class PlaceTableView(TemplateView):
         RequestConfig(self.request, paginate={'per_page': 50}).configure(table)
         context['filter'] = filter
         context['table'] = table
+        last_update = Exam.objects.latest('modified')
+        context['last_update'] = last_update.modified
         return context
 
 
@@ -50,7 +54,6 @@ class ExamTableView(TemplateView):
 
     def get_queryset(self, **kwargs):
         return Exam.objects.select_related().all()
-        # return Exam.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super(ExamTableView, self).get_context_data(**kwargs)
@@ -61,6 +64,8 @@ class ExamTableView(TemplateView):
         RequestConfig(self.request, paginate={'per_page': 50}).configure(table)
         context['filter'] = filter
         context['table'] = table
+        last_update = Exam.objects.latest('modified')
+        context['last_update'] = last_update.modified
         return context
 
 
@@ -113,6 +118,8 @@ class OrganisationDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(OrganisationDetailView, self).get_context_data(**kwargs)
         context['employees'] = self.object.employees.select_related()
+        last_update = Exam.objects.latest('modified')
+        context['last_update'] = last_update.modified
         return context
 
 
@@ -137,6 +144,8 @@ class EmployeeDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(EmployeeDetailView, self).get_context_data(**kwargs)
         context['exams'] = self.object.exams.select_related()
+        last_update = Exam.objects.latest('modified')
+        context['last_update'] = last_update.modified
         return context
 
 
