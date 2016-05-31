@@ -17,10 +17,10 @@ class Date(TimeStampedModel):
         return str(self.date)
 
     def get_absolute_url(self):
-        return reverse('rcoi:examdate_detail', args=(self.id,))
+        return reverse('rcoi:date_detail', args=(self.id,))
 
     def get_update_url(self):
-        return reverse('rcoi:examdate_update', args=(self.id,))
+        return reverse('rcoi:date_update', args=(self.id,))
 
 
 class Level(TimeStampedModel):
@@ -33,10 +33,10 @@ class Level(TimeStampedModel):
         return str(self.level)
 
     def get_absolute_url(self):
-        return reverse('rcoi:examlevel_detail', args=(self.id,))
+        return reverse('rcoi:level_detail', args=(self.id,))
 
     def get_update_url(self):
-        return reverse('rcoi:examlevel_update', args=(self.id,))
+        return reverse('rcoi:level_update', args=(self.id,))
 
 
 class Organisation(TimeStampedModel):

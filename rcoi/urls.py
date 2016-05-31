@@ -4,8 +4,8 @@ from . import api
 from . import views
 
 router = routers.DefaultRouter()
-router.register(r'examdate', api.ExamDateViewSet)
-router.register(r'examlevel', api.ExamLevelViewSet)
+router.register(r'date', api.ExamDateViewSet)
+router.register(r'level', api.ExamLevelViewSet)
 router.register(r'organisation', api.OrganisationViewSet)
 router.register(r'position', api.PositionViewSet)
 router.register(r'employee', api.EmployeeViewSet)
@@ -18,11 +18,11 @@ urlpatterns = [
     # url(r'^$', views.ExamTableView.as_view(), name='index'),
     url(r'^update$', views.IndexView.as_view(), name='index'),
     # urls for Date
-    url(r'^date/$', views.ExamDateListView.as_view(), name='date_list'),
-    url(r'^date/detail/(?P<pk>\S+)/$', views.ExamDateDetailView.as_view(), name='date_detail'),
+    url(r'^date/$', views.DateListView.as_view(), name='date_list'),
+    url(r'^date/detail/(?P<pk>\S+)/$', views.DateDetailView.as_view(), name='date_detail'),
     # urls for Level
-    url(r'^level/$', views.ExamLevelListView.as_view(), name='level_list'),
-    url(r'^level/detail/(?P<pk>\S+)/$', views.ExamLevelDetailView.as_view(), name='level_detail'),
+    url(r'^level/$', views.LevelListView.as_view(), name='level_list'),
+    url(r'^level/detail/(?P<pk>\S+)/$', views.LevelDetailView.as_view(), name='level_detail'),
     # urls for Organisation
     url(r'^organisation/$', views.OrganisationListView.as_view(), name='organisation_list'),
     url(r'^organisation/detail/(?P<pk>\S+)/$', views.OrganisationDetailView.as_view(), name='organisation_detail'),

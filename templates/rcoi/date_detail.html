@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<p><a class="btn btn-default" href="{% url 'rcoi:examdate_list' %}">ExamDate Listing</a></p>
+<p><a class="btn btn-default" href="{% url 'rcoi:date_list' %}">ExamDate Listing</a></p>
 <table class="table">
 <tr><td>date</td><td>{{ object.date }}</td></tr>
 </table>

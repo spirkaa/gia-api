@@ -89,19 +89,19 @@ class ExamTableView(TemplateView):
 #         return context
 
 
-class ExamDateListView(ListView):
+class DateListView(ListView):
     model = Date
 
 
-class ExamDateDetailView(DetailView):
+class DateDetailView(DetailView):
     model = Date
 
 
-class ExamLevelListView(ListView):
+class LevelListView(ListView):
     model = Level
 
 
-class ExamLevelDetailView(DetailView):
+class LevelDetailView(DetailView):
     model = Level
 
 
@@ -163,10 +163,6 @@ class PlaceListView(ListView):
 
 class PlaceDetailView(DetailView):
     model = Place
-
-
-class ExamListView(ListView):
-    model = Exam
 
 
 class ExamDetailView(DetailView):
