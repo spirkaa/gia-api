@@ -152,16 +152,24 @@ def initial_db_populate():
     import os
     import csv
     from collections import defaultdict
+    from time import time
     from .xls_to_db import get_files, save_to_csv
 
     path = 'data'
+    csv_file = 'data.csv'
     os.chdir(path)
-    get_files()
-    save_to_csv()
+    now = time()
+    hour_ago = now - 60*60
+    if not os.path.isfile(csv_file):
+        open(csv_file, 'w+').close()
+    file_modified = os.path.getmtime(csv_file)
+    if file_modified < hour_ago or os.path.getsize(csv_file) == 0:
+        get_files()
+        save_to_csv()
 
     data = defaultdict(list)
 
-    with open('data.csv', encoding='utf-8') as f:
+    with open(csv_file, encoding='utf-8') as f:
         reader = csv.DictReader(f, delimiter=';')
         for row in reader:
             for (k, v) in row.items():
