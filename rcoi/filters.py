@@ -1,12 +1,30 @@
-from django import forms
-from django.db import models
 import django_filters
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout
-from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
+
+from . import models
 
 
-class EmployeeFilter(django_filters.FilterSet):
+class FilterWithHelper(django_filters.FilterSet):
+
+    def __init__(self, *args, **kwargs):
+        super(FilterWithHelper, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.form_class = 'form-inline'
+        self.helper.form_show_labels = False
+        self.helper.form_id = 'filter'
+        self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+
+
+class EmployeeFilter(FilterWithHelper):
+
+    def __init__(self, *args, **kwargs):
+        super(EmployeeFilter, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            'name',
+            'org__name',
+            Submit('filter', 'Найти'))
 
     name = django_filters.CharFilter(
         lookup_expr='icontains',
@@ -16,24 +34,20 @@ class EmployeeFilter(django_filters.FilterSet):
         label='Место работы')
 
     class Meta:
-        model = Employee
+        model = models.Employee
 
-    @property
-    def helper(self):
-        helper = FormHelper()
-        helper.form_method = 'get'
-        helper.form_class = 'form-inline'
-        helper.form_show_labels = False
-        helper.form_id = 'filter'
-        helper.field_template = 'bootstrap3/layout/inline_field.html'
-        helper.layout = Layout(
+
+class PlaceFilter(FilterWithHelper):
+
+    def __init__(self, *args, **kwargs):
+        super(PlaceFilter, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            'code',
             'name',
-            'org__name',
+            'addr',
+            'ate__code',
+            'ate__name',
             Submit('filter', 'Найти'))
-        return helper
-
-
-class PlaceFilter(django_filters.FilterSet):
 
     code = django_filters.CharFilter(
         label='Код ППЭ')
@@ -50,33 +64,28 @@ class PlaceFilter(django_filters.FilterSet):
         label='Наименование АТЕ')
 
     class Meta:
-        model = Place
+        model = models.Place
 
-    @property
-    def helper(self):
-        helper = FormHelper()
-        helper.form_method = 'get'
-        helper.form_class = 'form-inline'
-        helper.form_show_labels = False
-        helper.form_id = 'filter'
-        helper.field_template = 'bootstrap3/layout/inline_field.html'
-        helper.layout = Layout(
-            'code',
-            'name',
-            'addr',
-            'ate__code',
-            'ate__name',
+
+class ExamFilter(FilterWithHelper):
+
+    def __init__(self, *args, **kwargs):
+        super(ExamFilter, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            'date',
+            'level',
+            'place__code',
+            'place__name',
+            'place__addr',
+            'employee__name',
+            'employee__org__name',
             Submit('filter', 'Найти'))
-        return helper
-
-
-class ExamFilter(django_filters.FilterSet):
 
     date = django_filters.ModelChoiceFilter(
-        queryset=Date.objects.all(),
+        queryset=models.Date.objects.all(),
         label='Дата экзамена')
     level = django_filters.ModelChoiceFilter(
-        queryset=Level.objects.all(),
+        queryset=models.Level.objects.all(),
         label='Уровень')
     place__code = django_filters.CharFilter(
         label='Код ППЭ')
@@ -93,33 +102,5 @@ class ExamFilter(django_filters.FilterSet):
         lookup_expr='icontains',
         label='Место работы')
 
-    filter_overrides = {
-        models.CharField: {
-            'filter_class': django_filters.CharFilter,
-            'extra': lambda f: {
-                'lookup_type': 'icontains'
-            }
-        },
-    }
-
     class Meta:
-        model = Exam
-
-    @property
-    def helper(self):
-        helper = FormHelper()
-        helper.form_method = 'get'
-        helper.form_class = 'form-inline'
-        helper.form_show_labels = False
-        helper.form_id = 'filter'
-        helper.field_template = 'bootstrap3/layout/inline_field.html'
-        helper.layout = Layout(
-            'date',
-            'level',
-            'employee__name',
-            'employee__org__name',
-            'place__code',
-            'place__name',
-            'place__addr',
-            Submit('filter', 'Найти'))
-        return helper
+        model = models.Exam

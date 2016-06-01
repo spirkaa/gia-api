@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
+from . import models
 
 
 class EmployeeTable(tables.Table):
@@ -9,8 +9,8 @@ class EmployeeTable(tables.Table):
                                 verbose_name='Место работы')
 
     class Meta:
-        model = Employee
-        sequence = ('name', 'org', '...')
+        model = models.Employee
+        sequence = ('name', 'org')
         exclude = ('id', 'created', 'modified')
 
 
@@ -23,9 +23,9 @@ class PlaceTable(tables.Table):
                                  verbose_name='Адрес ППЭ')
 
     class Meta:
-        model = Place
-        sequence = ('code', 'name', 'addr', 'ate_code', 'ate_name', '...')
-        exclude = ('id', 'created', 'modified', 'ate', 'slug')
+        model = models.Place
+        sequence = ('code', 'name', 'addr', 'ate_code', 'ate_name')
+        exclude = ('id', 'created', 'modified', 'ate')
 
 
 class ExamTable(tables.Table):
@@ -43,6 +43,6 @@ class ExamTable(tables.Table):
                                 verbose_name='Место работы')
 
     class Meta:
-        model = Exam
+        model = models.Exam
         sequence = ('date', 'level', 'code', 'place', 'addr', 'position', 'employee', 'org')
         exclude = ('id', 'created', 'modified')
