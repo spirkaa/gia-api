@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 import django_filters
 from crispy_forms.helper import FormHelper
@@ -21,8 +22,10 @@ class EmployeeFilter(django_filters.FilterSet):
     def helper(self):
         helper = FormHelper()
         helper.form_method = 'get'
-        helper.form_class = 'form-horizontal'
+        helper.form_class = 'form-inline'
+        helper.form_show_labels = False
         helper.form_id = 'filter'
+        helper.field_template = 'bootstrap3/layout/inline_field.html'
         helper.layout = Layout(
             'name',
             'org__name',
@@ -53,8 +56,10 @@ class PlaceFilter(django_filters.FilterSet):
     def helper(self):
         helper = FormHelper()
         helper.form_method = 'get'
-        helper.form_class = 'form-horizontal'
+        helper.form_class = 'form-inline'
+        helper.form_show_labels = False
         helper.form_id = 'filter'
+        helper.field_template = 'bootstrap3/layout/inline_field.html'
         helper.layout = Layout(
             'code',
             'name',
@@ -77,7 +82,7 @@ class ExamFilter(django_filters.FilterSet):
         label='Код ППЭ')
     place__name = django_filters.CharFilter(
         lookup_expr='icontains',
-        label='Название ППЭ')
+        label='Наименование ППЭ')
     place__addr = django_filters.CharFilter(
         lookup_expr='icontains',
         label='Адрес ППЭ')
@@ -104,8 +109,10 @@ class ExamFilter(django_filters.FilterSet):
     def helper(self):
         helper = FormHelper()
         helper.form_method = 'get'
-        helper.form_class = 'form-horizontal'
+        helper.form_class = 'form-inline'
+        helper.form_show_labels = False
         helper.form_id = 'filter'
+        helper.field_template = 'bootstrap3/layout/inline_field.html'
         helper.layout = Layout(
             'date',
             'level',

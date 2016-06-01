@@ -1,92 +1,79 @@
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-# from django.views import generic
+from django.db.models import Count, Max
+from django.http import HttpResponse
 from django.views.generic import TemplateView, DetailView, ListView, View
 from django_tables2 import RequestConfig
-from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
+
 from .filters import EmployeeFilter, PlaceFilter, ExamFilter
-from .tables import EmployeeTable, PlaceTable, ExamTable
-from django.http import HttpResponse
+from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
 from .models import initial_db_populate
+from .tables import EmployeeTable, PlaceTable, ExamTable
 
 
-class EmployeeTableView(TemplateView):
+class FilteredSingleTableView(TemplateView):
+    model = None
+    table_class = None
+    paginate_by = 50
+    filter_class = None
+    template_name = None
+
+    def get_queryset(self, **kwargs):
+        return self.model.objects.select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super(FilteredSingleTableView, self).get_context_data(**kwargs)
+        filter = self.filter_class(self.request.GET,
+                                   queryset=self.get_queryset(**kwargs))
+        filter.form.helper = self.filter_class().helper
+        table = self.table_class(filter.qs)
+        RequestConfig(self.request, paginate={'per_page': self.paginate_by}).configure(table)
+        context['filter'] = filter
+        context['table'] = table
+        context['updated'] = Exam.objects.aggregate(upd_date=Max('modified'))['upd_date']
+        return context
+
+
+class EmployeeTableView(FilteredSingleTableView):
+    model = Employee
+    table_class = EmployeeTable
+    filter_class = EmployeeFilter
     template_name = 'rcoi/employee.html'
 
-    def get_queryset(self, **kwargs):
-        return Employee.objects.select_related().all()
 
-    def get_context_data(self, **kwargs):
-        context = super(EmployeeTableView, self).get_context_data(**kwargs)
-        filter = EmployeeFilter(self.request.GET,
-                                queryset=self.get_queryset(**kwargs))
-        filter.form.helper = EmployeeFilter().helper
-        table = EmployeeTable(filter.qs)
-        RequestConfig(self.request, paginate={'per_page': 50}).configure(table)
-        context['filter'] = filter
-        context['table'] = table
-        last_update = Exam.objects.latest('modified')
-        context['last_update'] = last_update.modified
-        return context
-
-
-class PlaceTableView(TemplateView):
+class PlaceTableView(FilteredSingleTableView):
+    model = Place
+    table_class = PlaceTable
+    filter_class = PlaceFilter
     template_name = 'rcoi/place.html'
 
-    def get_queryset(self, **kwargs):
-        return Place.objects.select_related().all()
 
-    def get_context_data(self, **kwargs):
-        context = super(PlaceTableView, self).get_context_data(**kwargs)
-        filter = PlaceFilter(self.request.GET,
-                                queryset=self.get_queryset(**kwargs))
-        filter.form.helper = PlaceFilter().helper
-        table = PlaceTable(filter.qs)
-        RequestConfig(self.request, paginate={'per_page': 50}).configure(table)
-        context['filter'] = filter
-        context['table'] = table
-        last_update = Exam.objects.latest('modified')
-        context['last_update'] = last_update.modified
-        return context
-
-
-class ExamTableView(TemplateView):
+class ExamTableView(FilteredSingleTableView):
+    model = Exam
+    table_class = ExamTable
+    filter_class = ExamFilter
     template_name = 'rcoi/exam.html'
 
-    def get_queryset(self, **kwargs):
-        return Exam.objects.select_related().all()
+
+class OrganisationDetailView(DetailView):
+    model = Organisation
 
     def get_context_data(self, **kwargs):
-        context = super(ExamTableView, self).get_context_data(**kwargs)
-        filter = ExamFilter(self.request.GET,
-                            queryset=self.get_queryset(**kwargs))
-        filter.form.helper = ExamFilter().helper
-        table = ExamTable(filter.qs)
-        RequestConfig(self.request, paginate={'per_page': 50}).configure(table)
-        context['filter'] = filter
-        context['table'] = table
-        last_update = Exam.objects.latest('modified')
-        context['last_update'] = last_update.modified
+        context = super(OrganisationDetailView, self).get_context_data(**kwargs)
+        context['employees'] = self.object.employees.annotate(num_exams=Count('exams'))
+        context['updated'] = Exam.objects.aggregate(upd_date=Max('modified'))['upd_date']
         return context
 
 
-# class ExamListView(ListView):
-#     model = Exam
-#     paginate_by = 50
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(ExamListView, self).get_context_data(**kwargs)
-#         exams = Exam.objects.select_related().all()
-#         paginator = Paginator(exams, self.paginate_by)
-#         page = self.request.GET.get('page')
-#         try:
-#             exams = paginator.page(page)
-#         except PageNotAnInteger:
-#             exams = paginator.page(1)
-#         except EmptyPage:
-#             exams = paginator.page(paginator.num_pages)
-#
-#         context['exams'] = exams
-#         return context
+class EmployeeDetailView(DetailView):
+    model = Employee
+
+    def get_queryset(self):
+        return super(EmployeeDetailView, self).get_queryset().select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super(EmployeeDetailView, self).get_context_data(**kwargs)
+        context['exams'] = self.object.exams.select_related()
+        context['updated'] = Exam.objects.aggregate(upd_date=Max('modified'))['upd_date']
+        return context
 
 
 class DateListView(ListView):
@@ -109,20 +96,6 @@ class OrganisationListView(ListView):
     model = Organisation
 
 
-class OrganisationDetailView(DetailView):
-    model = Organisation
-
-    def get_queryset(self):
-        return super(OrganisationDetailView, self).get_queryset().select_related()
-
-    def get_context_data(self, **kwargs):
-        context = super(OrganisationDetailView, self).get_context_data(**kwargs)
-        context['employees'] = self.object.employees.select_related()
-        last_update = Exam.objects.latest('modified')
-        context['last_update'] = last_update.modified
-        return context
-
-
 class PositionListView(ListView):
     model = Position
 
@@ -133,20 +106,6 @@ class PositionDetailView(DetailView):
 
 class EmployeeListView(ListView):
     model = Employee
-
-
-class EmployeeDetailView(DetailView):
-    model = Employee
-
-    def get_queryset(self):
-        return super(EmployeeDetailView, self).get_queryset().select_related()
-
-    def get_context_data(self, **kwargs):
-        context = super(EmployeeDetailView, self).get_context_data(**kwargs)
-        context['exams'] = self.object.exams.select_related()
-        last_update = Exam.objects.latest('modified')
-        context['last_update'] = last_update.modified
-        return context
 
 
 class TerritoryListView(ListView):
