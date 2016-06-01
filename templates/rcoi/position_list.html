@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load static %}
 {% block content %}
 <p><a class="btn btn-default" href="{% url 'rcoi:position_list' %}">Position Listing</a></p>
 <table class="table">
@@ -14,5 +13,5 @@
     <td>{{ object.name }}</td>
 </tr>
 {% endfor %}
-</table><a class="btn btn-primary" href="{% url 'rcoi:position_create' %}">Create new Position</a>
+</table>
 {% endblock %}

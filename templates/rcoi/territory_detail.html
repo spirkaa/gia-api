@@ -1,12 +1,8 @@
 {% extends "base.html" %}
-{% load static %}
 {% block content %}
 <p><a class="btn btn-default" href="{% url 'rcoi:territory_list' %}">Territory Listing</a></p>
 <table class="table">
 <tr><td>code</td><td>{{ object.code }}</td></tr>
 <tr><td>name</td><td>{{ object.name }}</td></tr>
-<tr><td>slug</td><td>{{ object.slug }}</td></tr>
 </table>
-<a class="btn btn-primary" href="{{object.get_update_url}}">Edit Territory</a>
-
 {% endblock %}

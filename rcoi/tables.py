@@ -3,12 +3,10 @@ from .models import Date, Level, Organisation, Position, Employee, Territory, Pl
 
 
 class EmployeeTable(tables.Table):
-    name = tables.TemplateColumn(
-        '<a href="{{record.get_absolute_url}}">{{record.name}}</a>',
-        verbose_name='ФИО')
-    org = tables.TemplateColumn(
-        '<a href="{{record.org.get_absolute_url}}">{{record.org.name}}</a>',
-        verbose_name='Место работы')
+    name = tables.TemplateColumn(template_name='rcoi/cols/employee_name.html',
+                                 verbose_name='ФИО')
+    org = tables.TemplateColumn(template_name='rcoi/cols/employee_org.html',
+                                verbose_name='Место работы')
 
     class Meta:
         model = Employee
@@ -19,9 +17,10 @@ class EmployeeTable(tables.Table):
 class PlaceTable(tables.Table):
     ate_code = tables.Column(accessor='ate.code')
     ate_name = tables.Column(accessor='ate.name')
-    addr = tables.TemplateColumn(
-        '<a href="https://yandex.ru/maps/?text={{record.addr}}" target="_blank" title="Открыть карту">{{record.addr}}</a>',
-        verbose_name='Адрес ППЭ')
+    name = tables.TemplateColumn(template_name='rcoi/cols/place_name.html',
+                                 verbose_name='Наименование ППЭ')
+    addr = tables.TemplateColumn(template_name='rcoi/cols/place_addr.html',
+                                 verbose_name='Адрес ППЭ')
 
     class Meta:
         model = Place
@@ -33,15 +32,15 @@ class ExamTable(tables.Table):
     date = tables.DateColumn(accessor='date.date')
     level = tables.Column(accessor='level.level')
     code = tables.Column(accessor='place.code')
-    place = tables.Column(accessor='place.name')
-    addr = tables.TemplateColumn(
-        '<a href="https://yandex.ru/maps/?text={{record.place.addr}}" target="_blank" title="Открыть карту">{{record.place.addr}}</a>',
-        verbose_name='Адрес ППЭ')
+    place = tables.TemplateColumn(template_name='rcoi/cols/exam_place.html',
+                                  verbose_name='Наименование ППЭ')
+    addr = tables.TemplateColumn(template_name='rcoi/cols/exam_addr.html',
+                                 verbose_name='Адрес ППЭ')
     position = tables.Column(accessor='position.name')
-    employee = tables.TemplateColumn(
-        '<a href="{{record.employee.get_absolute_url}}">{{record.employee.name}}</a>',
-        verbose_name='ФИО')
-    org = tables.Column(accessor='employee.org.name')
+    employee = tables.TemplateColumn(template_name='rcoi/cols/exam_employee.html',
+                                     verbose_name='ФИО')
+    org = tables.TemplateColumn(template_name='rcoi/cols/exam_org.html',
+                                verbose_name='Место работы')
 
     class Meta:
         model = Exam
