@@ -5,7 +5,7 @@ from django_tables2 import RequestConfig
 
 from .filters import EmployeeFilter, PlaceFilter, ExamFilter
 from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
-from .models import initial_db_populate
+from .models import initial_db_populate, db_update
 from .tables import EmployeeTable, PlaceTable, ExamTable
 
 
@@ -131,5 +131,6 @@ class ExamDetailView(DetailView):
 class IndexView(View):
 
     def get(self, request):
-        initial_db_populate()
+        db_update()
+        # initial_db_populate()
         return HttpResponse("It's work!")
