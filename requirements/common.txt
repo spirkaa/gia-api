@@ -9,6 +9,8 @@ django-bootstrap3
 django-crispy-forms
 django-filter
 django-tables2
+djangorestframework
+djangorestframework-filters
 requests
 beautifulsoup4
 lxml

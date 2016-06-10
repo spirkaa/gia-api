@@ -40,6 +40,14 @@ class Common(Configuration):
         'javascript_url': '/static/js/bootstrap.min.js',
 
     }
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+        'PAGE_SIZE': 50,
+        'DEFAULT_FILTER_BACKENDS': (
+            'rest_framework_filters.backends.DjangoFilterBackend',
+            # 'rest_framework.filters.SearchFilter'
+        ),
+    }
     # Application definition
     INSTALLED_APPS = [
         'django.contrib.admin',
@@ -55,8 +63,11 @@ class Common(Configuration):
         'django_filters',
         'crispy_forms',
         'bootstrap3',
+        'rest_framework',
+        'rest_framework_filters',
 
         'rcoi',
+        'api.v1'
     ]
 
     MIDDLEWARE_CLASSES = [
@@ -84,7 +95,6 @@ class Common(Configuration):
                     'django.template.context_processors.request',
                     'django.contrib.auth.context_processors.auth',
                     'django.contrib.messages.context_processors.messages',
-                    'django.core.context_processors.request',
                 ],
             },
         },
@@ -104,7 +114,7 @@ class Common(Configuration):
             'USER': 'postgres',
             # 'PASSWORD': 'postgres',
             'HOST': '192.168.99.100',
-            'PORT': 32777,
+            'PORT': 32768,
         }
     }
     # Password validation

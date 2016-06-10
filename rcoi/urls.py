@@ -1,22 +1,11 @@
-from django.conf.urls import url, include
-from rest_framework import routers
-from . import api
+from django.conf.urls import url
 from . import views
 
-router = routers.DefaultRouter()
-router.register(r'date', api.ExamDateViewSet)
-router.register(r'level', api.ExamLevelViewSet)
-router.register(r'organisation', api.OrganisationViewSet)
-router.register(r'position', api.PositionViewSet)
-router.register(r'employee', api.EmployeeViewSet)
-router.register(r'territory', api.TerritoryViewSet)
-router.register(r'place', api.PlaceViewSet)
-router.register(r'exam', api.ExamViewSet)
 
 urlpatterns = [
-    url(r'^api/v1/', include(router.urls)),
-    # url(r'^$', views.ExamTableView.as_view(), name='index'),
-    url(r'^update$', views.IndexView.as_view(), name='index'),
+    url(r'^$', views.IndexView.as_view(), name='index'),
+    url(r'^(\d+)$', views.IndexView.as_view(), name='index'),
+    url(r'^update$', views.UpdateView.as_view(), name='update'),
     # urls for Date
     url(r'^date/$', views.DateListView.as_view(), name='date_list'),
     url(r'^date/detail/(?P<pk>\S+)/$', views.DateDetailView.as_view(), name='date_detail'),
