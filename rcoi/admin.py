@@ -1,45 +1,45 @@
 from django.contrib import admin
-from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
+from . import models
 
 
 class DateAdmin(admin.ModelAdmin):
     list_display = ('date', 'created', 'modified', 'id')
     list_filter = ('date', 'created', 'modified')
-admin.site.register(Date, DateAdmin)
+admin.site.register(models.Date, DateAdmin)
 
 
 class LevelAdmin(admin.ModelAdmin):
     list_display = ('level', 'created', 'modified', 'id')
     list_filter = ('level', 'created', 'modified')
-admin.site.register(Level, LevelAdmin)
+admin.site.register(models.Level, LevelAdmin)
 
 
 class OrganisationAdmin(admin.ModelAdmin):
     list_display = ('name', 'created', 'modified', 'id')
     list_filter = ('created', 'modified')
     search_fields = ('name',)
-admin.site.register(Organisation, OrganisationAdmin)
+admin.site.register(models.Organisation, OrganisationAdmin)
 
 
 class PositionAdmin(admin.ModelAdmin):
     list_display = ('name', 'created', 'modified', 'id')
     list_filter = ('created', 'modified')
     search_fields = ('name',)
-admin.site.register(Position, PositionAdmin)
+admin.site.register(models.Position, PositionAdmin)
 
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('name', 'org', 'created', 'modified', 'id')
     list_filter = ('created', 'modified')
     search_fields = ('name', 'org__name')
-admin.site.register(Employee, EmployeeAdmin)
+admin.site.register(models.Employee, EmployeeAdmin)
 
 
 class TerritoryAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'created', 'modified', 'id')
     list_filter = ('code', 'created', 'modified')
     search_fields = ('name', 'code')
-admin.site.register(Territory, TerritoryAdmin)
+admin.site.register(models.Territory, TerritoryAdmin)
 
 
 class PlaceAdmin(admin.ModelAdmin):
@@ -54,7 +54,7 @@ class PlaceAdmin(admin.ModelAdmin):
     )
     list_filter = ('ate', 'created', 'modified')
     search_fields = ('name', 'code')
-admin.site.register(Place, PlaceAdmin)
+admin.site.register(models.Place, PlaceAdmin)
 
 
 class ExamAdmin(admin.ModelAdmin):
@@ -78,4 +78,4 @@ class ExamAdmin(admin.ModelAdmin):
 
     get_employee_pos.short_description = 'Должность в ППЭ'
     get_employee_pos.admin_order_field = 'employee__position'
-admin.site.register(Exam, ExamAdmin)
+admin.site.register(models.Exam, ExamAdmin)

@@ -1,12 +1,11 @@
-from django.db import models
-from django.core.urlresolvers import reverse
-from django_extensions.db.models import TimeStampedModel
-import logging
-import datetime
 import csv
+import datetime
+import logging
 from io import StringIO
-from django.db import connection
 
+from django.core.urlresolvers import reverse
+from django.db import connection, models
+from django_extensions.db.models import TimeStampedModel
 
 logger = logging.getLogger('rcoi.models')
 
