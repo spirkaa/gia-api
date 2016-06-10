@@ -1,4 +1,5 @@
 {% load tz %}
+{% load navactive %}
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -14,13 +15,13 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li>
+        <li class="{% navactive request 'rcoi:exam' %}">
             <a href="{% url 'rcoi:exam' %}">Экзамены</a>
         </li>
-        <li>
+        <li class="{% navactive request 'rcoi:employee' %}">
             <a href="{% url 'rcoi:employee' %}">Сотрудники</a>
         </li>
-        <li>
+        <li class="{% navactive request 'rcoi:place' %}">
             <a href="{% url 'rcoi:place' %}">ППЭ</a>
         </li>
       </ul>
