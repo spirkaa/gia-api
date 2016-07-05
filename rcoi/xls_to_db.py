@@ -43,15 +43,17 @@ def get_files():
         [download_file(url) for url in files[i] if 'rab' in url]
 
 
+# replace quotation marks
+s0 = re.compile('["„“”«»\'‘’]')
+# remove spaces before punctuation marks
+s1 = re.compile('\s+(?=[\.,:;!\?])')
+# 1. (add space after punctuation marks |
+# 2. add space before "№" |
+# 3. replace whitespace chars with only one space)
+s2 = re.compile('(?<=[\.,:;!№\?])(?![\.,:;!№\?\s])|(?<=\w)(?=№)|\s+')
+
+
 def re_work(s):
-    # replace quotation marks
-    s0 = re.compile('["„“”«»\'‘’]')
-    # remove spaces before punctuation marks
-    s1 = re.compile('\s+(?=[\.,:;!\?])')
-    # 1. (add space after punctuation marks |
-    # 2. add space before "№" |
-    # 3. replace whitespace chars with only one space)
-    s2 = re.compile('(?<=[\.,:;!№\?])(?![\.,:;!№\?\s])|(?<=\w)(?=№)|\s+')
     s = s2.sub(' ', s1.sub('', s0.sub(' ', str(s)))).strip()
     return s
 
@@ -140,10 +142,28 @@ def save_to_csv():
                 a.writerow(line)
 
 
+def save_to_stream():
+    from io import StringIO
+    import sys
+    stream = StringIO()
+    writer = csv.writer(stream, delimiter='\t', quotechar="'")
+    writer.writerow(['date', 'level', 'ate_code', 'ate_name',
+                     'ppe_code', 'ppe_name', 'ppe_addr',
+                     'position', 'name', 'organisation'])
+
+    for file in glob.glob('*.xlsx'):
+        data = parse_xls(file)
+        logger.info(sys.getsizeof(data))
+        for line in data:
+            writer.writerow(line)
+    stream.seek(0)
+    return stream
+
+
 def main():
-    pass
-    get_files()
-    save_to_csv()
+    # get_files()
+    # save_to_csv()
+    print(save_to_stream())
 
 if __name__ == '__main__':
     main()
