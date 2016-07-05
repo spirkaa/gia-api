@@ -1,4 +1,6 @@
+from django.db.models import Count
 from rest_framework import viewsets
+from rest_framework_extensions.mixins import DetailSerializerMixin
 from rcoi import models
 from . import serializers
 from . import filters
@@ -28,36 +30,27 @@ class PositionViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = filters.LevelFilter
 
 
-class OrganisationViewSet(viewsets.ReadOnlyModelViewSet):
+class OrganisationViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
     """ViewSet for the Organisation class"""
 
     queryset = models.Organisation.objects.all()
+    serializer_class = serializers.OrganisationSerializer
+    serializer_detail_class = serializers.OrganisationDetailSerializer
     filter_class = filters.OrganisationFilter
 
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return serializers.OrganisationSerializer
-        return serializers.OrganisationDetailSerializer
 
-
-class EmployeeViewSet(viewsets.ReadOnlyModelViewSet):
+class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
     """ViewSet for the Employee class"""
 
+    queryset = models.Employee.objects.select_related()
+    queryset_detail = queryset.prefetch_related('exams__date',
+                                                'exams__level',
+                                                'exams__place',
+                                                'exams__place__ate',
+                                                'exams__position').all()
+    serializer_class = serializers.EmployeeSerializer
+    serializer_detail_class = serializers.EmployeeDetailSerializer
     filter_class = filters.EmployeeFilter
-
-    def get_queryset(self):
-        queryset = models.Employee.objects.select_related()
-        if self.action == 'list':
-            return queryset
-        return queryset.prefetch_related('exams__date',
-                                         'exams__level',
-                                         'exams__place',
-                                         'exams__position')
-
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return serializers.EmployeeSerializer
-        return serializers.EmployeeDetailSerializer
 
 
 class TerritoryViewSet(viewsets.ReadOnlyModelViewSet):

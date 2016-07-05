@@ -48,6 +48,7 @@ class Common(Configuration):
             # 'rest_framework.filters.SearchFilter'
         ),
     }
+    CORS_ORIGIN_ALLOW_ALL = True
     # Application definition
     INSTALLED_APPS = [
         'django.contrib.admin',
@@ -63,6 +64,7 @@ class Common(Configuration):
         'django_filters',
         'crispy_forms',
         'bootstrap3',
+        'corsheaders',
         'rest_framework',
         'rest_framework_filters',
 
@@ -73,6 +75,7 @@ class Common(Configuration):
     MIDDLEWARE_CLASSES = [
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
+        'corsheaders.middleware.CorsMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',

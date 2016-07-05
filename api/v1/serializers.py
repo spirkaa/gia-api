@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import serializers
 from rcoi import models
 
@@ -31,17 +32,11 @@ class OrganisationSerializer(serializers.ModelSerializer):
             'name',
         )
 
-
-class OrganisationDetailSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.Organisation
-        fields = (
-            'id',
-            'name',
-            'employees'
-        )
-        depth = 1
+    def to_representation(self, instance):
+        from rcoi.templatetags.rename import rename_org
+        data = super(OrganisationSerializer, self).to_representation(instance)
+        data.update({'name': rename_org(data['name'])})
+        return data
 
 
 class PositionSerializer(serializers.ModelSerializer):
@@ -78,9 +73,16 @@ class PlaceSerializer(serializers.ModelSerializer):
             'ate'
         )
 
+    def to_representation(self, instance):
+        from rcoi.templatetags.rename import rename_org
+        data = super(PlaceSerializer, self).to_representation(instance)
+        data.update({'name': rename_org(data['name'])})
+        return data
+
 
 class EmployeeSerializer(serializers.ModelSerializer):
     org = OrganisationSerializer()
+    # org = serializers.CharField(source='org.name')
 
     class Meta:
         model = models.Employee
@@ -113,6 +115,12 @@ class ExamFlatSerializer(serializers.ModelSerializer):
         model = models.Exam
         exclude = ('created', 'modified')
 
+    def to_representation(self, instance):
+        from rcoi.templatetags.rename import rename_org
+        data = super(ExamFlatSerializer, self).to_representation(instance)
+        data.update({'place': rename_org(data['place'])})
+        return data
+
 
 class ExamFullSerializer(serializers.ModelSerializer):
 
@@ -122,14 +130,19 @@ class ExamFullSerializer(serializers.ModelSerializer):
 
 
 class ExamForEmployeeSerializer(serializers.ModelSerializer):
-    date = serializers.DateField(source='date.date')
-    position = serializers.CharField(source='position.name')
-    place = serializers.CharField(source='place.name')
-    addr = serializers.CharField(source='place.addr')
+    # date = serializers.DateField(source='date.date')
+    # level = serializers.CharField(source='level.level')
+    # position = serializers.CharField(source='position.name')
+    # place = serializers.CharField(source='place.name')
+    # addr = serializers.CharField(source='place.addr')
+    date = DateSerializer()
+    level = LevelSerializer()
+    position = PositionSerializer()
+    place = PlaceSerializer()
 
     class Meta:
         model = models.Exam
-        exclude = ('created', 'modified', 'level', 'employee')
+        exclude = ('created', 'modified', 'employee')
 
 
 class EmployeeDetailSerializer(serializers.ModelSerializer):
@@ -140,3 +153,35 @@ class EmployeeDetailSerializer(serializers.ModelSerializer):
         model = models.Employee
         fields = ('id', 'name', 'org', 'exams',)
         depth = 1
+
+
+class EmployeeForOrgSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField()
+    org = serializers.IntegerField(source='org_id')
+    num_exams = serializers.IntegerField(read_only=True)
+
+
+class EmployeesAnnotatedField(serializers.Field):
+    def to_representation(self, value):
+        s = value.annotate(num_exams=Count('exams')).all()
+        ser = EmployeeForOrgSerializer(s, many=True)
+        return ser.data
+
+
+class OrganisationDetailSerializer(serializers.ModelSerializer):
+    employees = EmployeesAnnotatedField(read_only=True)
+
+    class Meta:
+        model = models.Organisation
+        fields = (
+            'id',
+            'name',
+            'employees'
+        )
+
+    def to_representation(self, instance):
+        from rcoi.templatetags.rename import rename_org
+        data = super(OrganisationDetailSerializer, self).to_representation(instance)
+        data.update({'name': rename_org(data['name'])})
+        return data
