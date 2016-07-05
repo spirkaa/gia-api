@@ -128,7 +128,7 @@ class ExamDetailView(DetailView):
     model = Exam
 
 
-class IndexView(View):
+class UpdateView(View):
 
     def get(self, request):
         db_update()

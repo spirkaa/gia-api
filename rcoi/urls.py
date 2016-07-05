@@ -3,8 +3,6 @@ from . import views
 
 
 urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'),
-    url(r'^(\d+)$', views.IndexView.as_view(), name='index'),
     url(r'^update$', views.UpdateView.as_view(), name='update'),
     # urls for Date
     url(r'^date/$', views.DateListView.as_view(), name='date_list'),
