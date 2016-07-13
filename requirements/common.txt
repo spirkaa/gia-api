@@ -1,19 +1,33 @@
-dj-database-url==0.4.1
-django-configurations==1.0.0
-django-debug-toolbar==1.4.0
-django-dotenv==1.4.1
+wheel==0.29.0
+
+# Django
+Django==1.9.7
 django-extensions==1.6.7
-Django==1.9.6
+django-bootstrap3==7.0.1
+django-crispy-forms==1.6.0
+django-filter==0.13.0
+django-tables2==1.2.1
+
+# REST
+django-cors-headers==1.1.0
+djangorestframework==3.3.3
+djangorestframework-filters==0.8.0
+-e git+https://github.com/chibisov/drf-extensions.git#egg=drf-extensions
+
+# Configuration
+django-environ==0.4.0
+django-dotenv==1.4.1
+whitenoise==3.2
+
+# PostgreSQL
 psycopg2==2.6.1
-django-bootstrap3
-django-crispy-forms
-django-filter
-django-tables2
-django-cors-headers
-djangorestframework
-djangorestframework-filters
-drf-extensions
-requests
-beautifulsoup4
-lxml
-openpyxl
+
+# Redis
+redis>=2.10.0
+django-redis==4.4.3
+
+# Libs for parser
+requests==2.10.0
+beautifulsoup4==4.4.1
+lxml==3.6.0
+openpyxl==2.3.5

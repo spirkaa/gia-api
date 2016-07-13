@@ -1,0 +1,6 @@
+-r common.txt
+django-debug-toolbar==1.4.0
+django-extensions==1.6.7
+django-spaghetti-and-meatballs==0.2.0
+Werkzeug==0.11.10
+ipython

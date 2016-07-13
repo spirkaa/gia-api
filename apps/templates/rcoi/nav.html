@@ -1,0 +1,45 @@
+{% load tz %}
+{% load navactive %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'rcoi:exam' %}">ГИА 2016 в Москве</a>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="{% navactive request 'rcoi:exam' %}">
+            <a href="{% url 'rcoi:exam' %}">Экзамены</a>
+        </li>
+        <li class="{% navactive request 'rcoi:employee' %}">
+            <a href="{% url 'rcoi:employee' %}">Сотрудники</a>
+        </li>
+        <li class="{% navactive request 'rcoi:place' %}">
+            <a href="{% url 'rcoi:place' %}">ППЭ</a>
+        </li>
+        <li>
+            <a href="/api/v1">JSON API</a>
+        </li>
+      </ul>
+        <ul class="nav navbar-nav navbar-right">
+            {% localtime off %}
+            <li class="navbar-text">Данные актуальны на {{ updated|date:"d.m.Y, H:i" }}</li>
+            {% endlocaltime %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Источники <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="http://rcoi.mcko.ru/index.php?option=com_content&view=article&id=1033&Itemid=211" target="_blank">Основной этап ГИА-9</a></li>
+            <li><a href="http://rcoi.mcko.ru/index.php?option=com_content&view=article&id=898&Itemid=197" target="_blank">Основной этап ГИА-11</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
