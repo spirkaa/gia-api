@@ -270,6 +270,7 @@ def db_update():
     import os
     import csv
     from collections import defaultdict
+    from datetime import timedelta
     from time import time
     from .xls_to_db import get_files, save_to_csv
 
@@ -296,7 +297,6 @@ def db_update():
     # Date, Level, Position, Organisation
     for key in ('date', 'level', 'position', 'organisation'):
         values = sorted(list(set(data[key])))
-        # stream = stream_file(values)
         stream = timestamp_list(values)
         table = key
         col = 'name'
@@ -304,7 +304,6 @@ def db_update():
             col = key
         columns = (col, 'created', 'modified')
         sql_insert_or_update(table, columns, stream, col)
-        # copy_from(stream, table, *columns)
 
     # Territory
     ate_code = data['ate_code'][:]
@@ -312,12 +311,10 @@ def db_update():
         ate_code[i] = int(ate_code[i])
     values = sorted(list(set(zip(ate_code,
                                  data['ate_name']))))
-    # stream = stream_file(values)
     stream = timestamp_list(values)
     table = 'territory'
     columns = ('code', 'name', 'created', 'modified')
     sql_insert_or_update(table, columns, stream, columns[0])
-    # copy_from(stream, table, *columns)
 
     # Employee
     organisation = Organisation.objects.all()
@@ -326,12 +323,10 @@ def db_update():
     values = sorted(list(set(zip(data['name'],
                                  data['organisation']))))
     values_with_id = [[val[0], organisation_db.get(val[1])] for val in values]
-    # stream = stream_file(values_with_id)
     stream = timestamp_list(values_with_id)
     table = 'employee'
     columns = ('name', 'org_id', 'created', 'modified')
     sql_insert_or_update(table, columns, stream, columns[:2])
-    # copy_from(stream, table, *columns)
 
     # Place
     territory = Territory.objects.all()
@@ -345,12 +340,10 @@ def db_update():
                                  data['ppe_addr'],
                                  data['ate_name']))))
     values_with_id = [[*val[:-1], territory_db.get(val[3])] for val in values]
-    # stream = stream_file(values_with_id)
     stream = timestamp_list(values_with_id)
     table = 'place'
     columns = ('code', 'name', 'addr', 'ate_id', 'created', 'modified')
     sql_insert_or_update(table, columns, stream, columns[:4])
-    # copy_from(stream, table, *columns)
 
     # Exam
     date = Date.objects.all()
@@ -382,19 +375,30 @@ def db_update():
     replace_items(employee_id, employee_db)
 
     exams = list(zip(date_id, level_id, place_id, employee_id, position_id))
-    # stream = stream_file(exams)
-    stream = timestamp_list(exams)
+
     table = 'exam'
     columns = ('date_id', 'level_id', 'place_id',
                'employee_id', 'position_id',
                'created', 'modified')
-    sql_insert_or_update(table, columns, stream, columns[:4])
-    # copy_from(stream, table, *columns)
 
-    # Delete not modified
+    for chunk in split_list(exams, 20):
+        stream = timestamp_list(chunk)
+        sql_insert_or_update(table, columns, stream, columns[:4])
+
+    # Delete unmodified rows ( == was deleted from files)
     for model in (Exam, Employee, Place):
-        now = model.objects.latest('modified')
-        model.objects.filter(modified__lt=now.modified).delete()
+        now = model.objects.latest('modified').modified - timedelta(minutes=5)
+        model.objects.filter(modified__lt=now).delete()
+
+
+def split_list(seq, chunks):
+    avg = (len(seq) // chunks) + 1
+    out = []
+    last = 0
+    while last < len(seq):
+        out.append(seq[last:last+avg])
+        last += avg
+    return out
 
 
 def replace_items(s_list, s_dict):
