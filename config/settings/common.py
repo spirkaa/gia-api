@@ -25,6 +25,7 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 THIRD_PARTY_APPS = [
+    'django_extensions',
     'django_tables2',
     'django_filters',
     'crispy_forms',

@@ -9,7 +9,7 @@ django-filter==0.13.0
 django-tables2==1.2.1
 
 # REST
-django-cors-headers==1.1.0
+django-cors-middleware==1.2.0
 djangorestframework==3.3.3
 djangorestframework-filters==0.8.0
 -e git+https://github.com/chibisov/drf-extensions.git#egg=drf-extensions

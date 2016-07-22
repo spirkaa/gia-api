@@ -1,15 +1,15 @@
 version: '2'
 
-#volumes:
-#  postgres_data_dev: {}
-#  postgres_backup_dev: {}
+volumes:
+  postgres_data_dev: {}
+  postgres_backup_dev: {}
 
 services:
   postgres:
     build: ./compose/postgres
-#    volumes:
-#      - postgres_data_dev:/var/lib/postgresql/data
-#      - postgres_backup_dev:/backups
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - postgres_backup_dev:/backups
     env_file: .env.local
 
   django:

@@ -19,6 +19,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # ------------------------------------------------------------------------------
 # See https://docs.djangoproject.com/en/1.9/ref/middleware/#module-django.middleware.security
 # and https://docs.djangoproject.com/ja/1.9/howto/deployment/checklist/#run-manage-py-check-deploy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_HSTS_SECONDS = 60
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
+#     'DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True)
+SECURE_SSL_REDIRECT = env.bool('DJANGO_SECURE_SSL_REDIRECT', default=True)
+
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
     'DJANGO_SECURE_CONTENT_TYPE_NOSNIFF', default=True)
 SECURE_BROWSER_XSS_FILTER = True
@@ -35,7 +41,8 @@ X_FRAME_OPTIONS = 'DENY'
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 # END SITE CONFIGURATION
 
-INSTALLED_APPS += ['gunicorn']
+INSTALLED_APPS += ['gunicorn',
+                   'cachalot']
 
 # EMAIL
 # ------------------------------------------------------------------------------
@@ -55,7 +62,6 @@ CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': env('CACHE_URL', default='redis://127.0.0.1:6379'),
-        'TIMEOUT': 2592000,
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'IGNORE_EXCEPTIONS': True,  # mimics memcache behavior.
@@ -64,11 +70,14 @@ CACHES = {
     }
 }
 
+MIDDLEWARE_CLASSES.insert(0, 'django.middleware.gzip.GZipMiddleware')
 MIDDLEWARE_CLASSES.insert(0, 'django.middleware.cache.UpdateCacheMiddleware')
 MIDDLEWARE_CLASSES.append('django.middleware.cache.FetchFromCacheMiddleware')
 
+CACHE_MIDDLEWARE_SECONDS = 31536000
+USE_ETAGS = True
+
 # Custom Admin URL, use {% url 'admin:index' %}
 ADMIN_URL = env('DJANGO_ADMIN_URL', default=r'^admin/')
-
 
 # Your production stuff: Below this line define 3rd party library settings

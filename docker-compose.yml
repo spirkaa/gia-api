@@ -1,16 +1,21 @@
 version: '2'
 
-#volumes:
-#  postgres_data: {}
-#  postgres_backup: {}
+volumes:
+  postgres_data: {}
+  postgres_backup: {}
 
 services:
+  redis:
+    image: redis:alpine
+    restart: always
+
   postgres:
     build: ./compose/postgres
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-#      - postgres_backup:/backups
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backup:/backups
     env_file: .env
+    restart: always
 
   django:
     build:
@@ -22,13 +27,19 @@ services:
       - redis
     command: /gunicorn.sh
     env_file: .env
+    restart: always
 
   nginx:
     build: ./compose/nginx
     depends_on:
       - django
-    ports:
-      - "0.0.0.0:80:8003"
+    networks:
+      - default
+      - proxy-tier
+    env_file: .env-nginx
+    restart: always
 
-  redis:
-    image: redis:alpine
+networks:
+  proxy-tier:
+    external:
+      name: nginx-proxy
