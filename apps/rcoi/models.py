@@ -1,13 +1,11 @@
-import csv
-import datetime
 import logging
-from io import StringIO
-
 from django.core.urlresolvers import reverse
 from django.db import connection, models
 from django_extensions.db.models import TimeStampedModel
 
-logger = logging.getLogger('rcoi.models')
+from apps.rcoi.xlsx_to_csv import get_files, save_to_csv
+
+logger = logging.getLogger(__name__)
 
 
 class Date(TimeStampedModel):
@@ -150,255 +148,165 @@ class Exam(TimeStampedModel):
         return reverse('rcoi:exam_update', args=(self.id,))
 
 
-def initial_db_populate():
-    import os
-    import csv
-    from collections import defaultdict
-    from time import time
-    from .xls_to_db import get_files, save_to_csv
-
-    path = 'data'
-    csv_file = 'data.csv'
-    os.chdir(path)
-    now = time()
-    hour_ago = now - 60*60
-    if not os.path.isfile(csv_file):
-        open(csv_file, 'w+').close()
-    file_modified = os.path.getmtime(csv_file)
-    if file_modified < hour_ago or os.path.getsize(csv_file) == 0:
-        get_files()
-        save_to_csv()
-
-    data = defaultdict(list)
-
-    with open(csv_file, encoding='utf-8') as f:
-        reader = csv.DictReader(f, delimiter=';')
-        for row in reader:
-            for (k, v) in row.items():
-                data[k].append(v)
-
-    # Date, Level, Position, Organisation
-    for key in ('date', 'level', 'position', 'organisation'):
-        values = sorted(list(set(data[key])))
-        stream = stream_file(values)
-        table = key
-        col = 'name'
-        if key == 'date' or key == 'level':
-            col = key
-        columns = (col, 'created', 'modified')
-        copy_from(stream, table, *columns)
-
-    # Territory
-    ate_code = data['ate_code'][:]
-    for i, v in enumerate(ate_code):
-        ate_code[i] = int(ate_code[i])
-    values = sorted(list(set(zip(ate_code,
-                                 data['ate_name']))))
-    stream = stream_file(values)
-    table = 'territory'
-    columns = ('code', 'name', 'created', 'modified')
-    copy_from(stream, table, *columns)
-
-    # Employee
-    organisation = Organisation.objects.all()
-    organisation_db = {org.name: org.id for org in organisation}
-
-    values = sorted(list(set(zip(data['name'],
-                                 data['organisation']))))
-    values_with_id = [[val[0], organisation_db.get(val[1])] for val in values]
-    stream = stream_file(values_with_id)
-    table = 'employee'
-    columns = ('name', 'org_id', 'created', 'modified')
-    copy_from(stream, table, *columns)
-
-    # Place
-    territory = Territory.objects.all()
-    territory_db = {ate.name: ate.id for ate in territory}
-    ppe_code = data['ppe_code'][:]
-    for i, v in enumerate(ppe_code):
-        ppe_code[i] = int(ppe_code[i])
-
-    values = sorted(list(set(zip(ppe_code,
-                                 data['ppe_name'],
-                                 data['ppe_addr'],
-                                 data['ate_name']))))
-    values_with_id = [[*val[:-1], territory_db.get(val[3])] for val in values]
-    stream = stream_file(values_with_id)
-    table = 'place'
-    columns = ('code', 'name', 'addr', 'ate_id', 'created', 'modified')
-    copy_from(stream, table, *columns)
-
-    # Exam
-    date = Date.objects.all()
-    date_db = {str(d.date): d.id for d in date}
-    date_id = data['date'][:]
-    replace_items(date_id, date_db)
-
-    level = Level.objects.all()
-    level_db = {lev.level: lev.id for lev in level}
-    level_id = data['level'][:]
-    replace_items(level_id, level_db)
-
-    position = Position.objects.all()
-    position_db = {pos.name: pos.id for pos in position}
-    position_id = data['position'][:]
-    replace_items(position_id, position_db)
-
-    place = Place.objects.all()
-    place_db = {(p.code, p.name, p.addr): p.id for p in place}
-    place_id = list(zip(data['ppe_code'],
-                        data['ppe_name'],
-                        data['ppe_addr'],))
-    replace_items(place_id, place_db)
-
-    employee = Employee.objects.all().select_related()
-    employee_db = {(emp.name, emp.org.name): emp.id for emp in employee}
-    employee_id = list(zip(data['name'],
-                           data['organisation'],))
-    replace_items(employee_id, employee_db)
-
-    exams = list(zip(date_id, level_id, place_id, employee_id, position_id))
-    stream = stream_file(exams)
-    table = 'exam'
-    columns = ('date_id', 'level_id', 'place_id',
-               'employee_id', 'position_id',
-               'created', 'modified')
-    copy_from(stream, table, *columns)
+class DataSource(TimeStampedModel):
+    name = models.CharField('Название', max_length=50)
+    url = models.URLField('Ссылка на источник данных')
 
 
-def db_update():
-    import os
-    import csv
-    from collections import defaultdict
-    from datetime import timedelta
-    from time import time
-    from .xls_to_db import get_files, save_to_csv
+class RcoiUpdater:
+    def __init__(self):
+        self.data = self.__prepare_data()
 
-    path = 'data'
-    csv_file = 'data.csv'
-    os.chdir(path)
-    now = time()
-    hour_ago = now - 60*60
-    if not os.path.isfile(csv_file):
-        open(csv_file, 'w+').close()
-    file_modified = os.path.getmtime(csv_file)
-    if file_modified < hour_ago or os.path.getsize(csv_file) == 0:
-        get_files()
-        save_to_csv()
+    def run(self):
+        self.__update_simple_tables()
+        self.__update_territory()
+        self.__update_employee()
+        self.__update_place()
+        self.__update_exam()
 
-    data = defaultdict(list)
+    def __prepare_data(self):
+        import csv
+        import os
+        import shutil
+        from collections import defaultdict
 
-    with open(csv_file, encoding='utf-8') as f:
-        reader = csv.DictReader(f, delimiter=';')
-        for row in reader:
-            for (k, v) in row.items():
-                data[k].append(v)
+        urls = DataSource.objects.all()
+        data = defaultdict(list)
+        tmp_path = 'tmp'
+        csv_file = os.path.join(tmp_path, tmp_path + '.csv')
 
-    # Date, Level, Position, Organisation
-    for key in ('date', 'level', 'position', 'organisation'):
-        values = sorted(list(set(data[key])))
+        if not os.path.exists(tmp_path):
+            os.makedirs(tmp_path)
+        if not os.path.isfile(csv_file):
+            open(csv_file, 'w+').close()
+
+        [get_files(url.url, tmp_path) for url in urls]
+        save_to_csv(csv_file)
+
+        with open(csv_file, encoding='utf-8') as f:
+            reader = csv.DictReader(f, delimiter=';')
+            for row in reader:
+                for (k, v) in row.items():
+                    data[k].append(v)
+        logger.debug('cleanup downloaded files...')
+        shutil.rmtree(tmp_path)
+        return data
+
+    def __sql_insert_or_update(self, table, columns, data, uniq):
+        table_name = 'rcoi_' + table
+        col_names = ', '.join(columns).rstrip(', ')
+        uniq_names = uniq
+        if isinstance(uniq, (list, tuple, set)):
+            uniq_names = ', '.join(uniq).rstrip(', ')
+        placeholder = ('%s, ' * len(columns)).rstrip(', ')
+        rows = ', '.join(['({})'.format(placeholder)] * (len(data) // len(columns)))
+        sql = 'INSERT INTO {} ({}) VALUES {} ON CONFLICT ({}) DO UPDATE SET modified=excluded.modified;'.format(
+            table_name, col_names, rows, uniq_names)
+        with connection.cursor() as cursor:
+            cursor.execute(sql, data)
+
+    def __update_simple_tables(self):
+        for key in ('date', 'level', 'position', 'organisation'):
+            values = sorted(list(set(self.data[key])))
+            stream = timestamp_list(values)
+            table = key
+            col = 'name'
+            if key == 'date' or key == 'level':
+                col = key
+            columns = (col, 'created', 'modified')
+            logger.debug('processing %s...', table)
+            self.__sql_insert_or_update(table, columns, stream, col)
+
+    def __update_territory(self):
+        ate_code = self.data['ate_code'][:]
+        for i, v in enumerate(ate_code):
+            ate_code[i] = int(ate_code[i])
+        values = sorted(list(set(zip(ate_code,
+                                     self.data['ate_name']))))
         stream = timestamp_list(values)
-        table = key
-        col = 'name'
-        if key == 'date' or key == 'level':
-            col = key
-        columns = (col, 'created', 'modified')
-        sql_insert_or_update(table, columns, stream, col)
+        table = 'territory'
+        columns = ('code', 'name', 'created', 'modified')
+        logger.debug('processing %s...', table)
+        self.__sql_insert_or_update(table, columns, stream, columns[0])
 
-    # Territory
-    ate_code = data['ate_code'][:]
-    for i, v in enumerate(ate_code):
-        ate_code[i] = int(ate_code[i])
-    values = sorted(list(set(zip(ate_code,
-                                 data['ate_name']))))
-    stream = timestamp_list(values)
-    table = 'territory'
-    columns = ('code', 'name', 'created', 'modified')
-    sql_insert_or_update(table, columns, stream, columns[0])
+    def __update_employee(self):
+        organisation = Organisation.objects.all()
+        organisation_db = {org.name: org.id for org in organisation}
 
-    # Employee
-    organisation = Organisation.objects.all()
-    organisation_db = {org.name: org.id for org in organisation}
+        values = sorted(list(set(zip(self.data['name'],
+                                     self.data['organisation']))))
+        values_with_id = [[val[0], organisation_db.get(val[1])] for val in values]
+        stream = timestamp_list(values_with_id)
+        table = 'employee'
+        columns = ('name', 'org_id', 'created', 'modified')
+        logger.debug('processing %s...', table)
+        self.__sql_insert_or_update(table, columns, stream, columns[:2])
 
-    values = sorted(list(set(zip(data['name'],
-                                 data['organisation']))))
-    values_with_id = [[val[0], organisation_db.get(val[1])] for val in values]
-    stream = timestamp_list(values_with_id)
-    table = 'employee'
-    columns = ('name', 'org_id', 'created', 'modified')
-    sql_insert_or_update(table, columns, stream, columns[:2])
+    def __update_place(self):
+        territory = Territory.objects.all()
+        territory_db = {ate.name: ate.id for ate in territory}
+        ppe_code = self.data['ppe_code'][:]
+        for i, v in enumerate(ppe_code):
+            ppe_code[i] = int(ppe_code[i])
 
-    # Place
-    territory = Territory.objects.all()
-    territory_db = {ate.name: ate.id for ate in territory}
-    ppe_code = data['ppe_code'][:]
-    for i, v in enumerate(ppe_code):
-        ppe_code[i] = int(ppe_code[i])
+        values = sorted(list(set(zip(ppe_code,
+                                     self.data['ppe_name'],
+                                     self.data['ppe_addr'],
+                                     self.data['ate_name']))))
+        values_with_id = [[*val[:-1], territory_db.get(val[3])] for val in values]
+        stream = timestamp_list(values_with_id)
+        table = 'place'
+        columns = ('code', 'name', 'addr', 'ate_id', 'created', 'modified')
+        logger.debug('processing %s...', table)
+        self.__sql_insert_or_update(table, columns, stream, columns[:4])
 
-    values = sorted(list(set(zip(ppe_code,
-                                 data['ppe_name'],
-                                 data['ppe_addr'],
-                                 data['ate_name']))))
-    values_with_id = [[*val[:-1], territory_db.get(val[3])] for val in values]
-    stream = timestamp_list(values_with_id)
-    table = 'place'
-    columns = ('code', 'name', 'addr', 'ate_id', 'created', 'modified')
-    sql_insert_or_update(table, columns, stream, columns[:4])
+    def __update_exam(self):
+        from datetime import timedelta
 
-    # Exam
-    date = Date.objects.all()
-    date_db = {str(d.date): d.id for d in date}
-    date_id = data['date'][:]
-    replace_items(date_id, date_db)
+        date = Date.objects.all()
+        date_db = {str(d.date): d.id for d in date}
+        date_id = self.data['date'][:]
+        replace_items(date_id, date_db)
 
-    level = Level.objects.all()
-    level_db = {lev.level: lev.id for lev in level}
-    level_id = data['level'][:]
-    replace_items(level_id, level_db)
+        level = Level.objects.all()
+        level_db = {lev.level: lev.id for lev in level}
+        level_id = self.data['level'][:]
+        replace_items(level_id, level_db)
 
-    position = Position.objects.all()
-    position_db = {pos.name: pos.id for pos in position}
-    position_id = data['position'][:]
-    replace_items(position_id, position_db)
+        position = Position.objects.all()
+        position_db = {pos.name: pos.id for pos in position}
+        position_id = self.data['position'][:]
+        replace_items(position_id, position_db)
 
-    place = Place.objects.all()
-    place_db = {(p.code, p.name, p.addr): p.id for p in place}
-    place_id = list(zip(data['ppe_code'],
-                        data['ppe_name'],
-                        data['ppe_addr'],))
-    replace_items(place_id, place_db)
+        place = Place.objects.all()
+        place_db = {(p.code, p.name, p.addr): p.id for p in place}
+        place_id = list(zip(self.data['ppe_code'],
+                            self.data['ppe_name'],
+                            self.data['ppe_addr'], ))
+        replace_items(place_id, place_db)
 
-    employee = Employee.objects.all().select_related()
-    employee_db = {(emp.name, emp.org.name): emp.id for emp in employee}
-    employee_id = list(zip(data['name'],
-                           data['organisation'],))
-    replace_items(employee_id, employee_db)
+        employee = Employee.objects.all().select_related()
+        employee_db = {(emp.name, emp.org.name): emp.id for emp in employee}
+        employee_id = list(zip(self.data['name'],
+                               self.data['organisation'], ))
+        replace_items(employee_id, employee_db)
 
-    exams = list(zip(date_id, level_id, place_id, employee_id, position_id))
+        exams = list(zip(date_id, level_id, place_id, employee_id, position_id))
 
-    table = 'exam'
-    columns = ('date_id', 'level_id', 'place_id',
-               'employee_id', 'position_id',
-               'created', 'modified')
+        table = 'exam'
+        columns = ('date_id', 'level_id', 'place_id',
+                   'employee_id', 'position_id',
+                   'created', 'modified')
+        logger.debug('processing %s...', table)
 
-    for chunk in split_list(exams, 20):
-        stream = timestamp_list(chunk)
-        sql_insert_or_update(table, columns, stream, columns[:4])
+        for chunk in split_list(exams, 20):
+            stream = timestamp_list(chunk)
+            self.__sql_insert_or_update(table, columns, stream, columns[:4])
 
-    # Delete unmodified rows ( == was deleted from files)
-    for model in (Exam, Employee, Place):
-        now = model.objects.latest('modified').modified - timedelta(minutes=5)
-        model.objects.filter(modified__lt=now).delete()
-
-
-def split_list(seq, chunks):
-    avg = (len(seq) // chunks) + 1
-    out = []
-    last = 0
-    while last < len(seq):
-        out.append(seq[last:last+avg])
-        last += avg
-    return out
+        # Delete unmodified rows ( == was deleted from files)
+        for model in (Exam, Employee, Place):
+            now = model.objects.latest('modified').modified - timedelta(minutes=5)
+            model.objects.filter(modified__lt=now).delete()
 
 
 def replace_items(s_list, s_dict):
@@ -406,13 +314,10 @@ def replace_items(s_list, s_dict):
         s_list[i] = s_dict.get(item)
 
 
-def timestamp():
-    datetime_now = datetime.datetime.now()
-    return [datetime_now, datetime_now]
-
-
 def timestamp_list(data):
-    created = timestamp()
+    import datetime
+    datetime_now = datetime.datetime.now()
+    created = [datetime_now, datetime_now]
     data_list = []
     for row in data:
         if isinstance(row, (list, tuple, set)):
@@ -424,41 +329,11 @@ def timestamp_list(data):
     return data_list
 
 
-def stream_file(data):
-    created = timestamp()
-    stream = StringIO()
-    writer = csv.writer(stream, delimiter='\t', quotechar="'")
-    for row in data:
-        if isinstance(row, (list, tuple, set)):
-            row = list(row)
-            row.extend(created)
-        else:
-            row = [row]
-            row.extend(created)
-        writer.writerow(row)
-    stream.seek(0)
-    return stream
-
-
-def sql_insert_or_update(table, columns, data, uniq):
-    tablename = 'rcoi_' + table
-    colnames = ', '.join(columns).rstrip(', ')
-    uniqnames = uniq
-    if isinstance(uniq, (list, tuple, set)):
-        uniqnames = ', '.join(uniq).rstrip(', ')
-    placeholder = ('%s, ' * len(columns)).rstrip(', ')
-    rows = ', '.join(['({})'.format(placeholder)] * (len(data) // len(columns)))
-    sql = 'INSERT INTO {} ({}) VALUES {} ON CONFLICT ({}) DO UPDATE SET modified=excluded.modified;'.format(
-        tablename, colnames, rows, uniqnames)
-    with connection.cursor() as cursor:
-        cursor.execute(sql, data)
-
-
-def copy_from(file, table, *columns, sep='\t'):
-    with connection.cursor() as cursor:
-        cursor.copy_from(
-            file=file,
-            table='rcoi_' + table,
-            sep=sep,
-            columns=columns,
-        )
+def split_list(seq, chunks):
+    avg = (len(seq) // chunks) + 1
+    out = []
+    last = 0
+    while last < len(seq):
+        out.append(seq[last:last + avg])
+        last += avg
+    return out
