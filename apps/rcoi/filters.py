@@ -35,6 +35,7 @@ class EmployeeFilter(FilterWithHelper):
 
     class Meta:
         model = models.Employee
+        fields = '__all__'
 
 
 class PlaceFilter(FilterWithHelper):
@@ -65,6 +66,7 @@ class PlaceFilter(FilterWithHelper):
 
     class Meta:
         model = models.Place
+        fields = '__all__'
 
 
 class ExamFilter(FilterWithHelper):
@@ -104,3 +106,4 @@ class ExamFilter(FilterWithHelper):
 
     class Meta:
         model = models.Exam
+        fields = '__all__'
