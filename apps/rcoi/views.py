@@ -1,11 +1,14 @@
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.db.models import Count, Max
 from django.http import HttpResponse
-from django.views.generic import TemplateView, DetailView, ListView, View
+from django.shortcuts import redirect
+from django.views.generic import TemplateView, DetailView, ListView
 from django_tables2 import RequestConfig
 
 from .filters import EmployeeFilter, PlaceFilter, ExamFilter
-from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam
-from .models import initial_db_populate, db_update
+from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam, DataSource, RcoiUpdater
 from .tables import EmployeeTable, PlaceTable, ExamTable
 
 
@@ -29,6 +32,7 @@ class FilteredSingleTableView(TemplateView):
         context['filter'] = filter
         context['table'] = table
         context['updated'] = Exam.objects.aggregate(upd_date=Max('modified'))['upd_date']
+        context['sources'] = DataSource.objects.all()
         return context
 
 
@@ -128,9 +132,14 @@ class ExamDetailView(DetailView):
     model = Exam
 
 
-class UpdateView(View):
-
-    def get(self, request):
-        db_update()
-        # initial_db_populate()
-        return HttpResponse("It's work!")
+@staff_member_required
+def update_db_view(request):
+    if request.method == 'POST':
+        # noinspection PyBroadException
+        try:
+            RcoiUpdater().run()
+            messages.info(request, 'База данных обновлена!')
+        except:
+            messages.error(request, 'Ошибка обновления!')
+        return redirect(reverse('admin:index'))
+    return HttpResponse('GET')

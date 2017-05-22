@@ -64,7 +64,7 @@ class ExamAdmin(admin.ModelAdmin):
         'level',
         'place',
         'employee',
-        'get_employee_pos',
+        'position',
         'created',
         'modified',
         'id',
@@ -73,10 +73,10 @@ class ExamAdmin(admin.ModelAdmin):
         'level', 'date__date', 'place__code'
     )
     search_fields = ('date__date', 'place__code', 'place__name', 'employee__name')
-
-    def get_employee_pos(self, obj):
-        return obj.employee.position
-
-    get_employee_pos.short_description = 'Должность в ППЭ'
-    get_employee_pos.admin_order_field = 'employee__position'
 admin.site.register(models.Exam, ExamAdmin)
+
+
+class DataSourceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'url', 'created', 'modified', 'id')
+    list_filter = ('name', 'url', 'created', 'modified')
+admin.site.register(models.DataSource, DataSourceAdmin)
