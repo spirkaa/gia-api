@@ -1,9 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<p><a class="btn btn-default" href="{% url 'rcoi:place' %}">Place Listing</a></p>
-<table class="table">
-<tr><td>code</td><td>{{ object.code }}</td></tr>
-<tr><td>name</td><td>{{ object.name }}</td></tr>
-<tr><td>addr</td><td>{{ object.addr }}</td></tr>
-</table>
+    <p><a class="btn btn-default" href="{% url 'rcoi:place' %}">Place Listing</a></p>
+    <table class="table">
+        <tr>
+            <td>code</td>
+            <td>{{ object.code }}</td>
+        </tr>
+        <tr>
+            <td>name</td>
+            <td>{{ object.name }}</td>
+        </tr>
+        <tr>
+            <td>addr</td>
+            <td>{{ object.addr }}</td>
+        </tr>
+    </table>
 {% endblock %}

@@ -1,20 +1,35 @@
-{% extends 'bootstrap3/bootstrap3.html' %}
+<!DOCTYPE html>
 {% load bootstrap3 %}
-{% block bootstrap3_title %}{% block title %}{% endblock %}{% endblock %}
-{% block bootstrap3_extra_head %}
-{% load staticfiles %}
+{% load static %}
+<html{% if LANGUAGE_CODE %} lang="{{ LANGUAGE_CODE }}"{% endif %}>
+
+<head>
+    <meta charset="utf-8">
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge" /><![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-{% endblock %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
 
-{% block bootstrap3_content %}
-        {% block nav %}{% include 'rcoi/nav.html' %}{% endblock %}
-        {% bootstrap_messages %}
-    <div class="dpad container-fluid">
-        <div class="page-header text-center">{% block page_header %}{% endblock %}</div>
-        {% block content %}(no content){% endblock %}
-    </div>
-{% endblock %}
+<body>
+{% block nav %}{% include 'rcoi/nav.html' %}{% endblock %}
+{% bootstrap_messages %}
+<div class="dpad container-fluid">
+    <div class="page-header text-center">{% block page_header %}{% endblock %}</div>
+    {% block content %}(no content){% endblock %}
+</div>
+{% if not 'javascript_in_head'|bootstrap_setting %}
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+{% endif %}
+</body>
 
-{% block bootstrap3_extra_script %}
-{#    <script src="{% static 'js/filter.js' %}"></script>#}
-{% endblock %}
+</html>

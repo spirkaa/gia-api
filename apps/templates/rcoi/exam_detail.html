@@ -1,14 +1,35 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<p><a class="btn btn-default" href="{% url 'rcoi:exam' %}">Exam Listing</a></p>
-<table class="table">
-<tr><td>id</td><td>{{ object.id }}</td></tr>
-<tr><td>created</td><td>{{ object.created }}</td></tr>
-<tr><td>modified</td><td>{{ object.modified }}</td></tr>
-<tr><td>date</td><td>{{ object.date }}</td></tr>
-<tr><td>level</td><td>{{ object.level }}</td></tr>
-<tr><td>place</td><td>{{ object.place }}</td></tr>
-<tr><td>employee</td><td>{{ object.employee }}</td></tr>
-</table>
+    <p><a class="btn btn-default" href="{% url 'rcoi:exam' %}">Exam Listing</a></p>
+    <table class="table">
+        <tr>
+            <td>id</td>
+            <td>{{ object.id }}</td>
+        </tr>
+        <tr>
+            <td>created</td>
+            <td>{{ object.created }}</td>
+        </tr>
+        <tr>
+            <td>modified</td>
+            <td>{{ object.modified }}</td>
+        </tr>
+        <tr>
+            <td>date</td>
+            <td>{{ object.date }}</td>
+        </tr>
+        <tr>
+            <td>level</td>
+            <td>{{ object.level }}</td>
+        </tr>
+        <tr>
+            <td>place</td>
+            <td>{{ object.place }}</td>
+        </tr>
+        <tr>
+            <td>employee</td>
+            <td>{{ object.employee }}</td>
+        </tr>
+    </table>
 {% endblock %}

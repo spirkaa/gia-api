@@ -15,31 +15,6 @@
     margin: 0 0 26px;
 }
 
-/* Collapsable filter panel */
-
-#row-main {
-    overflow-x: hidden;
-}
-
-#content {
-    transition: width 0.3s ease;
-}
-
-#sidebar {
-    transition: margin 0.3s ease;
-}
-
-.collapsed {
-    display: none;
-}
-
-@media (min-width: 992px) {
-    .collapsed {
-        display: block;
-        margin-left: -25%;
-    }
-}
-
 
 /* Django-tables2 bootstrap */
 

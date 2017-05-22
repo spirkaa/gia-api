@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<p><a class="btn btn-default" href="{% url 'rcoi:position_list' %}">Position Listing</a></p>
-<table class="table">
-<tr><td>name</td><td>{{ object.name }}</td></tr>
-</table>
+    <p><a class="btn btn-default" href="{% url 'rcoi:position_list' %}">Position Listing</a></p>
+    <table class="table">
+        <tr>
+            <td>name</td>
+            <td>{{ object.name }}</td>
+        </tr>
+    </table>
 {% endblock %}
