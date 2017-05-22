@@ -1,5 +1,14 @@
 version: '2'
 
+# docker-compose up --build -d
+# docker exec -it giaapi_django_1 python manage.py migrate
+# docker exec -it giaapi_django_1 python manage.py createsuperuser
+# docker exec -it giaapi_django_1 python manage.py shell_plus
+# from apps.rcoi.models import db_update
+# db_update()
+# exit()
+# docker-compose restart
+
 volumes:
   postgres_data: {}
   postgres_backup: {}
@@ -33,10 +42,15 @@ services:
     build: ./compose/nginx
     depends_on:
       - django
+    environment:
+      - VIRTUAL_HOST=gia-api.devmem.ru
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=devmem.ru,www.devmem.ru,battery.devmem.ru,cloud.devmem.ru,gia-api.devmem.ru,gia.devmem.ru,plex.devmem.ru,proxmox.devmem.ru,soft.devmem.ru,auth.devmem.ru,autoconfig.devmem.ru,autodiscover.devmem.ru,cp.devmem.ru,demo.devmem.ru,dev.devmem.ru,docker.devmem.ru,fw.devmem.ru,gate.devmem.ru,git.devmem.ru,login.devmem.ru,mail.devmem.ru,mx1.devmem.ru,nas.devmem.ru,proxy.devmem.ru,registry.devmem.ru,router.devmem.ru,spmini.devmem.ru,spsrv.devmem.ru,ssh.devmem.ru,static.devmem.ru,sync.devmem.ru,test.devmem.ru,vpn.devmem.ru
+      - LETSENCRYPT_EMAIL=spirkaa@gmail.com
     networks:
       - default
       - proxy-tier
-    env_file: .env-nginx
     restart: always
 
 networks:

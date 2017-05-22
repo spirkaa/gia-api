@@ -1,4 +1,6 @@
-FROM onjin/alpine-postgres:latest
+FROM postgres:alpine
+
+RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 
 # add backup scripts
 ADD backup.sh /usr/local/bin/backup

@@ -1,19 +1,22 @@
-FROM python:3.5-alpine
+FROM python:3.6-alpine
 
 ENV PYTHONUNBUFFERED 1
 
 # Requirements have to be pulled and installed here, otherwise caching won't work
 COPY ./requirements /requirements
 
-RUN apk add --no-cache libpq \
+RUN echo "http://nl.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
+     && apk add --no-cache tzdata \
+        libpq \
         libxslt-dev \
         libxml2-dev \
+     && ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
      && apk add --no-cache --virtual .build-deps \
+        python3-dev \
+        postgresql-dev \
         git \
 		build-base \
-		python3-dev \
-        postgresql-dev \
-    && pip install -r /requirements/local.txt \
+    && pip install --no-cache-dir -U -r /requirements/local.txt \
     && apk del .build-deps
 
 COPY ./compose/django/entrypoint.sh /entrypoint.sh
