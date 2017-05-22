@@ -118,6 +118,7 @@ class ExamFullSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Exam
+        fields = '__all__'
         depth = 2
 
 
@@ -183,3 +184,12 @@ class OrganisationDetailSerializer(serializers.ModelSerializer):
         data = super(OrganisationDetailSerializer, self).to_representation(instance)
         data.update({'name': rename_org(data['name'])})
         return data
+
+
+class DataSourceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.DataSource
+        fields = ('id',
+                  'name',
+                  'url')

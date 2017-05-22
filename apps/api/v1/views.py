@@ -91,3 +91,11 @@ class ExamFullViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Exam.objects.select_related()
     serializer_class = serializers.ExamFullSerializer
     filter_class = filters.ExamFilter
+
+
+class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for the DataSource class"""
+
+    queryset = models.DataSource.objects.all()
+    serializer_class = serializers.DataSourceSerializer
+    filter_class = filters.DataSourceFilter
