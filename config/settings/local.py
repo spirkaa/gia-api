@@ -32,7 +32,7 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='pdl(ek6_-@%=a!r^=vjbpagn+^duc6q7u
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
-MIDDLEWARE_CLASSES += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 INSTALLED_APPS += ['debug_toolbar']
 
 INTERNAL_IPS = ['127.0.0.1', '10.0.2.2', '192.168.99.1']
@@ -52,4 +52,5 @@ DEBUG_TOOLBAR_CONFIG = {
 # ------------------------------------------------------------------------------
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
+LOGGING['handlers']['console']['level'] = 'DEBUG'
 # Your local stuff: Below this line define 3rd party library settings

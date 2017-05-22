@@ -44,7 +44,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -109,7 +109,7 @@ USE_I18N = True
 USE_L10N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
-USE_TZ = True
+USE_TZ = False
 
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -144,12 +144,6 @@ TEMPLATES = [
 
 # See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
-BOOTSTRAP3 = {
-    'jquery_url': '/static/js/jquery.min.js',
-    'css_url': '/static/css/bootstrap.min.css',
-    'javascript_url': '/static/js/bootstrap.min.js',
-}
 
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -241,7 +235,7 @@ LOGGING = {
         },
         '': {
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': env('DJANGO_LOG_LEVEL', default='INFO')
         }
     }
 }
