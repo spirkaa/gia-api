@@ -36,7 +36,7 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['127.0.0.1', 'localhos
 # END SITE CONFIGURATION
 
 INSTALLED_APPS += ['gunicorn',
-                   'cachalot']
+                   'cacheops']
 
 # EMAIL
 # ------------------------------------------------------------------------------
@@ -64,16 +64,32 @@ CACHES = {
     }
 }
 
+CACHEOPS_REDIS = env('CACHE_URL')
+
+CACHEOPS_DEFAULTS = {
+    'timeout': 60*60*24
+}
+
+CACHEOPS = {
+    'auth.user': {'ops': 'get', 'timeout': 60*15},
+    'auth.*': {'ops': ('fetch', 'get')},
+    'auth.permission': {'ops': 'all'},
+    '*.*': {},
+}
+
+CACHEOPS_DEGRADE_ON_FAILURE = True
+
 CACHE_MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.gzip.GZipMiddleware',
+    'django_brotli.middleware.BrotliMiddleware',
     'django.middleware.http.ConditionalGetMiddleware'
     ]
 MIDDLEWARE = MIDDLEWARE[:1] + CACHE_MIDDLEWARE + MIDDLEWARE[1:]
 MIDDLEWARE.append('django.middleware.cache.FetchFromCacheMiddleware')
 
-CACHE_MIDDLEWARE_SECONDS = 86400
+CACHE_MIDDLEWARE_SECONDS = 600
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 

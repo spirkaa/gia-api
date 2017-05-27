@@ -23,6 +23,7 @@ RUN echo "http://nl.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
         libpq \
         libxslt-dev \
         libxml2-dev \
+        libffi-dev \
      && ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
      && apk add --no-cache --virtual .build-deps \
         python3-dev \
