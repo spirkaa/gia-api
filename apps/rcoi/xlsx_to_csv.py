@@ -1,8 +1,10 @@
-import os
 import csv
 import glob
 import logging
+import os
 import re
+from datetime import datetime
+
 import requests
 from bs4 import BeautifulSoup
 from openpyxl import load_workbook
@@ -14,28 +16,50 @@ logging.basicConfig(
 logging.getLogger('requests').setLevel(logging.WARNING)
 
 
-def get_links(url):
+def get_files_info(url):
     logger.debug('get file links: %s', url)
+    headers = {
+        'content-type': 'application/x-www-form-urlencoded',
+        'cache-control': 'no-cache'
+    }
+    fmt_dt = '%a, %d %b %Y %H:%M:%S %Z'
     url_base = '/'.join(url.split('/')[:3])
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'lxml')
-    content = soup.select('.article-content a')
-    return [url_base + a.attrs.get('href') for a in content]
+    content = soup.select('span[data-class="info"]')
+    blocks = [block.attrs.get('data-ident') for block in content]
+
+    links = []
+    for block in blocks:
+        payload = 'data={}&val=1'.format(block)
+        r2 = requests.request('POST', url, data=payload, headers=headers)
+        soup2 = BeautifulSoup(r2.text, 'lxml')
+        content2 = soup2.select('p a')
+        links += [url_base + a.attrs.get('href') for a in content2 if 'rab' in a.attrs.get('href')]
+
+    files_info = []
+    for link in links:
+        local_filename = link.split('/')[-1]
+        r3 = requests.head(link)
+        lmd = datetime.strptime(r3.headers['Last-Modified'], fmt_dt)
+        file = {
+            'name': local_filename,
+            'url': link,
+            'size': r3.headers['Content-Length'],
+            'last_modified': lmd
+        }
+        files_info.append(file)
+    return files_info
 
 
 def download_file(url, path):
-    logger.debug('download file: %s', url)
     local_filename = url.split('/')[-1]
+    logger.debug('download file: %s', local_filename)
     fs = requests.get(url, stream=True)
     with open(os.path.join(path, local_filename), 'wb') as f:
         for chunk in fs.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
-
-
-def get_files(url, path):
-    file_links = get_links(url)
-    [download_file(file_link, path) for file_link in file_links if 'rab' in file_link]
 
 
 # replace quotation marks
@@ -83,13 +107,26 @@ def parse_xlsx(filename):
     else:
         level = 9
     date = extract_date(header)
-    logger.debug('parse file: %s (date %s, level %s, records %s)', filename, date, level, row_count-2)
+    filename = filename.split('/')[-1]
+    logger.debug('parse file: %s (date %s, level %s, rows %s)', filename, date, level, row_count-2)
     l_data = []
+    prev_value_of_cell_0 = 0
+    prev_value_of_cell_1 = 0
     for row_num in range(2, row_count):
         row = data[row_num]
-        l_row = [date, level]
+        l_row = [filename, date, level]
         for cell_num in range(len(row)):
             cell = row[cell_num].value
+            # Тупое хачество из-за косяка в файле РЦОИ
+            # там в 2 строках отсутствуют 2 ячейки
+            if cell and cell_num == 0:
+                prev_value_of_cell_0 = cell
+            if cell and cell_num == 1:
+                prev_value_of_cell_1 = cell
+            if not cell and cell_num == 0:
+                cell = prev_value_of_cell_0
+            if not cell and cell_num == 1:
+                cell = prev_value_of_cell_1
             if cell:
                 cell = re_work(cell)
                 if ' образовательное учреждение' in cell:
@@ -99,7 +136,7 @@ def parse_xlsx(filename):
                 if 'ГБОУ' in cell:
                     cell = cell.replace('ГБОУ', 'Государственное бюджетное общеобразовательное учреждение города Москвы')
             l_row.append(cell)
-        if l_row[2]:
+        if l_row[5]:
             l_data.append(l_row)
     return l_data
 
@@ -107,7 +144,8 @@ def parse_xlsx(filename):
 def save_to_csv(csv_file):
     with open(csv_file, 'w+', newline='', encoding='utf-8') as fp:
         a = csv.writer(fp, delimiter=';')
-        a.writerow(['date', 'level', 'ate_code', 'ate_name',
+        a.writerow(['datafile', 'date', 'level',
+                    'ate_code', 'ate_name',
                     'ppe_code', 'ppe_name', 'ppe_addr',
                     'position', 'name', 'organisation'])
 
@@ -124,17 +162,16 @@ def save_to_csv(csv_file):
 
 def save_to_stream(path):
     from io import StringIO
-    import sys
     stream = StringIO()
     writer = csv.writer(stream, delimiter='\t', quotechar="'")
-    writer.writerow(['date', 'level', 'ate_code', 'ate_name',
+    writer.writerow(['datafile', 'date', 'level',
+                     'ate_code', 'ate_name',
                      'ppe_code', 'ppe_name', 'ppe_addr',
                      'position', 'name', 'organisation'])
 
     xlsx = os.path.join(path, '*.xlsx')
     for name in glob.glob(xlsx):
         data = parse_xlsx(name)
-        logger.info(sys.getsizeof(data))
         for line in data:
             writer.writerow(line)
     stream.seek(0)
@@ -146,9 +183,11 @@ def main():
     if not os.path.exists(path):
         os.makedirs(path)
     csv_file = os.path.join(path, path + '.csv')
-    pages = ['http://rcoi.mcko.ru/index.php?option=com_content&view=article&id=896&Itemid=196',
-             'http://rcoi.mcko.ru/index.php?option=com_content&view=article&id=958&Itemid=203']
-    [get_files(url, path) for url in pages]
+    urls = ['http://rcoi.mcko.ru/organizers/schedule/oge/?period=2',
+             'http://rcoi.mcko.ru/organizers/schedule/ege/?period=2']
+    files_info = [get_files_info(url) for url in urls]
+    files_info = [url for url_list in files_info for url in url_list]
+    [download_file(file['url'], path) for file in files_info]
     save_to_csv(csv_file)
 
 if __name__ == '__main__':

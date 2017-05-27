@@ -53,8 +53,9 @@
 <div id="content-related">
     <div class="module" id="recent-actions-module">
         <h2>
-            <form action="{% url 'rcoi:update_db' %}" method="post">{% csrf_token %}
-                <button class="button" type="submit">Обновить БД</button>
+            <form method="post">{% csrf_token %}
+                <button class="button" type="submit" formaction="{% url 'rcoi:update_db' %}">Обновить БД</button>
+                <button class="button" type="submit" formaction="{% url 'rcoi:clear_caches' %}">Очистить кэш</button>
             </form>
         </h2>
         <h2>{% trans 'Recent actions' %}</h2>

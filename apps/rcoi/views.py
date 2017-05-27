@@ -1,14 +1,13 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.db.models import Count, Max
-from django.http import HttpResponse
+from django.db.models import Count
 from django.shortcuts import redirect
 from django.views.generic import TemplateView, DetailView, ListView
 from django_tables2 import RequestConfig
 
 from .filters import EmployeeFilter, PlaceFilter, ExamFilter
-from .models import Date, Level, Organisation, Position, Employee, Territory, Place, Exam, DataSource, RcoiUpdater
+from .models import DataSource, DataFile, Date, Level, Organisation, Position, Employee, Territory, Place, Exam, RcoiUpdater
 from .tables import EmployeeTable, PlaceTable, ExamTable
 
 
@@ -31,8 +30,8 @@ class FilteredSingleTableView(TemplateView):
         RequestConfig(self.request, paginate={'per_page': self.paginate_by}).configure(table)
         context['filter'] = filter
         context['table'] = table
-        context['updated'] = Exam.objects.aggregate(upd_date=Max('modified'))['upd_date']
         context['sources'] = DataSource.objects.all()
+        context['updated'] = DataFile.objects.latest('modified').modified
         return context
 
 
@@ -63,7 +62,8 @@ class OrganisationDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(OrganisationDetailView, self).get_context_data(**kwargs)
         context['employees'] = self.object.employees.annotate(num_exams=Count('exams'))
-        context['updated'] = Exam.objects.aggregate(upd_date=Max('modified'))['upd_date']
+        context['sources'] = DataSource.objects.all()
+        context['updated'] = DataFile.objects.latest('modified').modified
         return context
 
 
@@ -76,7 +76,8 @@ class EmployeeDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(EmployeeDetailView, self).get_context_data(**kwargs)
         context['exams'] = self.object.exams.select_related()
-        context['updated'] = Exam.objects.aggregate(upd_date=Max('modified'))['upd_date']
+        context['sources'] = DataSource.objects.all()
+        context['updated'] = DataFile.objects.latest('modified').modified
         return context
 
 
@@ -137,9 +138,31 @@ def update_db_view(request):
     if request.method == 'POST':
         # noinspection PyBroadException
         try:
-            RcoiUpdater().run()
-            messages.info(request, 'База данных обновлена!')
+            updated = RcoiUpdater().run()
+            if updated:
+                messages.info(request, 'База данных обновлена!')
+            else:
+                messages.info(request, 'Изменений нет!')
         except:
-            messages.error(request, 'Ошибка обновления!')
-        return redirect(reverse('admin:index'))
-    return HttpResponse('GET')
+            messages.error(request, 'Ошибка!')
+    return redirect(reverse('admin:index'))
+
+
+@staff_member_required
+def clear_caches_view(request):
+    from django.conf import settings
+
+    if settings.DEBUG:
+        messages.warning(request, 'Эта кнопка работает только на продакшене!')
+    else:
+        if request.method == 'POST':
+            # noinspection PyBroadException
+            try:
+                from cacheops import invalidate_all
+                from django.core.cache import cache
+                invalidate_all()
+                cache.clear()
+                messages.info(request, 'Кэш очищен!')
+            except:
+                messages.error(request, 'Ошибка!')
+    return redirect(reverse('admin:index'))

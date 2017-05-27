@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
     url(r'^$', RedirectView.as_view(pattern_name='rcoi:exam')),
     url(r'^admin/update_db/$', views.update_db_view, name='update_db'),
+    url(r'^admin/clear_caches/$', views.clear_caches_view, name='clear_caches'),
     # urls for Date
     url(r'^date/$', views.DateListView.as_view(), name='date_list'),
     url(r'^date/detail/(?P<pk>\S+)/$', views.DateDetailView.as_view(), name='date_detail'),

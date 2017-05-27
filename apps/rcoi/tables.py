@@ -46,4 +46,4 @@ class ExamTable(tables.Table):
     class Meta:
         model = models.Exam
         sequence = ('date', 'level', 'code', 'place', 'addr', 'position', 'employee', 'org')
-        exclude = ('id', 'created', 'modified')
+        exclude = ('id', 'created', 'modified', 'datafile')
