@@ -190,6 +190,13 @@ class DataSourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.DataSource
-        fields = ('id',
-                  'name',
-                  'url')
+        exclude = ('created',
+                   'modified')
+
+
+class DataFileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.DataFile
+        exclude = ('created',
+                   'modified')

@@ -98,4 +98,10 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = models.DataSource.objects.all()
     serializer_class = serializers.DataSourceSerializer
-    filter_class = filters.DataSourceFilter
+
+
+class DataFileViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for the DataFile class"""
+
+    queryset = models.DataFile.objects.all()
+    serializer_class = serializers.DataFileSerializer
