@@ -24,9 +24,15 @@
 {% block nav %}{% include 'rcoi/nav.html' %}{% endblock %}
 {% bootstrap_messages %}
 <div class="dpad container-fluid">
-    <div class="page-header text-center">{% block page_header %}{% endblock %}</div>
+    {% block page_header_div %}<div class="page-header text-center">{% block page_header %}{% endblock %}</div>{% endblock %}
     {% block content %}(no content){% endblock %}
 </div>
+  <footer class='bottom-buffer'>
+    <hr/>
+    <div class='col-lg-12 text-center'>
+      <p>2016-2017 &copy; spirkaa@gmail.com</p>
+    </div>
+  </footer>
 {% if not 'javascript_in_head'|bootstrap_setting %}
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>

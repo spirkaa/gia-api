@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% block page_header_div %}{% endblock %}
+{% block content %}
+    <div class="jumbotron">
+    <h1>{% block title %}База сотрудников ППЭ{% endblock %}</h1>
+      <p>
+        Данные с сайта <a href='http://rcoi.mcko.ru'>РЦОИ города Москвы</a> о
+        распределении сотрудников образовательных организаций
+        в пункты проведения экзаменов во время основного этапа (май-июнь)
+        экзаменационной кампании 2016/2017 учебного года.
+      </p>
+    <p>
+        <a href="{% url 'rcoi:exam' %}" type="button" class="btn btn-primary">
+            Перейти к поиску
+        </a>
+    </p>
+    </div>
+{% endblock %}

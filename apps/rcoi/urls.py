@@ -1,10 +1,9 @@
 from django.conf.urls import url
-from django.views.generic import RedirectView
 
 from . import views
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(pattern_name='rcoi:exam')),
+    url(r'^$', views.HomeView.as_view(), name='home'),
     url(r'^admin/update_db/$', views.update_db_view, name='update_db'),
     url(r'^admin/clear_caches/$', views.clear_caches_view, name='clear_caches'),
     # urls for Date

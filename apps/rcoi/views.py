@@ -11,6 +11,17 @@ from .models import DataSource, DataFile, Date, Level, Organisation, Position, E
 from .tables import EmployeeTable, PlaceTable, ExamTable
 
 
+class HomeView(TemplateView):
+    model = None
+    template_name = 'rcoi/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data(**kwargs)
+        context['sources'] = DataSource.objects.all()
+        context['updated'] = DataFile.objects.latest('modified').modified
+        return context
+
+
 class FilteredSingleTableView(TemplateView):
     model = None
     table_class = None
