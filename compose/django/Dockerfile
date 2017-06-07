@@ -2,11 +2,28 @@ FROM python:3.6-alpine
 
 ENV PYTHONUNBUFFERED 1
 
+# Requirements have to be pulled and installed here, otherwise caching won't work
+COPY ./requirements /requirements
+
+RUN echo "http://nl.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
+     && apk add --no-cache \
+        tzdata \
+        libpq \
+        libxslt-dev \
+        libxml2-dev \
+        libffi-dev \
+     && ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
+     && apk add --no-cache --virtual .build-deps \
+        python3-dev \
+        postgresql-dev \
+        git \
+        build-base \
+    && pip install --no-cache-dir -U -r /requirements/production.txt \
+    && apk del .build-deps
+
 COPY . /app
 COPY ./compose/django/gunicorn.sh /gunicorn.sh
 COPY ./compose/django/entrypoint.sh /entrypoint.sh
-
-WORKDIR /app
 
 RUN addgroup django \
     && adduser -D -G django django \
@@ -18,19 +35,6 @@ RUN addgroup django \
     && chmod +x /gunicorn.sh \
     && chown django /gunicorn.sh
 
-RUN echo "http://nl.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
-     && apk add --no-cache tzdata \
-        libpq \
-        libxslt-dev \
-        libxml2-dev \
-        libffi-dev \
-     && ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
-     && apk add --no-cache --virtual .build-deps \
-        python3-dev \
-        postgresql-dev \
-        git \
-		build-base \
-    && pip install --no-cache-dir -U -r requirements/production.txt \
-    && apk del .build-deps
+WORKDIR /app
 
 ENTRYPOINT ["/entrypoint.sh"]
