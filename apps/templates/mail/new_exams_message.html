@@ -1,0 +1,148 @@
+{% load rename %}
+{% autoescape off %}
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link href="https://fonts.googleapis.com/css?family=PT Sans" rel="stylesheet"
+              type="text/css">
+        <title>Обновления в экзаменах</title>
+        <style media="all" type="text/css">
+            .body-text {
+                font-family: 'PT Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            }
+
+            table {
+                background-color: transparent;
+                border-spacing: 0;
+                border-collapse: collapse;
+            }
+
+            td,
+            th {
+                padding: 0;
+            }
+
+            caption {
+                padding-top: 3px;
+                padding-bottom: 3px;
+                color: #777;
+                text-align: left;
+            }
+
+            th {
+                text-align: left;
+            }
+
+            .table {
+                width: 100%;
+                max-width: 100%;
+                margin-bottom: 10px;
+                border-collapse: collapse !important;
+            }
+
+            .table td,
+            .table th {
+                background-color: #fff !important;
+            }
+
+            .table > thead > tr > th,
+            .table > tbody > tr > th,
+            .table > tfoot > tr > th,
+            .table > thead > tr > td,
+            .table > tbody > tr > td,
+            .table > tfoot > tr > td {
+                padding: 4px;
+                line-height: 1.42857143;
+                vertical-align: top;
+                border-top: 1px solid #ddd;
+            }
+
+            .table > thead > tr > th {
+                vertical-align: bottom;
+                border-bottom: 2px solid #ddd;
+            }
+
+            .table > caption + thead > tr:first-child > th,
+            .table > colgroup + thead > tr:first-child > th,
+            .table > thead:first-child > tr:first-child > th,
+            .table > caption + thead > tr:first-child > td,
+            .table > colgroup + thead > tr:first-child > td,
+            .table > thead:first-child > tr:first-child > td {
+                border-top: 0;
+            }
+
+            .table > tbody + tbody {
+                border-top: 2px solid #ddd;
+            }
+
+            .table .table {
+                background-color: #fff;
+            }
+
+            .table-condensed > thead > tr > th,
+            .table-condensed > tbody > tr > th,
+            .table-condensed > tfoot > tr > th,
+            .table-condensed > thead > tr > td,
+            .table-condensed > tbody > tr > td,
+            .table-condensed > tfoot > tr > td {
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body class="body-text">
+    {% for sub in context %}
+        <p style="font-size: 13px;">Для работника ППЭ <a href="{{ sub.sub_page }}">{{ sub.employee }}</a>
+            добавлены экзамены</p>
+        <p></p>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th></th>
+                <th class="body-text" style="font-size: 13px;color: #676767;">Дата экзамена</th>
+                <th class="body-text" style="font-size: 13px;color: #676767;">Должность в ППЭ</th>
+                <th class="body-text" style="font-size: 13px;color: #676767;">Наименование ППЭ</th>
+                <th class="body-text" style="font-size: 13px;color: #676767;">Адрес ППЭ</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for exam in sub.exams %}
+                <tr>
+                    {% now "Y-m-d" as todays_date %}
+                    {% if todays_date > exam.date.date|date:"Y-m-d" %}
+                        <td>&#10004;</td>
+                        <td class="body-text" style="font-size: 13px;color: #afafaf;">{{ exam.date }}</td>
+                        <td class="body-text" style="font-size: 13px;color: #afafaf;">{{ exam.position }}</td>
+                        <td class="body-text"
+                            style="font-size: 13px;color: #afafaf;">{{ exam.place.name|rename_org }}</td>
+                        <td class="body-text" style="font-size: 13px;color: #afafaf;">
+                            <a href="https://yandex.ru/maps/?text={{ exam.place.addr }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               title="Открыть карту">{{ exam.place.addr }}</a>
+                        </td>
+                    {% else %}
+                        <td></td>
+                        <td class="body-text" style="font-size: 13px;">{{ exam.date }}</td>
+                        <td class="body-text" style="font-size: 13px;">{{ exam.position }}</td>
+                        <td class="body-text" style="font-size: 13px;">{{ exam.place.name|rename_org }}</td>
+                        <td class="body-text" style="font-size: 13px;">
+                            <a href="https://yandex.ru/maps/?text={{ exam.place.addr }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               title="Открыть карту">{{ exam.place.addr }}</a>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <hr/>
+        <p></p>
+    {% endfor %}
+    <p></p>
+    <p style="font-size: 13px;">Вы получили это письмо, потому что подписались на уведомления на сайте
+        <a href="https://gia.devmem.ru">gia.devmem.ru</a>
+    </p>
+    </body>
+    </html>
+{% endautoescape %}

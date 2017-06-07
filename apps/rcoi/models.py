@@ -1,5 +1,6 @@
 import logging
 import datetime
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import connection, models
 from django_extensions.db.models import TimeStampedModel
@@ -7,6 +8,8 @@ from django_extensions.db.models import TimeStampedModel
 from apps.rcoi import xlsx_to_csv
 
 logger = logging.getLogger(__name__)
+
+User = get_user_model()
 
 
 class DataSource(TimeStampedModel):
@@ -141,6 +144,7 @@ class Place(TimeStampedModel):
 
     class Meta:
         unique_together = (('code', 'name', 'addr', 'ate'),)
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -161,8 +165,8 @@ class Exam(TimeStampedModel):
     datafile = models.ForeignKey(DataFile, related_name='exams', on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('date', 'level', 'place', 'employee'),)
-        ordering = ['date']
+        unique_together = (('date', 'level', 'place', 'employee', 'position'),)
+        ordering = ['-date']
 
     def __str__(self):
         return str(self.date) + ', ' + str(self.place) + ', ' + str(self.employee)
@@ -172,6 +176,54 @@ class Exam(TimeStampedModel):
 
     def get_update_url(self):
         return reverse('rcoi:exam_update', args=(self.id,))
+
+
+class Subscription(TimeStampedModel):
+    user = models.ForeignKey(User, related_name='subscriptions', on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, related_name='subscriptions', on_delete=models.CASCADE)
+    last_send = models.DateTimeField(default=datetime.datetime(2017, 5, 1))
+
+    class Meta:
+        unique_together = (('user', 'employee'),)
+        ordering = ['employee']
+
+    def __str__(self):
+        return str(self.user) + ' --> ' + str(self.employee)
+
+
+def send_subscriptions():
+    from allauth.account.adapter import get_adapter
+    from allauth.utils import build_absolute_uri
+    from django.core import mail
+
+    template_prefix = 'mail/new_exams'
+    location = '/employees/detail/'
+    url = build_absolute_uri(None, location, protocol='https')
+
+    subscriptions = Subscription.objects.all().select_related()
+    send_queue = {}
+    for sub in subscriptions:
+        new_exams = []
+        context = {
+            'exams': new_exams,
+            'sub_page': '{}{}'.format(url, sub.employee.id),
+            'employee': sub.employee.name
+        }
+        for exam in sub.employee.exams.all():
+            if exam.created > sub.last_send:
+                new_exams.append(exam)
+        if new_exams:
+            send_queue.setdefault(sub.user.email, []).append(context)
+            sub.last_send = datetime.datetime.now()
+            sub.save()
+    if send_queue:
+        adapter = get_adapter()
+        sender = mail.get_connection()
+        messages = []
+        for email, context in send_queue.items():
+            msg = adapter.send_mail(template_prefix, email, {'context': context})
+            messages.append(msg)
+        sender.send_messages(messages)
 
 
 class RcoiUpdater:
@@ -186,6 +238,7 @@ class RcoiUpdater:
             self.__update_place()
             self.__update_exam()
             self.__cleanup()
+            return True
 
     def __prepare_data(self):
         import csv
@@ -194,6 +247,10 @@ class RcoiUpdater:
         from collections import defaultdict
 
         urls = DataSource.objects.all()
+        try:
+            urls.latest('modified')
+        except DataSource.DoesNotExist:
+            raise
         tmp_path = 'tmp'
 
         if not os.path.exists(tmp_path):
@@ -239,12 +296,16 @@ class RcoiUpdater:
         from django.conf import settings
 
         logger.debug('cleanup unneeded exam rows')
-        now = datetime.datetime.now() - datetime.timedelta(minutes=20)
-        updated_files = DataFile.objects.filter(modified__gt=now)
-        for file in updated_files:
-            filtered = Exam.objects.filter(modified__lt=now, datafile_id=file.id)
+        files = DataFile.objects.all()
+        exams = Exam.objects.all()
+        for file in files:
+            modified = file.modified - datetime.timedelta(minutes=5)
+            oldest_exam = exams.filter(datafile_id=file.id).earliest('modified')
+            filtered = exams.filter(modified__lt=modified, datafile_id=file.id)
+            filtered_count = filtered.count()
             filtered.delete()
-            logger.debug('%s: deleted %s rows', file.name, filtered.count())
+            logger.debug('%s: file modified: %s, oldest exam: %s, rows deleted: %s',
+                         file.name, file.modified, oldest_exam.modified, filtered_count)
 
         if not settings.DEBUG:
             from cacheops import invalidate_all
@@ -364,7 +425,7 @@ class RcoiUpdater:
 
         for chunk in split_list(exams, 20):
             stream = timestamp_list(chunk)
-            self.__sql_insert_or_update(table, columns, stream, columns[:4])
+            self.__sql_insert_or_update(table, columns, stream, columns[:5])
 
 
 def replace_items(s_list, s_dict):
@@ -394,3 +455,10 @@ def split_list(seq, chunks):
         out.append(seq[last:last + avg])
         last += avg
     return out
+
+
+def cursor_execute(sql):
+    # sql = 'DROP TABLE rcoi_subscription;'
+    # sql = 'DELETE FROM rcoi_exam;'
+    with connection.cursor() as cursor:
+        cursor.execute(sql)

@@ -1,5 +1,7 @@
 from django.db.models import Count
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
+
 
 from apps.rcoi import models
 
@@ -200,3 +202,45 @@ class DataFileSerializer(serializers.ModelSerializer):
         model = models.DataFile
         exclude = ('created',
                    'modified')
+
+
+def limit_subscriptions(fields):
+    limit = 100
+    if fields['user'].subscriptions.count() == limit:
+        raise serializers.ValidationError("У вас не может быть больше {} подписок".format(limit))
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = models.Subscription
+        fields = ('id',
+                  'user',
+                  'employee')
+        validators = [
+            UniqueTogetherValidator(
+                queryset=models.Subscription.objects.all(),
+                fields=('user', 'employee'),
+                message='Вы уже подписаны на этого сотрудника'
+            ), limit_subscriptions
+        ]
+
+
+class SubscriptionListSerializer(serializers.ModelSerializer):
+    employee = EmployeeSerializer()
+
+    class Meta:
+        model = models.Subscription
+        fields = ('id',
+                  'employee')
+
+
+class SubscriptionDetailSerializer(serializers.ModelSerializer):
+    employee = EmployeeDetailSerializer()
+
+    class Meta:
+        model = models.Subscription
+        fields = ('id',
+                  'employee')

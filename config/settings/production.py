@@ -11,8 +11,8 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY CONFIGURATION
 # ------------------------------------------------------------------------------
-# See https://docs.djangoproject.com/en/1.9/ref/middleware/#module-django.middleware.security
-# and https://docs.djangoproject.com/ja/1.9/howto/deployment/checklist/#run-manage-py-check-deploy
+# See https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security
+# and https://docs.djangoproject.com/en/dev/howto/deployment/checklist/#run-manage-py-check-deploy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURE_HSTS_SECONDS = 60
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
@@ -31,19 +31,23 @@ X_FRAME_OPTIONS = 'DENY'
 # SITE CONFIGURATION
 # ------------------------------------------------------------------------------
 # Hosts/domain names that are valid for this site
-# See https://docs.djangoproject.com/en/1.6/ref/settings/#allowed-hosts
+# See https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 # END SITE CONFIGURATION
 
 INSTALLED_APPS += ['gunicorn',
                    'cacheops']
 
-# EMAIL
+# EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
-DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL',
-                         default='gia <spirkaa.trade@gmail.com>')
-EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[gia] ')
-SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
+DJMAIL_REAL_BACKEND = env('DJANGO_DJMAIL_REAL_BACKEND',
+                          default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_USE_TLS = env('DJANGO_EMAIL_USE_TLS', default=True)
+EMAIL_HOST = env('DJANGO_EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = env('DJANGO_EMAIL_PORT', default=587)
+EMAIL_HOST_USER = env('DJANGO_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('DJANGO_EMAIL_HOST_PASSWORD')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -94,6 +98,6 @@ CACHE_MIDDLEWARE_SECONDS = 600
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Custom Admin URL, use {% url 'admin:index' %}
-ADMIN_URL = env('DJANGO_ADMIN_URL', default=r'^admin/')
+ADMIN_URL = env('DJANGO_ADMIN_URL')
 
 # Your production stuff: Below this line define 3rd party library settings

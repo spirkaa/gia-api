@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(
     format='%(asctime)s [%(name)s:%(lineno)s] %(levelname)s - %(message)s',
     level=logging.DEBUG)
-logging.getLogger('requests').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 
 def get_files_info(url):
@@ -94,9 +94,9 @@ def extract_date(header):
 def parse_xlsx(filename):
     wb = load_workbook(filename)
     ws = wb[wb.get_sheet_names()[0]]
-    if len(tuple(ws.columns)) < 9:
+    if len(tuple(ws.columns)) < 8:
         logger.debug('skip file %s: wrong number of columns', filename)
-        return None
+        return []
     data = tuple(ws.rows)
     row_count = len(data)
     header = data[0][0].value.split()

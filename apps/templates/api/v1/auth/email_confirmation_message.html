@@ -1,0 +1,17 @@
+{% load account %}
+{% user_display user as user_display %}
+{% load i18n %}{% autoescape off %}
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Пожалуйста подтвердите ваш e-mail адрес</title>
+    </head>
+    <body>
+    <p>Вы получили это письмо, потому что кто-то указал этот e-mail адрес при регистрации.</p>
+    <p>Чтобы подтвердить его, перейдите по ссылке <a href="{{ activate_url }}">{{ activate_url }}</a></p>
+    <p></p>
+    <p>{% trans "Thanks for using our site!" %}</p>
+    <p>{{ current_site.name }}</p>
+    </body>
+    </html>
+{% endautoescape %}
