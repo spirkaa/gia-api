@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load rename %}
+{% block description %}График работы (расписание экзаменов) для работника ППЭ {{ object.name }}, {{ object.org.name|rename_org }}.{% endblock %}
+{% block title %}{{ object.name }}, {{ object.org.name|rename_org }}, работник ППЭ{% endblock %}
 {% block page_header %}
-    <h1>{% block title %}{{ object.name }}{% endblock %}<br/>
+    <h1>{{ object.name }}<br/>
         <small><a href="{{ object.org.get_absolute_url }}">{{ object.org.name|rename_org }}</a></small>
     </h1>
 {% endblock %}
