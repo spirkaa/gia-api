@@ -40,7 +40,7 @@ class Date(TimeStampedModel):
     date = models.DateField('Дата экзамена', unique=True, db_index=True)
 
     class Meta:
-        ordering = ['date']
+        ordering = ['-date']
 
     def __str__(self):
         return str(self.date)
@@ -166,7 +166,7 @@ class Exam(TimeStampedModel):
 
     class Meta:
         unique_together = (('date', 'level', 'place', 'employee', 'position'),)
-        ordering = ['-date']
+        ordering = ['date']
 
     def __str__(self):
         return str(self.date) + ', ' + str(self.place) + ', ' + str(self.employee)
