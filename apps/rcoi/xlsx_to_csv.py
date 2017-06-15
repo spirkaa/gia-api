@@ -27,11 +27,11 @@ def get_files_info(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'lxml')
     content = soup.select('span[data-class="info"]')
-    blocks = [block.attrs.get('data-ident') for block in content]
+    blocks = [(block.attrs.get('data-id'), block.attrs.get('data-ident')) for block in content]
 
     links = []
     for block in blocks:
-        payload = 'data={}&val=1'.format(block)
+        payload = 'id={}&data={}&val=1'.format(*block)
         r2 = requests.request('POST', url, data=payload, headers=headers)
         soup2 = BeautifulSoup(r2.text, 'lxml')
         content2 = soup2.select('p a')
