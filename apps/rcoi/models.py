@@ -261,9 +261,10 @@ class RcoiUpdater:
 
         updated_files = []
         for file in files_info:
+            url = file['url']
             name = file['name']
             try:
-                f = DataFile.objects.get(name=name)
+                f = DataFile.objects.get(url=url)
                 if f.last_modified != file['last_modified']:
                     for k, v in file.items():
                         setattr(f, k, v)

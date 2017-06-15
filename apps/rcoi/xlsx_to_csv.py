@@ -39,7 +39,8 @@ def get_files_info(url):
 
     files_info = []
     for link in links:
-        local_filename = link.split('/')[-1]
+        link_parts = link.split('/')
+        local_filename = '{}-{}'.format(link_parts[-4], link_parts[-1])
         r3 = requests.head(link)
         lmd = datetime.strptime(r3.headers['Last-Modified'], fmt_dt)
         file = {
@@ -53,7 +54,8 @@ def get_files_info(url):
 
 
 def download_file(url, path):
-    local_filename = url.split('/')[-1]
+    link_parts = url.split('/')
+    local_filename = '{}-{}'.format(link_parts[-4], link_parts[-1])
     logger.debug('download file: %s', local_filename)
     fs = requests.get(url, stream=True)
     with open(os.path.join(path, local_filename), 'wb') as f:
