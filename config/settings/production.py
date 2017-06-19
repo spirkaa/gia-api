@@ -78,13 +78,14 @@ CACHEOPS = {
     'auth.user': {'ops': 'get', 'timeout': 60*15},
     'auth.*': {'ops': ('fetch', 'get')},
     'auth.permission': {'ops': 'all'},
-    '*.*': {},
+    '*.*': {'ops': 'all'},
 }
 
 CACHEOPS_DEGRADE_ON_FAILURE = True
 
 CACHE_MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'apps.rcoi.middleware.SetBrowserCacheTimeoutMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django_brotli.middleware.BrotliMiddleware',
@@ -93,7 +94,8 @@ CACHE_MIDDLEWARE = [
 MIDDLEWARE = MIDDLEWARE[:1] + CACHE_MIDDLEWARE + MIDDLEWARE[1:]
 MIDDLEWARE.append('django.middleware.cache.FetchFromCacheMiddleware')
 
-CACHE_MIDDLEWARE_SECONDS = 600
+CACHE_MIDDLEWARE_SECONDS = 60*60*24
+RESPONSE_CACHE_SECONDS = 600
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 

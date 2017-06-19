@@ -294,7 +294,7 @@ class RcoiUpdater:
         return None
 
     def __cleanup(self):
-        from django.conf import settings
+        from django.core.cache import cache
 
         logger.debug('cleanup unneeded exam rows')
         files = DataFile.objects.all()
@@ -307,12 +307,7 @@ class RcoiUpdater:
             filtered.delete()
             logger.debug('%s: file modified: %s, oldest exam: %s, rows deleted: %s',
                          file.name, file.modified, oldest_exam.modified, filtered_count)
-
-        if not settings.DEBUG:
-            from cacheops import invalidate_all
-            from django.core.cache import cache
-            invalidate_all()
-            cache.clear()
+        cache.clear()
 
     def __sql_insert_or_update(self, table, columns, data, uniq):
         table_name = 'rcoi_' + table

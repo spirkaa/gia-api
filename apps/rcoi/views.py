@@ -161,19 +161,12 @@ def update_db_view(request):
 
 @staff_member_required
 def clear_caches_view(request):
-    from django.conf import settings
-
-    if settings.DEBUG:
-        messages.warning(request, 'Эта кнопка работает только на продакшене!')
-    else:
-        if request.method == 'POST':
-            # noinspection PyBroadException
-            try:
-                from cacheops import invalidate_all
-                from django.core.cache import cache
-                invalidate_all()
-                cache.clear()
-                messages.info(request, 'Кэш очищен!')
-            except:
-                messages.error(request, 'Ошибка!')
+    if request.method == 'POST':
+        # noinspection PyBroadException
+        try:
+            from django.core.cache import cache
+            res = cache.clear()
+            messages.info(request, 'Кэш очищен! Удалено ключей: {}'.format(res))
+        except:
+            messages.error(request, 'Ошибка!')
     return redirect(reverse('admin:index'))
