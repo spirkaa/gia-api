@@ -69,19 +69,17 @@ CACHES = {
 }
 
 CACHEOPS_REDIS = env('CACHE_URL')
-
 CACHEOPS_DEFAULTS = {
     'timeout': 60*60*24
 }
-
 CACHEOPS = {
     'auth.user': {'ops': 'get', 'timeout': 60*15},
     'auth.*': {'ops': ('fetch', 'get')},
     'auth.permission': {'ops': 'all'},
     '*.*': {'ops': 'all'},
 }
-
 CACHEOPS_DEGRADE_ON_FAILURE = True
+CACHEOPS_LRU = True
 
 CACHE_MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',

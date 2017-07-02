@@ -12,7 +12,7 @@ version: '2'
 
 services:
   redis:
-    image: redis:alpine
+    build: ./compose/redis
     volumes:
       - ./data/redis:/data
     restart: always
