@@ -275,6 +275,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'apps.rcoi': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'level': env('DJANGO_LOG_LEVEL', default='INFO'),
+            'propagate': False,
+        },
         '': {
             'handlers': ['console', 'file'],
             'level': env('DJANGO_LOG_LEVEL', default='INFO')

@@ -165,8 +165,8 @@ class Exam(TimeStampedModel):
     datafile = models.ForeignKey(DataFile, related_name='exams', on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('date', 'level', 'place', 'employee', 'position'),)
-        ordering = ['date']
+        unique_together = (('date', 'level', 'place', 'employee', 'position', 'datafile'),)
+        ordering = ['date', 'id']
 
     def __str__(self):
         return str(self.date) + ', ' + str(self.place) + ', ' + str(self.employee)
@@ -228,17 +228,26 @@ def send_subscriptions():
 
 class RcoiUpdater:
     def __init__(self):
-        self.data = self.__prepare_data()
+        try:
+            self.data, self.updated_files = self.__prepare_data()
+        except:
+            logger.exception('Prepare data for update failed!')
+            raise
 
     def run(self):
         if self.data:
-            self.__update_simple_tables()
-            self.__update_territory()
-            self.__update_employee()
-            self.__update_place()
-            self.__update_exam()
-            self.__cleanup()
-            return True
+            try:
+                self.__update_simple_tables()
+                self.__update_territory()
+                self.__update_employee()
+                self.__update_place()
+                self.__update_exam()
+                self.__update_datafile()
+                self.__cleanup()
+                return True
+            except:
+                logger.exception('Update failed!')
+                raise
 
     def __prepare_data(self):
         import csv
@@ -266,22 +275,19 @@ class RcoiUpdater:
             try:
                 f = DataFile.objects.get(url=url)
                 if f.last_modified != file['last_modified']:
-                    for k, v in file.items():
-                        setattr(f, k, v)
-                    f.save()
-                    updated_files.append(f)
-                    logger.debug('%s: dates differ: download', name)
+                    updated_files.append(file)
+                    logger.debug('%s: dates differ, DOWNLOAD', name)
                 else:
-                    logger.debug('%s: dates are the same: skip', name)
+                    logger.debug('%s: dates are the same, SKIP', name)
             except DataFile.DoesNotExist:
-                logger.debug('%s: datafile not found: add and download', name)
-                f = DataFile.objects.create(**file)
-                updated_files.append(f)
+                logger.debug('%s: file not found, DOWNLOAD', name)
+                DataFile.objects.create(**file)
+                updated_files.append(file)
 
         if updated_files:
             data = defaultdict(list)
 
-            [xlsx_to_csv.download_file(file.url, tmp_path) for file in updated_files]
+            [xlsx_to_csv.download_file(file['url'], tmp_path) for file in updated_files]
             csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
 
             reader = csv.DictReader(csv_stream, delimiter='\t')
@@ -290,26 +296,31 @@ class RcoiUpdater:
                     data[k].append(v)
             logger.debug('cleanup downloaded files')
             shutil.rmtree(tmp_path)
-            return data
-        return None
+            return data, updated_files
+        return None, None
 
     def __cleanup(self):
         from django.core.cache import cache
+        cache.clear()
 
         logger.debug('cleanup unneeded exam rows')
         files = DataFile.objects.all()
         exams = Exam.objects.all()
+        to_delete = []
         for file in files:
             modified = file.modified - datetime.timedelta(minutes=5)
-            oldest_exam = exams.filter(datafile_id=file.id).earliest('modified')
             filtered = exams.filter(modified__lt=modified, datafile_id=file.id)
-            filtered_count = filtered.count()
-            filtered.delete()
-            logger.debug('%s: file modified: %s, oldest exam: %s, rows deleted: %s',
-                         file.name, file.modified, oldest_exam.modified, filtered_count)
+            if filtered.count() > 0:
+                to_delete.append(filtered)
+        for qs in to_delete:
+            count = qs.delete()
+            logger.debug('rows deleted: %s', count[0])
         cache.clear()
 
     def __sql_insert_or_update(self, table, columns, data, uniq):
+        from django.core.cache import cache
+        cache.clear()
+
         table_name = 'rcoi_' + table
         col_names = ', '.join(columns).rstrip(', ')
         uniq_names = uniq
@@ -321,6 +332,11 @@ class RcoiUpdater:
             table_name, col_names, rows, uniq_names)
         with connection.cursor() as cursor:
             cursor.execute(sql, data)
+
+    def __update_datafile(self):
+        for file in self.updated_files:
+            logger.debug('update or create file: %s', file['name'])
+            DataFile.objects.update_or_create(url=file['url'], defaults=file)
 
     def __update_simple_tables(self):
         for key in ('date', 'level', 'position', 'organisation'):
@@ -421,7 +437,7 @@ class RcoiUpdater:
 
         for chunk in split_list(exams, 20):
             stream = timestamp_list(chunk)
-            self.__sql_insert_or_update(table, columns, stream, columns[:5])
+            self.__sql_insert_or_update(table, columns, stream, columns[:6])
 
 
 def replace_items(s_list, s_dict):

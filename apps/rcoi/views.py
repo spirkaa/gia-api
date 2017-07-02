@@ -1,33 +1,43 @@
-from django.contrib.admin.views.decorators import staff_member_required
+import sys
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.sites.requests import RequestSite
 from django.db.models import Count
 from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic import TemplateView, DetailView, ListView
 from django_tables2 import RequestConfig
 
 from .filters import EmployeeFilter, PlaceFilter, ExamFilter
-from .models import DataSource, DataFile, Date, Level, Organisation, Position, Employee, Territory, Place, Exam, RcoiUpdater
+from .models import DataSource, DataFile, Date, Level, Organisation, Position, Employee, Territory, Place, Exam, \
+    RcoiUpdater
 from .tables import EmployeeTable, PlaceTable, ExamTable
 
 
-class HomeView(TemplateView):
+class TemplateViewWithContext(TemplateView):
     model = None
-    template_name = 'rcoi/home.html'
+    template_name = None
 
     def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
+        context = super(TemplateViewWithContext, self).get_context_data(**kwargs)
         context['sources'] = DataSource.objects.all()
         context['updated'] = DataFile.objects.latest('modified').modified
+        context['link_rel'] = '{}://{}{}'.format(
+            self.request.scheme,
+            RequestSite(self.request).domain,
+            self.request.path)
         return context
 
 
-class FilteredSingleTableView(TemplateView):
-    model = None
+class HomeView(TemplateViewWithContext):
+    template_name = 'rcoi/home.html'
+
+
+class FilteredSingleTableView(TemplateViewWithContext):
     table_class = None
     paginate_by = 50
     filter_class = None
-    template_name = None
 
     def get_queryset(self, **kwargs):
         return self.model.objects.select_related()
@@ -41,8 +51,10 @@ class FilteredSingleTableView(TemplateView):
         RequestConfig(self.request, paginate={'per_page': self.paginate_by}).configure(table)
         context['filter'] = filter
         context['table'] = table
-        context['sources'] = DataSource.objects.all()
-        context['updated'] = DataFile.objects.latest('modified').modified
+        try:
+            context['table_sort'] = self.request.GET['sort']
+        except MultiValueDictKeyError:
+            pass
         return context
 
 
@@ -67,18 +79,30 @@ class ExamTableView(FilteredSingleTableView):
     template_name = 'rcoi/exam.html'
 
 
-class OrganisationDetailView(DetailView):
+class DetailViewWithContext(DetailView):
+    model = None
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailViewWithContext, self).get_context_data(**kwargs)
+        context['sources'] = DataSource.objects.all()
+        context['updated'] = DataFile.objects.latest('modified').modified
+        context['link_rel'] = '{}://{}{}'.format(
+            self.request.scheme,
+            RequestSite(self.request).domain,
+            self.request.path)
+        return context
+
+
+class OrganisationDetailView(DetailViewWithContext):
     model = Organisation
 
     def get_context_data(self, **kwargs):
         context = super(OrganisationDetailView, self).get_context_data(**kwargs)
         context['employees'] = self.object.employees.annotate(num_exams=Count('exams'))
-        context['sources'] = DataSource.objects.all()
-        context['updated'] = DataFile.objects.latest('modified').modified
         return context
 
 
-class EmployeeDetailView(DetailView):
+class EmployeeDetailView(DetailViewWithContext):
     model = Employee
 
     def get_queryset(self):
@@ -87,8 +111,6 @@ class EmployeeDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(EmployeeDetailView, self).get_context_data(**kwargs)
         context['exams'] = self.object.exams.select_related()
-        context['sources'] = DataSource.objects.all()
-        context['updated'] = DataFile.objects.latest('modified').modified
         return context
 
 
@@ -155,7 +177,7 @@ def update_db_view(request):
             else:
                 messages.info(request, 'Изменений нет!')
         except:
-            messages.error(request, 'Ошибка!')
+            messages.error(request, sys.exc_info())
     return redirect(reverse('admin:index'))
 
 
@@ -168,5 +190,5 @@ def clear_caches_view(request):
             res = cache.clear()
             messages.info(request, 'Кэш очищен! Удалено ключей: {}'.format(res))
         except:
-            messages.error(request, 'Ошибка!')
+            messages.error(request, sys.exc_info())
     return redirect(reverse('admin:index'))
