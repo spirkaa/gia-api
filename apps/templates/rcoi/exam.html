@@ -2,7 +2,28 @@
 {% load bootstrap3 %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
+
 {% block description %}Общий список всех записей про {% block title %}Распределение сотрудников в пункты проведения экзаменов ЕГЭ и ОГЭ{% endblock %}{% endblock %}
+
+{% if table.page and table.paginator.num_pages > 1 %}
+    {% block meta %}
+        {% if table.page.has_previous and table_sort %}
+            <link rel="canonical" href="{{ link_rel }}?page={{ table.page.number }}"/>
+            <link rel="prev" href="{{ link_rel }}?page={{ table.page.previous_page_number }}&sort={{ table_sort }}"/>
+        {% elif table.page.has_previous %}
+            <link rel="canonical" href="{{ link_rel }}?page={{ table.page.number }}"/>
+            <link rel="prev" href="{{ link_rel }}?page={{ table.page.previous_page_number }}"/>
+        {% else %}
+            {{ block.super }}
+        {% endif %}
+        {% if table.page.has_next and table_sort %}
+            <link rel="next" href="{{ link_rel }}?page={{ table.page.next_page_number }}&sort={{ table_sort }}"/>
+        {% elif table.page.has_next %}
+            <link rel="next" href="{{ link_rel }}?page={{ table.page.next_page_number }}"/>
+        {% endif %}
+    {% endblock meta %}
+{% endif %}
+
 {% block page_header %}
     <h1>Распределение сотрудников в ППЭ</h1>
 {% endblock %}

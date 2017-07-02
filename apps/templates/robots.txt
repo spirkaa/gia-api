@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /api
+Disallow: /date
+Disallow: /level
+Disallow: /position
+Disallow: /territory
+Disallow: *filter=
+
+Host: https://gia-api.devmem.ru
+Sitemap: https://gia-api.devmem.ru/sitemap.xml

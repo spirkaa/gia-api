@@ -1,9 +1,18 @@
 from django.conf.urls import url
+from django.views.decorators.cache import cache_page
+from django.views.generic import TemplateView
 
 from . import views
+from .sitemap import index, sitemap, sitemaps_context
+
 
 urlpatterns = [
     url(r'^$', views.HomeView.as_view(), name='home'),
+    url(r'^robots\.txt$', cache_page(86400)(TemplateView.as_view(template_name='robots.txt', content_type='text/plain'))),
+    url(r'^sitemap\.xml$', cache_page(86400)(index),
+        {'sitemaps': sitemaps_context, 'sitemap_url_name': 'rcoi:sitemap_section'}),
+    url(r'^sitemap-(?P<section>.+)\.xml$', cache_page(86400)(sitemap),
+        {'sitemaps': sitemaps_context}, name='sitemap_section'),
     url(r'^admin/update_db/$', views.update_db_view, name='update_db'),
     url(r'^admin/clear_caches/$', views.clear_caches_view, name='clear_caches'),
     # urls for Date
