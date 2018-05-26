@@ -5,8 +5,8 @@ version: '2'
 # docker exec -it giaapi_django_1 python manage.py createsuperuser
 # Add datasources in admin panel
 # docker exec -it giaapi_django_1 python manage.py shell_plus
-# from apps.rcoi.models import db_update
-# db_update()
+# from apps.rcoi.models import RcoiUpdater
+# RcoiUpdater().run()
 # exit()
 # docker-compose restart
 

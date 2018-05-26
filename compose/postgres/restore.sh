@@ -42,15 +42,15 @@ echo "-------------------------"
 # deleting the db can fail. Spit out a comment if this happens but continue since the db
 # is created in the next step
 echo "deleting old database $POSTGRES_USER"
-if dropdb -h postgres -U $POSTGRES_USER $POSTGRES_USER
+if dropdb -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_USER
 then echo "deleted $POSTGRES_USER database"
 else echo "database $POSTGRES_USER does not exist, continue"
 fi
 
 # create a new database
 echo "creating new database $POSTGRES_USER"
-createdb -h postgres -U $POSTGRES_USER $POSTGRES_USER -O $POSTGRES_USER
+createdb -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_USER -O $POSTGRES_USER
 
 # restore the database
 echo "restoring database $POSTGRES_USER"
-gunzip -c $BACKUPFILE | psql -h postgres -U $POSTGRES_USER
+gunzip -c $BACKUPFILE | psql -h $POSTGRES_HOST -U $POSTGRES_USER
