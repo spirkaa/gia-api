@@ -1,4 +1,4 @@
-FROM postgres:alpine
+FROM postgres:9-alpine
 
 RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 
