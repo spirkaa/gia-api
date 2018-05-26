@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% load bootstrap3 %} {% block main %}
     <div class="dpad container-fluid">
-        <h1>{% block title %}Работники ППЭ в Москве (ГИА 2017){% endblock %}</h1> {% if exams %}
+        <h1>{% block title %}Работники ППЭ в Москве (ГИА 2018){% endblock %}</h1> {% if exams %}
         <ul>
             {% for exam in exams %}
                 <li>{{ exam.date.date }}, {{ exam.level.level }}, {{ exam.place.code }}, {{ exam.place.name }}, {{ exam.place.addr }}, {{ exam.employee.position.name }}, {{ exam.employee.name }}, {{ exam.employee.org.name }}
