@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load rename %}
-{% block description %}Сотрудники и учителя {{ object.name|rename_org }}, заявлянные на ЕГЭ и ОГЭ как работники пунктов проведения экзаменов: организаторы аудитории, технические специалисты, руководители ППЭ, члены ГЭК{% endblock %}
-{% block title %}{{ object.name|rename_org }} | Работники ППЭ от организации{% endblock %}
+{% block description %}Сотрудники и учителя {{ object.name }}, заявлянные на ЕГЭ и ОГЭ как работники пунктов проведения экзаменов: организаторы аудитории, технические специалисты, руководители ППЭ, члены ГЭК{% endblock %}
+{% block title %}{{ object.name }} | Работники ППЭ от организации{% endblock %}
 {% block page_header %}
-    <h1>{{ object.name|rename_org }}<br/>
+    <h1>{{ object.name }}<br/>
         <small>Работники ППЭ от организации</small>
     </h1>
 {% endblock %}

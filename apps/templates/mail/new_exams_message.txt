@@ -4,7 +4,7 @@
 {% for sub in context %}
 Для работника ППЭ {{ sub.employee }} ({{ sub.sub_page }}) добавлены экзамены:
 {% for exam in sub.exams %}
-{{ exam.date }} | {{ exam.position }} | {{ exam.place.name|rename_org }} | {{ exam.place.addr }}
+{{ exam.date }} | {{ exam.position }} | {{ exam.place.name }} | {{ exam.place.addr }}
 {% endfor %}-----------------------------
 {% endfor %}
 

@@ -29,12 +29,6 @@ class OrganisationSerializer(serializers.ModelSerializer):
         fields = ('id',
                   'name')
 
-    def to_representation(self, instance):
-        from apps.rcoi.templatetags.rename import rename_org
-        data = super(OrganisationSerializer, self).to_representation(instance)
-        data.update({'name': rename_org(data['name'])})
-        return data
-
 
 class PositionSerializer(serializers.ModelSerializer):
 
@@ -52,12 +46,6 @@ class PlaceSerializer(serializers.ModelSerializer):
                   'code',
                   'name',
                   'addr')
-
-    def to_representation(self, instance):
-        from apps.rcoi.templatetags.rename import rename_org
-        data = super(PlaceSerializer, self).to_representation(instance)
-        data.update({'name': rename_org(data['name'])})
-        return data
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -97,12 +85,6 @@ class ExamFlatSerializer(serializers.ModelSerializer):
         model = models.Exam
         exclude = ('created',
                    'modified')
-
-    def to_representation(self, instance):
-        from apps.rcoi.templatetags.rename import rename_org
-        data = super(ExamFlatSerializer, self).to_representation(instance)
-        data.update({'place': rename_org(data['place'])})
-        return data
 
 
 class ExamFullSerializer(serializers.ModelSerializer):
@@ -169,12 +151,6 @@ class OrganisationDetailSerializer(serializers.ModelSerializer):
         fields = ('id',
                   'name',
                   'employees')
-
-    def to_representation(self, instance):
-        from apps.rcoi.templatetags.rename import rename_org
-        data = super(OrganisationDetailSerializer, self).to_representation(instance)
-        data.update({'name': rename_org(data['name'])})
-        return data
 
 
 class DataSourceSerializer(serializers.ModelSerializer):
