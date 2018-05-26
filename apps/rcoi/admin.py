@@ -36,24 +36,16 @@ class EmployeeAdmin(admin.ModelAdmin):
 admin.site.register(models.Employee, EmployeeAdmin)
 
 
-class TerritoryAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'created', 'modified', 'id')
-    list_filter = ('code', 'created', 'modified')
-    search_fields = ('name', 'code')
-admin.site.register(models.Territory, TerritoryAdmin)
-
-
 class PlaceAdmin(admin.ModelAdmin):
     list_display = (
         'code',
         'name',
         'addr',
-        'ate',
         'created',
         'modified',
         'id',
     )
-    list_filter = ('ate', 'created', 'modified')
+    list_filter = ('created', 'modified')
     search_fields = ('name', 'code')
 admin.site.register(models.Place, PlaceAdmin)
 

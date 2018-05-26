@@ -44,25 +44,14 @@ class PositionSerializer(serializers.ModelSerializer):
                   'name')
 
 
-class TerritorySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.Territory
-        fields = ('id',
-                  'code',
-                  'name')
-
-
 class PlaceSerializer(serializers.ModelSerializer):
-    ate = TerritorySerializer()
 
     class Meta:
         model = models.Place
         fields = ('id',
                   'code',
                   'name',
-                  'addr',
-                  'ate')
+                  'addr')
 
     def to_representation(self, instance):
         from apps.rcoi.templatetags.rename import rename_org

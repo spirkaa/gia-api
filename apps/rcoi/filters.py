@@ -46,8 +46,6 @@ class PlaceFilter(FilterWithHelper):
             'code',
             'name',
             'addr',
-            'ate__code',
-            'ate__name',
             Submit('filter', 'Найти'))
 
     code = django_filters.CharFilter(
@@ -58,11 +56,6 @@ class PlaceFilter(FilterWithHelper):
     addr = django_filters.CharFilter(
         lookup_expr='icontains',
         label='Адрес ППЭ')
-    ate__code = django_filters.CharFilter(
-        label='Код АТЕ')
-    ate__name = django_filters.CharFilter(
-        lookup_expr='icontains',
-        label='Наименование АТЕ')
 
     class Meta:
         model = models.Place

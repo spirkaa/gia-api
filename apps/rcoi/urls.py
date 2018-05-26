@@ -30,9 +30,6 @@ urlpatterns = [
     # urls for Employee
     url(r'^employee/$', views.EmployeeTableView.as_view(), name='employee'),
     url(r'^employee/detail/(?P<pk>\S+)/$', views.EmployeeDetailView.as_view(), name='employee_detail'),
-    # urls for Territory
-    url(r'^territory/$', views.TerritoryListView.as_view(), name='territory_list'),
-    url(r'^territory/detail/(?P<pk>\S+)/$', views.TerritoryDetailView.as_view(), name='territory_detail'),
     # urls for Place
     url(r'^place/$', views.PlaceTableView.as_view(), name='place'),
     url(r'^place/detail/(?P<pk>\S+)/$', views.PlaceDetailView.as_view(), name='place_detail'),

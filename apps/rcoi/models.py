@@ -140,10 +140,10 @@ class Place(TimeStampedModel):
     code = models.CharField('Код ППЭ', max_length=5, db_index=True)
     name = models.CharField('Наименование ППЭ', max_length=500, db_index=True)
     addr = models.CharField('Адрес ППЭ', max_length=255, db_index=True)
-    ate = models.ForeignKey(Territory, related_name='places', on_delete=models.CASCADE)
+    ate = models.ForeignKey(Territory, related_name='places', blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('code', 'name', 'addr', 'ate'),)
+        unique_together = (('code', 'name', 'addr'),)
         ordering = ['name']
 
     def __str__(self):
@@ -238,7 +238,6 @@ class RcoiUpdater:
         if self.data:
             try:
                 self.__update_simple_tables()
-                self.__update_territory()
                 self.__update_employee()
                 self.__update_place()
                 self.__update_exam()
@@ -350,18 +349,6 @@ class RcoiUpdater:
             logger.debug('processing model: %s', table)
             self.__sql_insert_or_update(table, columns, stream, col)
 
-    def __update_territory(self):
-        ate_code = self.data['ate_code'][:]
-        for i, v in enumerate(ate_code):
-            ate_code[i] = int(ate_code[i])
-        values = sorted(list(set(zip(ate_code,
-                                     self.data['ate_name']))))
-        stream = timestamp_list(values)
-        table = 'territory'
-        columns = ('code', 'name', 'created', 'modified')
-        logger.debug('processing model: %s', table)
-        self.__sql_insert_or_update(table, columns, stream, columns[0])
-
     def __update_employee(self):
         organisation = Organisation.objects.all()
         organisation_db = {org.name: org.id for org in organisation}
@@ -376,22 +363,18 @@ class RcoiUpdater:
         self.__sql_insert_or_update(table, columns, stream, columns[:2])
 
     def __update_place(self):
-        territory = Territory.objects.all()
-        territory_db = {ate.name: ate.id for ate in territory}
         ppe_code = self.data['ppe_code'][:]
         for i, v in enumerate(ppe_code):
             ppe_code[i] = int(ppe_code[i])
 
         values = sorted(list(set(zip(ppe_code,
                                      self.data['ppe_name'],
-                                     self.data['ppe_addr'],
-                                     self.data['ate_name']))))
-        values_with_id = [[*val[:-1], territory_db.get(val[3])] for val in values]
-        stream = timestamp_list(values_with_id)
+                                     self.data['ppe_addr']))))
+        stream = timestamp_list(values)
         table = 'place'
-        columns = ('code', 'name', 'addr', 'ate_id', 'created', 'modified')
+        columns = ('code', 'name', 'addr', 'created', 'modified')
         logger.debug('processing model: %s', table)
-        self.__sql_insert_or_update(table, columns, stream, columns[:4])
+        self.__sql_insert_or_update(table, columns, stream, columns[:3])
 
     def __update_exam(self):
         date = Date.objects.all()

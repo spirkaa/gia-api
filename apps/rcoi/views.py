@@ -10,7 +10,7 @@ from django.views.generic import TemplateView, DetailView, ListView
 from django_tables2 import RequestConfig
 
 from .filters import EmployeeFilter, PlaceFilter, ExamFilter
-from .models import DataSource, DataFile, Date, Level, Organisation, Position, Employee, Territory, Place, Exam, \
+from .models import DataSource, DataFile, Date, Level, Organisation, Position, Employee, Place, Exam, \
     RcoiUpdater
 from .tables import EmployeeTable, PlaceTable, ExamTable
 
@@ -144,14 +144,6 @@ class PositionDetailView(DetailView):
 
 class EmployeeListView(ListView):
     model = Employee
-
-
-class TerritoryListView(ListView):
-    model = Territory
-
-
-class TerritoryDetailView(DetailView):
-    model = Territory
 
 
 class PlaceListView(ListView):

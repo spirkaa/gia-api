@@ -58,14 +58,6 @@ class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
     filter_class = filters.EmployeeFilter
 
 
-class TerritoryViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the Territory class"""
-
-    queryset = models.Territory.objects.all()
-    serializer_class = serializers.TerritorySerializer
-    filter_class = filters.TerritoryFilter
-
-
 class PlaceViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for the Place class"""
 
@@ -124,7 +116,6 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
         queryset = queryset.prefetch_related('employee__exams__date',
                                              'employee__exams__level',
                                              'employee__exams__place',
-                                             'employee__exams__place__ate',
                                              'employee__exams__position').all()
         return queryset
 

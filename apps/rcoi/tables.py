@@ -16,8 +16,6 @@ class EmployeeTable(tables.Table):
 
 
 class PlaceTable(tables.Table):
-    ate_code = tables.Column(accessor='ate.code')
-    ate_name = tables.Column(accessor='ate.name')
     name = tables.TemplateColumn(template_name='rcoi/cols/place_name.html',
                                  verbose_name='Наименование ППЭ')
     addr = tables.TemplateColumn(template_name='rcoi/cols/place_addr.html',
@@ -25,7 +23,7 @@ class PlaceTable(tables.Table):
 
     class Meta:
         model = models.Place
-        sequence = ('code', 'name', 'addr', 'ate_code', 'ate_name')
+        sequence = ('code', 'name', 'addr')
         exclude = ('id', 'created', 'modified', 'ate')
 
 
