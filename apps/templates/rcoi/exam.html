@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
 
-{% block description %}Общий список всех записей про {% block title %}Распределение сотрудников в пункты проведения экзаменов ЕГЭ и ОГЭ{% endblock %}{% endblock %}
+{% block description %}{% block title %}Список организаторов в пунктах проведения экзаменов ЕГЭ и ОГЭ{% endblock %}{% endblock %}
 
 {% if table.page and table.paginator.num_pages > 1 %}
     {% block meta %}
@@ -25,7 +25,7 @@
 {% endif %}
 
 {% block page_header %}
-    <h1>Распределение сотрудников в ППЭ</h1>
+    <h1>Список организаторов ГИА 2018</h1>
 {% endblock %}
 {% block content %}
     <div>
