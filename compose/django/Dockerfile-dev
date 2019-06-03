@@ -1,4 +1,4 @@
-FROM python:alpine3.7
+FROM jfloff/alpine-python:3.7
 
 ENV PYTHONUNBUFFERED 1
 
@@ -6,16 +6,15 @@ ENV PYTHONUNBUFFERED 1
 COPY ./requirements /requirements
 
 RUN echo "http://nl.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
-     && apk add --no-cache tzdata \
+     && apk add --no-cache \
+        tzdata \
         libpq \
         libxslt-dev \
         libxml2-dev \
      && ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
      && apk add --no-cache --virtual .build-deps \
-        python3-dev \
         postgresql-dev \
-        git \
-		build-base \
+	&& pip install --upgrade pip \
     && pip install --no-cache-dir -U -r /requirements/local.txt \
     && apk del .build-deps
 

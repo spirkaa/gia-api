@@ -1,4 +1,4 @@
-FROM python:alpine3.7
+FROM jfloff/alpine-python:3.7
 
 ENV PYTHONUNBUFFERED 1
 
@@ -14,10 +14,8 @@ RUN echo "http://nl.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
         libffi-dev \
      && ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
      && apk add --no-cache --virtual .build-deps \
-        python3-dev \
         postgresql-dev \
-        git \
-        build-base \
+	&& pip install --upgrade pip \
     && pip install --no-cache-dir -U -r /requirements/staging.txt \
     && apk del .build-deps
 
