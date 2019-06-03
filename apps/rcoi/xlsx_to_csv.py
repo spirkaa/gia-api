@@ -16,7 +16,29 @@ logging.basicConfig(
 logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 
+def get_filename_from_url(url):
+    """
+    Format filename from parts of URL
+
+    :type url: str
+    :param url: file url
+    :return: formatted filename
+    :rtype: str
+    """
+    url_parts = url.split('/')
+    filename = '{}-{}-{}'.format(url_parts[-4], url_parts[-3], url_parts[-1])
+    return filename
+
+
 def get_files_info(url):
+    """
+    Get remote file headers from URL
+
+    :type url: str
+    :param url: file url
+    :return: files headers
+    :rtype: dict
+    """
     logger.debug('get file links: %s', url)
     headers = {
         'content-type': 'application/x-www-form-urlencoded',
@@ -38,14 +60,13 @@ def get_files_info(url):
         links += [url_base + a.attrs.get('href') for a in content2 if 'rab' in a.attrs.get('href')]
 
     files_info = []
-    for link in links:
-        link_parts = link.split('/')
-        local_filename = '{}-{}-{}'.format(link_parts[-3], link_parts[-2], link_parts[-1])
-        r3 = requests.head(link)
+    for url in links:
+        local_filename = get_filename_from_url(url)
+        r3 = requests.head(url)
         lmd = datetime.strptime(r3.headers['Last-Modified'], fmt_dt)
         file = {
             'name': local_filename,
-            'url': link,
+            'url': url,
             'size': r3.headers['Content-Length'],
             'last_modified': lmd
         }
@@ -54,8 +75,15 @@ def get_files_info(url):
 
 
 def download_file(url, path):
-    link_parts = url.split('/')
-    local_filename = '{}-{}-{}'.format(link_parts[-3], link_parts[-2], link_parts[-1])
+    """
+    Download file from URL
+
+    :type url: str
+    :param url: file url
+    :type path: str
+    :param path: local path
+    """
+    local_filename = get_filename_from_url(url)
     logger.debug('download file: %s', local_filename)
     fs = requests.get(url, stream=True)
     with open(os.path.join(path, local_filename), 'wb') as f:
@@ -65,21 +93,37 @@ def download_file(url, path):
 
 
 # replace quotation marks
-s0 = re.compile('["„“”«»\'‘’]')
+s0 = re.compile(r'["„“”«»\'‘’]')
 # remove spaces before punctuation marks
-s1 = re.compile('\s+(?=[.,:;!?])')
+s1 = re.compile(r'\s+(?=[.,:;!?])')
 # 1. (add space after punctuation marks |
 # 2. add space before "№" |
 # 3. replace whitespace chars with only one space)
-s2 = re.compile('(?<=[.,:;!№?])(?![.,:;!№?\s])|(?<=\w)(?=№)|\s+')
+s2 = re.compile(r'(?<=[.,:;!№?])(?![.,:;!№?\s])|(?<=\w)(?=№)|\s+')
 
 
 def re_work(s):
+    """
+    Format string with precompiled regexp rules
+
+    :type s: str
+    :param s: string
+    :return: formatted string
+    :rtype: str
+    """
     s = s2.sub(' ', s1.sub('', s0.sub(' ', str(s)))).strip()
     return s
 
 
 def rename_org(value):
+    """
+    Replace parts of organization name
+
+    :type value: str
+    :param value: original name
+    :return: modified name
+    :rtype: str
+    """
     value = value.replace('Федеральное государственное бюджетное общеобразовательное учреждение высшего образования',
                           'ФГБОУ ВО')
     value = value.replace('федеральное государственное бюджетное общеобразовательное учреждение высшего образования',
@@ -184,6 +228,14 @@ def rename_org(value):
 
 
 def extract_date(header):
+    """
+    Extract date from string
+
+    :type header: list
+    :param header: list with text date
+    :return: formatted text date
+    :rtype: str
+    """
     months = {
         'января': '01', 'февраля': '02', 'марта': '03',
         'апреля': '04', 'мая': '05', 'июня': '06',
@@ -192,14 +244,22 @@ def extract_date(header):
     }
     date = header[-4:-1]
     date[1] = months[date[1]]
-    if int(date[0]) < 10:
+    if len(date[0]) == 1:
         date[0] = '0' + date[0]
     return '-'.join(reversed(date))
 
 
 def parse_xlsx(filename):
+    """
+    Process Excel file and convert it to list of rows
+
+    :type filename: str
+    :param filename: local xlsx file name
+    :return: list of rows
+    :rtype: list
+    """
     wb = load_workbook(filename)
-    ws = wb[wb.get_sheet_names()[0]]
+    ws = wb[wb.sheetnames[0]]
     if len(tuple(ws.columns)) < 7:
         logger.debug('skip file %s: wrong number of columns', filename)
         return []
@@ -208,10 +268,10 @@ def parse_xlsx(filename):
     header = data[0][0].value.split()
     if 'ГИА-11' in header:
         level = 11
-    elif 'выпускного' in header:
-        level = 'ГВЭ'
-    else:
+    elif 'ГИА-9' in header:
         level = 9
+    else:
+        level = 'Другое'
     date = extract_date(header)
     filename = filename.split('/')[-1]
     logger.debug('parse file: %s (date %s, level %s, rows %s)', filename, date, level, row_count-2)
@@ -227,12 +287,6 @@ def parse_xlsx(filename):
                 if ' образовательное учреждение' in cell:
                     cell = cell.replace(' образовательное учреждение',
                                         ' общеобразовательное учреждение')
-                if 'учреждение школа' in cell:
-                    cell = cell.replace('учреждение школа',
-                                        'учреждение города Москвы Школа')
-                if 'ГБОУ' in cell:
-                    cell = cell.replace('ГБОУ',
-                                        'Государственное бюджетное общеобразовательное учреждение города Москвы')
                 cell = rename_org(cell)
             l_row.append(cell)
         if l_row[5]:
@@ -241,6 +295,12 @@ def parse_xlsx(filename):
 
 
 def save_to_csv(csv_file):
+    """
+    Save list of rows to CSV in local file
+
+    :type csv_file: str
+    :param csv_file: local CSV file name
+    """
     with open(csv_file, 'w+', newline='', encoding='utf-8') as fp:
         a = csv.writer(fp, delimiter=';')
         a.writerow(['datafile', 'date', 'level',
@@ -259,6 +319,14 @@ def save_to_csv(csv_file):
 
 
 def save_to_stream(path):
+    """
+    Save list of rows to CSV in string buffer (memory file)
+
+    :type path: str
+    :param path: local directory with xlsx files
+    :return: memory file
+    :rtype: StringIO
+    """
     from io import StringIO
     stream = StringIO()
     writer = csv.writer(stream, delimiter='\t', quotechar="'")
