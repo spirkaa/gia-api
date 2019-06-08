@@ -286,7 +286,7 @@ class RcoiUpdater:
         if updated_files:
             data = defaultdict(list)
 
-            [xlsx_to_csv.download_file(file['url'], tmp_path) for file in updated_files]
+            [xlsx_to_csv.download_file(file['url'], file['name'], tmp_path) for file in updated_files]
             csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
 
             reader = csv.DictReader(csv_stream, delimiter='\t')
@@ -302,11 +302,12 @@ class RcoiUpdater:
         from django.core.cache import cache
         cache.clear()
 
-        logger.debug('cleanup unneeded exam rows')
+        logger.debug('cleanup unneeded exam rows from updated files')
         files = DataFile.objects.all()
+        files_modified = files.filter(modified__gte=datetime.datetime.now() - datetime.timedelta(minutes=5))
         exams = Exam.objects.all()
         to_delete = []
-        for file in files:
+        for file in files_modified:
             modified = file.modified - datetime.timedelta(minutes=5)
             filtered = exams.filter(modified__lt=modified, datafile_id=file.id)
             if filtered.count() > 0:

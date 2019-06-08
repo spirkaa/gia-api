@@ -57,11 +57,12 @@ def get_files_info(url):
         r2 = requests.request('POST', url, data=payload, headers=headers)
         soup2 = BeautifulSoup(r2.text, 'lxml')
         content2 = soup2.select('p a')
-        links += [url_base + a.attrs.get('href') for a in content2 if 'rab' in a.attrs.get('href')]
+        links += [(block[1], url_base + a.attrs.get('href')) for a in content2 if 'rab' in a.attrs.get('href')]
 
     files_info = []
-    for url in links:
+    for ident, url in links:
         local_filename = get_filename_from_url(url)
+        local_filename = '{}-{}-{}__{}'.format(ident[0:4], ident[4:6], ident[6:8], local_filename)
         r3 = requests.head(url)
         lmd = datetime.strptime(r3.headers['Last-Modified'], fmt_dt)
         file = {
@@ -74,16 +75,17 @@ def get_files_info(url):
     return files_info
 
 
-def download_file(url, path):
+def download_file(url, local_filename, path):
     """
     Download file from URL
 
     :type url: str
     :param url: file url
+    :type local_filename: str
+    :param local_filename: file name
     :type path: str
     :param path: local path
     """
-    local_filename = get_filename_from_url(url)
     logger.debug('download file: %s', local_filename)
     fs = requests.get(url, stream=True)
     with open(os.path.join(path, local_filename), 'wb') as f:
@@ -227,28 +229,6 @@ def rename_org(value):
     return value
 
 
-def extract_date(header):
-    """
-    Extract date from string
-
-    :type header: list
-    :param header: list with text date
-    :return: formatted text date
-    :rtype: str
-    """
-    months = {
-        'января': '01', 'февраля': '02', 'марта': '03',
-        'апреля': '04', 'мая': '05', 'июня': '06',
-        'июля': '07', 'августа': '08', 'сентября': '09',
-        'октября': '10', 'ноября': '11', 'декабря': '12'
-    }
-    date = header[-4:-1]
-    date[1] = months[date[1]]
-    if len(date[0]) == 1:
-        date[0] = '0' + date[0]
-    return '-'.join(reversed(date))
-
-
 def parse_xlsx(filename):
     """
     Process Excel file and convert it to list of rows
@@ -272,13 +252,15 @@ def parse_xlsx(filename):
         level = 9
     else:
         level = 'Другое'
-    date = extract_date(header)
-    filename = filename.split('/')[-1]
-    logger.debug('parse file: %s (date %s, level %s, rows %s)', filename, date, level, row_count-2)
+    filename_clean = filename.split('/')[-1]
+    if filename_clean == filename:
+        filename_clean = filename.split('\\')[-1]
+    date = filename_clean.split('__')[0]
+    logger.debug('parse file: %s (date %s, level %s, rows %s)', filename_clean, date, level, row_count-2)
     l_data = []
     for row_num in range(2, row_count):
         row = data[row_num]
-        l_row = [filename, date, level]
+        l_row = [filename_clean, date, level]
         # Пропускаем 1 ячейку с порядковым номером
         for cell_num in range(1, len(row)):
             cell = row[cell_num].value
@@ -348,11 +330,15 @@ def main():
     if not os.path.exists(path):
         os.makedirs(path)
     csv_file = os.path.join(path, path + '.csv')
-    urls = ['http://rcoi.mcko.ru/organizers/schedule/oge/?period=2',
-            'http://rcoi.mcko.ru/organizers/schedule/ege/?period=2']
+    urls = ['http://rcoi.mcko.ru/organizers/schedule/oge/?period=1',
+            'http://rcoi.mcko.ru/organizers/schedule/ege/?period=1',
+            'http://rcoi.mcko.ru/organizers/schedule/oge/?period=2',
+            'http://rcoi.mcko.ru/organizers/schedule/ege/?period=2',
+            'http://rcoi.mcko.ru/organizers/schedule/oge/?period=3',
+            'http://rcoi.mcko.ru/organizers/schedule/ege/?period=3']
     files_info = [get_files_info(url) for url in urls]
     files_info = [url for url_list in files_info for url in url_list]
-    [download_file(file['url'], path) for file in files_info]
+    [download_file(file['url'], file['name'], path) for file in files_info]
     save_to_csv(csv_file)
 
 
