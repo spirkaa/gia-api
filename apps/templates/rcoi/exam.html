@@ -29,7 +29,18 @@
 {% endblock %}
 {% block content %}
     <div>
-        <div class="text-center bottom-buffer">{% crispy filter.form filter.form.helper %}</div>
+        <div class="text-center bottom-buffer">
+            <div class="bottom-buffer">
+                <small>
+                    Поиск работает по любому полю, заполнять все нет необходимости.
+                    Для начала поиска укажите в соответствующем поле что-нибудь из списка:
+                    фамилию без инициалов,
+                    номер или название школы без ГБОУ и №,
+                    название улицы без ул. и дома и т.д.
+                </small>
+            </div>
+            <div>{% crispy filter.form filter.form.helper %}</div>
+        </div>
     </div>
     <div class="row" id="row-main">
         {% render_table table 'table.html' %}
