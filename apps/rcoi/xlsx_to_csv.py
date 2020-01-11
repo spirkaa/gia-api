@@ -16,20 +16,6 @@ logging.basicConfig(
 logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 
-def get_filename_from_url(url):
-    """
-    Format filename from parts of URL
-
-    :type url: str
-    :param url: file url
-    :return: formatted filename
-    :rtype: str
-    """
-    url_parts = url.split('/')
-    filename = '{}-{}-{}'.format(url_parts[-4], url_parts[-3], url_parts[-1])
-    return filename
-
-
 def get_files_info(url):
     """
     Get remote file headers from URL
@@ -49,6 +35,12 @@ def get_files_info(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'lxml')
     content = soup.select('span[data-class="info"]')
+    if '/ege/' in url:
+        level = 11
+    elif '/oge/' in url:
+        level = 9
+    else:
+        level = 'other'
     blocks = [(block.attrs.get('data-id'), block.attrs.get('data-ident')) for block in content]
 
     links = []
@@ -61,8 +53,7 @@ def get_files_info(url):
 
     files_info = []
     for ident, url in links:
-        local_filename = get_filename_from_url(url)
-        local_filename = '{}-{}-{}__{}'.format(ident[0:4], ident[4:6], ident[6:8], local_filename)
+        local_filename = '{}-{}-{}__{}__{}'.format(ident[0:4], ident[4:6], ident[6:8], level, url.split('/')[-1])
         r3 = requests.head(url)
         lmd = datetime.strptime(r3.headers['Last-Modified'], fmt_dt)
         file = {
@@ -245,34 +236,30 @@ def parse_xlsx(filename):
         return []
     data = tuple(ws.rows)
     row_count = len(data)
-    header = data[0][0].value.split()
-    if 'ГИА-11' in header:
-        level = 11
-    elif 'ГИА-9' in header:
-        level = 9
-    else:
-        level = 'Другое'
     filename_clean = filename.split('/')[-1]
     if filename_clean == filename:
         filename_clean = filename.split('\\')[-1]
-    date = filename_clean.split('__')[0]
+    filename_splitted = filename_clean.split('__')
+    date = filename_splitted[0]
+    level = filename_splitted[1]
     logger.debug('parse file: %s (date %s, level %s, rows %s)', filename_clean, date, level, row_count-2)
     l_data = []
     for row_num in range(2, row_count):
         row = data[row_num]
         l_row = [filename_clean, date, level]
-        # Пропускаем 1 ячейку с порядковым номером
-        for cell_num in range(1, len(row)):
-            cell = row[cell_num].value
-            if cell:
-                cell = re_work(cell)
-                if ' образовательное учреждение' in cell:
-                    cell = cell.replace(' образовательное учреждение',
-                                        ' общеобразовательное учреждение')
-                cell = rename_org(cell)
-            l_row.append(cell)
-        if l_row[5]:
-            l_data.append(l_row)
+        if isinstance(row[0].value, int):
+            # Пропускаем 1 ячейку с порядковым номером
+            for cell_num in range(1, len(row)):
+                cell = row[cell_num].value
+                if cell:
+                    cell = re_work(cell)
+                    if ' образовательное учреждение' in cell:
+                        cell = cell.replace(' образовательное учреждение',
+                                            ' общеобразовательное учреждение')
+                    cell = rename_org(cell)
+                l_row.append(cell)
+            if l_row[5]:
+                l_data.append(l_row)
     return l_data
 
 
