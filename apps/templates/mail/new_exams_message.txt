@@ -1,4 +1,3 @@
-{% load rename %}
 {% autoescape off %}
 
 {% for sub in context %}
