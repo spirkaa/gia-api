@@ -1,5 +1,5 @@
 -r common.txt
-django-debug-toolbar==1.11
-Werkzeug==0.15.4
-ipython==7.5.0
-coverage==4.5.3
+django-debug-toolbar==2.2
+Werkzeug==0.16.1
+ipython==7.15.0
+coverage==4.5.4
