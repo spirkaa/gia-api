@@ -1,18 +1,5 @@
 version: '2'
 
-# docker-compose -f docker-compose.staging.yml up --build -d
-# docker-compose -f docker-compose.staging.yml logs
-# docker exec -it gia_django-staging_1 python manage.py migrate
-# docker exec -it gia_django-staging_1 python manage.py createsuperuser
-
-# Add datasources in admin panel manually
-
-# docker exec -it gia_django-staging_1 python manage.py shell_plus
-# from apps.rcoi.models import RcoiUpdater
-# RcoiUpdater().run()
-# exit()
-# docker-compose restart
-
 volumes:
   postgres_data_staging: {}
 
