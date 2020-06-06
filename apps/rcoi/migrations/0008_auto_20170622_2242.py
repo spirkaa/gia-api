@@ -8,16 +8,17 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rcoi', '0007_auto_20170613_1047'),
+        ("rcoi", "0007_auto_20170613_1047"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='exam',
-            options={'ordering': ['date', 'id']},
+            name="exam", options={"ordering": ["date", "id"]},
         ),
         migrations.AlterUniqueTogether(
-            name='exam',
-            unique_together=set([('date', 'level', 'place', 'employee', 'position', 'datafile')]),
+            name="exam",
+            unique_together=set(
+                [("date", "level", "place", "employee", "position", "datafile")]
+            ),
         ),
     ]

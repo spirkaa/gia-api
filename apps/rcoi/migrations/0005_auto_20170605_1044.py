@@ -3,23 +3,21 @@
 from __future__ import unicode_literals
 
 import datetime
+
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rcoi', '0004_auto_20170604_2353'),
+        ("rcoi", "0004_auto_20170604_2353"),
     ]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='place',
-            options={'ordering': ['name']},
-        ),
+        migrations.AlterModelOptions(name="place", options={"ordering": ["name"]},),
         migrations.AlterField(
-            model_name='subscription',
-            name='last_send',
+            model_name="subscription",
+            name="last_send",
             field=models.DateTimeField(default=datetime.datetime(2017, 5, 1, 0, 0)),
         ),
     ]

@@ -7,25 +7,28 @@ Local settings
 - Add django-extensions as app
 """
 
-from .common import *  # noqa
-import socket
 import os
+import socket
+
+from .common import *  # noqa
 
 # DEBUG
 # ------------------------------------------------------------------------------
-DEBUG = env.bool('DJANGO_DEBUG', default=True)
-TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
+DEBUG = env.bool("DJANGO_DEBUG", default=True)
+TEMPLATES[0]["OPTIONS"]["debug"] = DEBUG
 
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Note: This key only used for development and testing.
-SECRET_KEY = env('DJANGO_SECRET_KEY', default='pdl(ek6_-@%=a!r^=vjbpagn+^duc6q7u4v#ye3j9yfj#=8(t0')
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY", default="pdl(ek6_-@%=a!r^=vjbpagn+^duc6q7u4v#ye3j9yfj#=8(t0"
+)
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
-MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
-INSTALLED_APPS += ['debug_toolbar']
+MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+INSTALLED_APPS += ["debug_toolbar"]
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -49,24 +52,24 @@ INSTALLED_APPS += ['debug_toolbar']
 #
 # CACHE_MIDDLEWARE_SECONDS = 600
 
-INTERNAL_IPS = ['127.0.0.1', '10.0.2.2', '192.168.99.1']
+INTERNAL_IPS = ["127.0.0.1", "10.0.2.2", "192.168.99.1"]
 # tricks to have debug toolbar when developing with docker
-if os.environ.get('USE_DOCKER') == 'yes':
+if os.environ.get("USE_DOCKER") == "yes":
     ip = socket.gethostbyname(socket.gethostname())
-    INTERNAL_IPS += [ip[:-1]+"1"]
+    INTERNAL_IPS += [ip[:-1] + "1"]
 
 DEBUG_TOOLBAR_CONFIG = {
-    'DISABLE_PANELS': [
-        'debug_toolbar.panels.redirects.RedirectsPanel',
-    ],
-    'SHOW_TEMPLATE_CONTEXT': True,
+    "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel",],
+    "SHOW_TEMPLATE_CONTEXT": True,
 }
 
 # TESTING
 # ------------------------------------------------------------------------------
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 # Your local stuff: Below this line define 3rd party library settings
 
-REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (['rest_framework.renderers.JSONRenderer',
-                                               'rest_framework.renderers.BrowsableAPIRenderer'])
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
+    "rest_framework.renderers.JSONRenderer",
+    "rest_framework.renderers.BrowsableAPIRenderer",
+]

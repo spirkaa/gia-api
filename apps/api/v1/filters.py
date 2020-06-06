@@ -1,1 +1,123 @@
-import rest_framework_filters as filtersfrom django_filters import Filterfrom django_filters.fields import Lookupfrom apps.rcoi import modelsclass ListFilter(Filter):    def filter(self, qs, value):        if not value:            return qs        return super(ListFilter, self)\            .filter(qs, Lookup(value.split(u","), "in"))class DateFilter(filters.FilterSet):    date = filters.CharFilter(        lookup_expr='icontains',        label='Дата экзамена')    class Meta:        model = models.Date        fields = ('date',)class LevelFilter(filters.FilterSet):    level = filters.CharFilter(        lookup_expr='icontains',        label='Уровень')    class Meta:        model = models.Level        fields = ('level',)class OrganisationFilter(filters.FilterSet):    name = filters.CharFilter(        lookup_expr='icontains',        label='Место работы')    class Meta:        model = models.Organisation        fields = ('name',)class PositionFilter(filters.FilterSet):    name = filters.CharFilter(        lookup_expr='icontains',        label='Должность в ППЭ')    class Meta:        model = models.Position        fields = ('name',)class EmployeeFilter(filters.FilterSet):    id = ListFilter()    name = filters.CharFilter(        lookup_expr='icontains',        label='ФИО сотрудника')    org_id = filters.CharFilter(        name='org__id',        label='id места работы')    org_name = filters.CharFilter(        name='org__name',        lookup_expr='icontains',        label='Место работы')    class Meta:        model = models.Employee        fields = ('id',                  'name',                  'org_id',                  'org_name')class PlaceFilter(filters.FilterSet):    id = ListFilter()    name = filters.CharFilter(        lookup_expr='icontains',        label='Наименование ППЭ')    addr = filters.CharFilter(        lookup_expr='icontains',        label='Адрес ППЭ')    class Meta:        model = models.Place        fields = ('id',                  'code',                  'name',                  'addr')        class ExamFilter(filters.FilterSet):    id = ListFilter()    date = filters.DateFilter(        name='date__date',        lookup_expr='icontains',        label='Дата экзамена')    level = filters.CharFilter(        name='level__level',        lookup_expr='icontains',        label='Уровень')    pos = filters.CharFilter(        name='position__name',        lookup_expr='icontains',        label='Должность в ППЭ')    p_id = filters.CharFilter(        name='place__id',        label='id ППЭ')    p_code = filters.CharFilter(        name='place__code',        label='Код ППЭ')    p_name = filters.CharFilter(        name='place__name',        lookup_expr='icontains',        label='Наименование ППЭ')    p_addr = filters.CharFilter(        name='place__addr',        lookup_expr='icontains',        label='Адрес ППЭ')    emp_id = filters.CharFilter(        name='employee__id',        label='id сотрудника')    emp_name = filters.CharFilter(        name='employee__name',        lookup_expr='icontains',        label='ФИО сотрудника')    emp_org_id = filters.CharFilter(        name='employee__org__id',        label='id места работы')    emp_org_name = filters.CharFilter(        name='employee__org__name',        lookup_expr='icontains',        label='Место работы')    class Meta:        model = models.Exam        fields = ('id',                  'date',                  'level',                  'pos',                  'p_id',                  'p_code',                  'p_name',                  'p_addr',                  'emp_id',                  'emp_name',                  'emp_org_id',                  'emp_org_name')
+import rest_framework_filters as filters
+from django_filters import Filter
+from django_filters.fields import Lookup
+
+from apps.rcoi import models
+
+
+class ListFilter(Filter):
+    def filter(self, qs, value):
+        if not value:
+            return qs
+        return super(ListFilter, self).filter(qs, Lookup(value.split(u","), "in"))
+
+
+class DateFilter(filters.FilterSet):
+
+    date = filters.CharFilter(lookup_expr="icontains", label="Дата экзамена")
+
+    class Meta:
+        model = models.Date
+        fields = ("date",)
+
+
+class LevelFilter(filters.FilterSet):
+
+    level = filters.CharFilter(lookup_expr="icontains", label="Уровень")
+
+    class Meta:
+        model = models.Level
+        fields = ("level",)
+
+
+class OrganisationFilter(filters.FilterSet):
+
+    name = filters.CharFilter(lookup_expr="icontains", label="Место работы")
+
+    class Meta:
+        model = models.Organisation
+        fields = ("name",)
+
+
+class PositionFilter(filters.FilterSet):
+
+    name = filters.CharFilter(lookup_expr="icontains", label="Должность в ППЭ")
+
+    class Meta:
+        model = models.Position
+        fields = ("name",)
+
+
+class EmployeeFilter(filters.FilterSet):
+
+    id = ListFilter()
+
+    name = filters.CharFilter(lookup_expr="icontains", label="ФИО сотрудника")
+    org_id = filters.CharFilter(name="org__id", label="id места работы")
+    org_name = filters.CharFilter(
+        name="org__name", lookup_expr="icontains", label="Место работы"
+    )
+
+    class Meta:
+        model = models.Employee
+        fields = ("id", "name", "org_id", "org_name")
+
+
+class PlaceFilter(filters.FilterSet):
+
+    id = ListFilter()
+
+    name = filters.CharFilter(lookup_expr="icontains", label="Наименование ППЭ")
+    addr = filters.CharFilter(lookup_expr="icontains", label="Адрес ППЭ")
+
+    class Meta:
+        model = models.Place
+        fields = ("id", "code", "name", "addr")
+
+
+class ExamFilter(filters.FilterSet):
+
+    id = ListFilter()
+
+    date = filters.DateFilter(
+        name="date__date", lookup_expr="icontains", label="Дата экзамена"
+    )
+    level = filters.CharFilter(
+        name="level__level", lookup_expr="icontains", label="Уровень"
+    )
+    pos = filters.CharFilter(
+        name="position__name", lookup_expr="icontains", label="Должность в ППЭ"
+    )
+    p_id = filters.CharFilter(name="place__id", label="id ППЭ")
+    p_code = filters.CharFilter(name="place__code", label="Код ППЭ")
+    p_name = filters.CharFilter(
+        name="place__name", lookup_expr="icontains", label="Наименование ППЭ"
+    )
+    p_addr = filters.CharFilter(
+        name="place__addr", lookup_expr="icontains", label="Адрес ППЭ"
+    )
+    emp_id = filters.CharFilter(name="employee__id", label="id сотрудника")
+    emp_name = filters.CharFilter(
+        name="employee__name", lookup_expr="icontains", label="ФИО сотрудника"
+    )
+    emp_org_id = filters.CharFilter(name="employee__org__id", label="id места работы")
+    emp_org_name = filters.CharFilter(
+        name="employee__org__name", lookup_expr="icontains", label="Место работы"
+    )
+
+    class Meta:
+        model = models.Exam
+        fields = (
+            "id",
+            "date",
+            "level",
+            "pos",
+            "p_id",
+            "p_code",
+            "p_name",
+            "p_addr",
+            "emp_id",
+            "emp_name",
+            "emp_org_id",
+            "emp_org_name",
+        )

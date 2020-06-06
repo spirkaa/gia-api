@@ -8,16 +8,10 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rcoi', '0006_auto_20170605_2052'),
+        ("rcoi", "0006_auto_20170605_2052"),
     ]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='date',
-            options={'ordering': ['-date']},
-        ),
-        migrations.AlterModelOptions(
-            name='exam',
-            options={'ordering': ['date']},
-        ),
+        migrations.AlterModelOptions(name="date", options={"ordering": ["-date"]},),
+        migrations.AlterModelOptions(name="exam", options={"ordering": ["date"]},),
     ]

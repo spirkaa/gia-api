@@ -8,12 +8,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rcoi', '0005_auto_20170605_1044'),
+        ("rcoi", "0005_auto_20170605_1044"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='subscription',
-            options={'ordering': ['employee']},
+            name="subscription", options={"ordering": ["employee"]},
         ),
     ]

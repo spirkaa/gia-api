@@ -1,4 +1,5 @@
 import sys
+
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.requests import RequestSite
@@ -6,13 +7,23 @@ from django.db.models import Count
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDictKeyError
-from django.views.generic import TemplateView, DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from django_tables2 import RequestConfig
 
-from .filters import EmployeeFilter, PlaceFilter, ExamFilter
-from .models import DataSource, DataFile, Date, Level, Organisation, Position, Employee, Place, Exam, \
-    RcoiUpdater
-from .tables import EmployeeTable, PlaceTable, ExamTable
+from .filters import EmployeeFilter, ExamFilter, PlaceFilter
+from .models import (
+    DataFile,
+    DataSource,
+    Date,
+    Employee,
+    Exam,
+    Level,
+    Organisation,
+    Place,
+    Position,
+    RcoiUpdater,
+)
+from .tables import EmployeeTable, ExamTable, PlaceTable
 
 
 class TemplateViewWithContext(TemplateView):
@@ -21,17 +32,16 @@ class TemplateViewWithContext(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TemplateViewWithContext, self).get_context_data(**kwargs)
-        context['sources'] = DataSource.objects.all()
-        context['updated'] = DataFile.objects.latest('modified').modified
-        context['link_rel'] = '{}://{}{}'.format(
-            self.request.scheme,
-            RequestSite(self.request).domain,
-            self.request.path)
+        context["sources"] = DataSource.objects.all()
+        context["updated"] = DataFile.objects.latest("modified").modified
+        context["link_rel"] = "{}://{}{}".format(
+            self.request.scheme, RequestSite(self.request).domain, self.request.path
+        )
         return context
 
 
 class HomeView(TemplateViewWithContext):
-    template_name = 'rcoi/home.html'
+    template_name = "rcoi/home.html"
 
 
 class FilteredSingleTableView(TemplateViewWithContext):
@@ -44,15 +54,18 @@ class FilteredSingleTableView(TemplateViewWithContext):
 
     def get_context_data(self, **kwargs):
         context = super(FilteredSingleTableView, self).get_context_data(**kwargs)
-        filter = self.filter_class(self.request.GET,
-                                   queryset=self.get_queryset(**kwargs))
+        filter = self.filter_class(
+            self.request.GET, queryset=self.get_queryset(**kwargs)
+        )
         filter.form.helper = self.filter_class().helper
         table = self.table_class(filter.qs)
-        RequestConfig(self.request, paginate={'per_page': self.paginate_by}).configure(table)
-        context['filter'] = filter
-        context['table'] = table
+        RequestConfig(self.request, paginate={"per_page": self.paginate_by}).configure(
+            table
+        )
+        context["filter"] = filter
+        context["table"] = table
         try:
-            context['table_sort'] = self.request.GET['sort']
+            context["table_sort"] = self.request.GET["sort"]
         except MultiValueDictKeyError:
             pass
         return context
@@ -62,21 +75,21 @@ class EmployeeTableView(FilteredSingleTableView):
     model = Employee
     table_class = EmployeeTable
     filter_class = EmployeeFilter
-    template_name = 'rcoi/employee.html'
+    template_name = "rcoi/employee.html"
 
 
 class PlaceTableView(FilteredSingleTableView):
     model = Place
     table_class = PlaceTable
     filter_class = PlaceFilter
-    template_name = 'rcoi/place.html'
+    template_name = "rcoi/place.html"
 
 
 class ExamTableView(FilteredSingleTableView):
     model = Exam
     table_class = ExamTable
     filter_class = ExamFilter
-    template_name = 'rcoi/exam.html'
+    template_name = "rcoi/exam.html"
 
 
 class DetailViewWithContext(DetailView):
@@ -84,12 +97,11 @@ class DetailViewWithContext(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailViewWithContext, self).get_context_data(**kwargs)
-        context['sources'] = DataSource.objects.all()
-        context['updated'] = DataFile.objects.latest('modified').modified
-        context['link_rel'] = '{}://{}{}'.format(
-            self.request.scheme,
-            RequestSite(self.request).domain,
-            self.request.path)
+        context["sources"] = DataSource.objects.all()
+        context["updated"] = DataFile.objects.latest("modified").modified
+        context["link_rel"] = "{}://{}{}".format(
+            self.request.scheme, RequestSite(self.request).domain, self.request.path
+        )
         return context
 
 
@@ -98,7 +110,7 @@ class OrganisationDetailView(DetailViewWithContext):
 
     def get_context_data(self, **kwargs):
         context = super(OrganisationDetailView, self).get_context_data(**kwargs)
-        context['employees'] = self.object.employees.annotate(num_exams=Count('exams'))
+        context["employees"] = self.object.employees.annotate(num_exams=Count("exams"))
         return context
 
 
@@ -110,7 +122,7 @@ class EmployeeDetailView(DetailViewWithContext):
 
     def get_context_data(self, **kwargs):
         context = super(EmployeeDetailView, self).get_context_data(**kwargs)
-        context['exams'] = self.object.exams.select_related()
+        context["exams"] = self.object.exams.select_related()
         return context
 
 
@@ -160,27 +172,28 @@ class ExamDetailView(DetailView):
 
 @staff_member_required
 def update_db_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         # noinspection PyBroadException
         try:
             updated = RcoiUpdater().run()
             if updated:
-                messages.info(request, 'База данных обновлена!')
+                messages.info(request, "База данных обновлена!")
             else:
-                messages.info(request, 'Изменений нет!')
-        except:
+                messages.info(request, "Изменений нет!")
+        except:  # noqa
             messages.error(request, sys.exc_info())
-    return redirect(reverse('admin:index'))
+    return redirect(reverse("admin:index"))
 
 
 @staff_member_required
 def clear_caches_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         # noinspection PyBroadException
         try:
             from django.core.cache import cache
+
             res = cache.clear()
-            messages.info(request, 'Кэш очищен! Удалено ключей: {}'.format(res))
-        except:
+            messages.info(request, "Кэш очищен! Удалено ключей: {}".format(res))
+        except:  # noqa
             messages.error(request, sys.exc_info())
-    return redirect(reverse('admin:index'))
+    return redirect(reverse("admin:index"))

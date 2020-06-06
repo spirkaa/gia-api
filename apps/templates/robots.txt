@@ -62,7 +62,7 @@ User-agent: meanpathbot
 Disallow: /
 
 # http://www.backlinktest.com/crawler.html
-User-agent: BacklinkCrawler 
+User-agent: BacklinkCrawler
 Disallow: /
 
 # http://www.brandwatch.com/magpie-crawler/
@@ -92,7 +92,7 @@ User-Agent: CloudServerMarketSpider
 Disallow: /
 
 # http://www.trendiction.de/de/publisher/bot
-User-Agent: trendictionbot 
+User-Agent: trendictionbot
 Disallow: /
 
 # http://www.exalead.com
@@ -168,7 +168,7 @@ User-agent: Kraken
 Disallow: /
 
 # http://www.botje.com/plukkie.htm
-User-agent: plukkie 
+User-agent: plukkie
 Disallow: /
 
 # https://www.safedns.com/searchbot

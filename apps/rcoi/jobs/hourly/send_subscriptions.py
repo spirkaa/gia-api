@@ -6,5 +6,6 @@ class Job(HourlyJob):
 
     def execute(self):
         from apps.rcoi.models import send_subscriptions
+
         send_subscriptions()
         return

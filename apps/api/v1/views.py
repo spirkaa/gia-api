@@ -6,8 +6,8 @@ from rest_framework.settings import api_settings
 from rest_framework_extensions.mixins import DetailSerializerMixin
 
 from apps.rcoi import models
-from . import filters
-from . import serializers
+
+from . import filters, serializers
 from .permissions import IsOwner
 
 
@@ -48,11 +48,13 @@ class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
     """ViewSet for the Employee class"""
 
     queryset = models.Employee.objects.select_related()
-    queryset_detail = queryset.prefetch_related('exams__date',
-                                                'exams__level',
-                                                'exams__place',
-                                                'exams__place__ate',
-                                                'exams__position').all()
+    queryset_detail = queryset.prefetch_related(
+        "exams__date",
+        "exams__level",
+        "exams__place",
+        "exams__place__ate",
+        "exams__position",
+    ).all()
     serializer_class = serializers.EmployeeSerializer
     serializer_detail_class = serializers.EmployeeDetailSerializer
     filter_class = filters.EmployeeFilter
@@ -104,7 +106,7 @@ class DataFileViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.DataFileSerializer
 
 
-@method_decorator(never_cache, name='dispatch')
+@method_decorator(never_cache, name="dispatch")
 class SubscriptionViewSet(viewsets.GenericViewSet):
     """ ViewSet for managing User to Employee subscriptions """
 
@@ -113,10 +115,12 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
 
     def get_queryset(self):
         queryset = self.request.user.subscriptions.all().select_related()
-        queryset = queryset.prefetch_related('employee__exams__date',
-                                             'employee__exams__level',
-                                             'employee__exams__place',
-                                             'employee__exams__position').all()
+        queryset = queryset.prefetch_related(
+            "employee__exams__date",
+            "employee__exams__level",
+            "employee__exams__place",
+            "employee__exams__position",
+        ).all()
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -124,14 +128,16 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     def perform_create(self, serializer):
         serializer.save()
 
     def get_success_headers(self, data):
         try:
-            return {'Location': data[api_settings.URL_FIELD_NAME]}
+            return {"Location": data[api_settings.URL_FIELD_NAME]}
         except (TypeError, KeyError):
             return {}
 
@@ -149,7 +155,7 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response({'detail': 'ok'}, status=status.HTTP_200_OK)
+        return Response({"detail": "ok"}, status=status.HTTP_200_OK)
 
     def perform_destroy(self, instance):
         instance.delete()
