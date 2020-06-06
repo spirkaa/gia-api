@@ -6,23 +6,25 @@ volumes:
 
 services:
   postgres-dev:
-    build: ./compose/postgres
-    volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
-      - postgres_backup_dev:/backups
+    build:
+      context: ./compose/postgres
+      dockerfile: Dockerfile
     ports:
       - "5432:5432"
+    volumes:
+      - "postgres_data_dev:/var/lib/postgresql/data"
+      - "postgres_backup_dev:/backups"
     env_file: .env.local
 
   django-dev:
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ".:/app"
     command: python /app/manage.py runserver_plus 0.0.0.0:8000
     depends_on:
       - postgres-dev
-    volumes:
-      - .:/app
-    ports:
-      - "8000:8000"
     env_file: .env.local

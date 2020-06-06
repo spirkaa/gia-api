@@ -18,38 +18,42 @@ volumes:
 
 services:
   redis-staging:
-    image: redis:alpine
+    build:
+      context: ./compose/redis
+      dockerfile: Dockerfile
     ports:
       - "6379:6379"
     volumes:
-      - ./data/staging/redis:/data
+      - "./data/staging/redis:/data"
 
   postgres-staging:
-    build: ./compose/postgres
+    build:
+      context: ./compose/postgres
+      dockerfile: Dockerfile
     volumes:
-      - postgres_data_staging:/var/lib/postgresql/data
-      - ./data/staging/backups:/backups
+      - "postgres_data_staging:/var/lib/postgresql/data"
+      - "./data/staging/backups:/backups"
     env_file: .env.staging
 
   django-staging:
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile-staging
+    volumes:
+      - ".:/app"
+    command: /gunicorn.sh
     user: django
     depends_on:
       - postgres-staging
       - redis-staging
-    volumes:
-      - .:/app
-    command: /gunicorn.sh
     env_file: .env.staging
 
   nginx-staging:
     build:
-      context: .
-      dockerfile: ./compose/nginx/Dockerfile-staging
-    depends_on:
-      - django-staging
+      context: ./compose/nginx
+      dockerfile: Dockerfile-staging
     ports:
       - "8080:80"
       - "443:443"
+    depends_on:
+      - django-staging

@@ -1,6 +1,12 @@
 FROM nginx:alpine
 
-RUN apk add --no-cache tzdata \
-    && ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+ENV TZ=Europe/Moscow
 
-ADD nginx.conf /etc/nginx/nginx.conf
+RUN set -eux \
+    && apk add --no-cache --virtual .tz \
+        alpine-conf \
+        tzdata \
+    && /sbin/setup-timezone -z $TZ \
+    && apk del .tz
+
+COPY nginx.conf /etc/nginx/nginx.conf

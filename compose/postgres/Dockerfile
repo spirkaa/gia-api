@@ -1,13 +1,17 @@
 FROM postgres:9-alpine
 
-RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+ENV TZ=Europe/Moscow
 
-# add backup scripts
-ADD backup.sh /usr/local/bin/backup
-ADD restore.sh /usr/local/bin/restore
-ADD list-backups.sh /usr/local/bin/list-backups
+RUN set -eux \
+    && apk add --no-cache --virtual .tz \
+        alpine-conf \
+        tzdata \
+    && /sbin/setup-timezone -z $TZ \
+    && apk del .tz
 
-# make them executable
-RUN chmod +x /usr/local/bin/restore
-RUN chmod +x /usr/local/bin/list-backups
-RUN chmod +x /usr/local/bin/backup
+COPY scripts /usr/local/bin
+
+RUN set -eux \
+    && chmod +x /usr/local/bin/restore \
+    && chmod +x /usr/local/bin/list-backups \
+    && chmod +x /usr/local/bin/backup

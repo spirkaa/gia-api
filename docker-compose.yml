@@ -12,16 +12,20 @@ version: '2'
 
 services:
   redis:
-    build: ./compose/redis
+    build:
+      context: ./compose/redis
+      dockerfile: Dockerfile
     volumes:
-      - ./data/redis:/data
+      - "./data/redis:/data"
     restart: always
 
   postgres:
-    build: ./compose/postgres
+    build:
+      context: ./compose/postgres
+      dockerfile: Dockerfile
     volumes:
-      - ./data/postgresql:/var/lib/postgresql/data
-      - ./data/backups:/backups
+      - "./data/postgresql:/var/lib/postgresql/data"
+      - "./data/backups:/backups"
     env_file: .env
     restart: always
 
@@ -29,18 +33,18 @@ services:
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile
-    user: django
     depends_on:
       - postgres
       - redis
+    user: django
     command: /gunicorn.sh
     env_file: .env
     restart: always
 
   nginx:
-    build: ./compose/nginx
-    depends_on:
-      - django
+    build:
+      context: ./compose/nginx
+      dockerfile: Dockerfile
     environment:
       - VIRTUAL_HOST=gia-api.devmem.ru
       - VIRTUAL_NETWORK=nginx-proxy
@@ -50,6 +54,8 @@ services:
     networks:
       - default
       - proxy-tier
+    depends_on:
+      - django
     restart: always
 
 networks:
