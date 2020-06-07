@@ -12,7 +12,7 @@ RUN set -eux \
     && apk del .tz
 
 # Requirements have to be pulled and installed here, otherwise caching won't work
-COPY ./requirements /requirements
+COPY ./gia-api/requirements /app/requirements
 
 RUN set -eux \
     && apk add --no-cache \
@@ -25,10 +25,10 @@ RUN set -eux \
     && apk add --no-cache --virtual .build-deps \
         postgresql-dev \
 	&& pip install --upgrade pip \
-    && pip install --no-cache-dir -U -r /requirements/production.txt \
+    && pip install --no-cache-dir -U -r /app/requirements/production.txt \
     && apk del .build-deps
 
-COPY . /app
+COPY ./gia-api /app
 COPY ./compose/django/gunicorn.sh /gunicorn.sh
 COPY ./compose/django/entrypoint.sh /entrypoint.sh
 

@@ -236,7 +236,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.FileHandler",
             "formatter": "default",
-            "filename": str(ROOT_DIR("gia.log")),
+            "filename": str(ROOT_DIR("data/app.log")),
         },
         "mail_admins": {
             "level": "ERROR",

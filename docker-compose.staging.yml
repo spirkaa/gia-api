@@ -11,7 +11,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - "./data/staging/redis:/data"
+      - "./gia-api/data/staging/redis:/data"
 
   postgres-staging:
     build:
@@ -19,7 +19,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "postgres_data_staging:/var/lib/postgresql/data"
-      - "./data/staging/backups:/backups"
+      - "./gia-api/data/staging/backups:/backups"
     env_file: .env.staging
 
   django-staging:
@@ -27,7 +27,7 @@ services:
       context: .
       dockerfile: ./compose/django/Dockerfile-staging
     volumes:
-      - ".:/app"
+      - "./gia-api:/app"
     command: /gunicorn.sh
     user: django
     depends_on:

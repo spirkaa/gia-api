@@ -12,7 +12,7 @@ RUN set -eux \
     && apk del .tz
 
 # Requirements have to be pulled and installed here, otherwise caching won't work
-COPY ./requirements /requirements
+COPY ./gia-api/requirements /requirements
 
 RUN set -eux \
     && apk add --no-cache \
@@ -26,7 +26,8 @@ RUN set -eux \
         postgresql-dev \
 	&& pip install --upgrade pip \
     && pip install --no-cache-dir -U -r /requirements/local.txt \
-    && apk del .build-deps
+    && apk del .build-deps \
+    && rm -rf /requirements
 
 COPY ./compose/django/entrypoint.sh /entrypoint.sh
 
