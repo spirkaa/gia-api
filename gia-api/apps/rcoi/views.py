@@ -33,7 +33,10 @@ class TemplateViewWithContext(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TemplateViewWithContext, self).get_context_data(**kwargs)
         context["sources"] = DataSource.objects.all()
-        context["updated"] = DataFile.objects.latest("modified").modified
+        try:
+            context["updated"] = DataFile.objects.latest("modified").modified
+        except DataFile.DoesNotExist:
+            context["updated"] = ""
         context["link_rel"] = "{}://{}{}".format(
             self.request.scheme, RequestSite(self.request).domain, self.request.path
         )
@@ -98,7 +101,10 @@ class DetailViewWithContext(DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailViewWithContext, self).get_context_data(**kwargs)
         context["sources"] = DataSource.objects.all()
-        context["updated"] = DataFile.objects.latest("modified").modified
+        try:
+            context["updated"] = DataFile.objects.latest("modified").modified
+        except DataFile.DoesNotExist:
+            context["updated"] = ""
         context["link_rel"] = "{}://{}{}".format(
             self.request.scheme, RequestSite(self.request).domain, self.request.path
         )
