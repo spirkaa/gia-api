@@ -5,11 +5,7 @@ ENV PYTHONUNBUFFERED=1 \
     TZ=Europe/Moscow
 
 RUN set -eux \
-    && apk add --no-cache --virtual .tz \
-        alpine-conf \
-        tzdata \
-    && /sbin/setup-timezone -z $TZ \
-    && apk del .tz
+    && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
 
 # Requirements have to be pulled and installed here, otherwise caching won't work
 COPY ./gia-api/requirements /requirements

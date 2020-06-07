@@ -3,11 +3,7 @@ FROM postgres:9-alpine
 ENV TZ=Europe/Moscow
 
 RUN set -eux \
-    && apk add --no-cache --virtual .tz \
-        alpine-conf \
-        tzdata \
-    && /sbin/setup-timezone -z $TZ \
-    && apk del .tz
+    && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
 
 COPY scripts /usr/local/bin
 

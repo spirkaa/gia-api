@@ -3,11 +3,7 @@ FROM redis:alpine
 ENV TZ=Europe/Moscow
 
 RUN set -eux \
-    && apk add --no-cache --virtual .tz \
-        alpine-conf \
-        tzdata \
-    && /sbin/setup-timezone -z $TZ \
-    && apk del .tz
+    && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
 
 COPY redis.conf /usr/local/etc/redis/redis.conf
 

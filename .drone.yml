@@ -1,0 +1,35 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: app
+  image: plugins/docker
+  settings:
+    repo: registry.home.devmem.ru/gia-api/app
+    registry: registry.home.devmem.ru
+    dockerfile: ./compose/django/Dockerfile-drone
+    tags:
+    - ${DRONE_COMMIT_SHA:0:8}
+    - latest
+
+- name: postgres
+  image: plugins/docker
+  settings:
+    repo: registry.home.devmem.ru/gia-api/postgres
+    registry: registry.home.devmem.ru
+    dockerfile: ./compose/postgres/Dockerfile
+    context: ./compose/postgres
+    tags:
+    - latest
+
+- name: redis
+  image: plugins/docker
+  settings:
+    repo: registry.home.devmem.ru/gia-api/redis
+    registry: registry.home.devmem.ru
+    dockerfile: ./compose/redis/Dockerfile
+    context: ./compose/redis
+    tags:
+    - latest
