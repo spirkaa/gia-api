@@ -1,4 +1,4 @@
-FROM postgres:9-alpine
+FROM postgres:12-alpine
 
 ENV TZ=Europe/Moscow
 
