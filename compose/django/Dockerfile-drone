@@ -1,4 +1,4 @@
-FROM registry.home.devmem.ru/gia-api/python:latest
+FROM registry.home.devmem.ru/python:3.7-alpine
 LABEL maintainer="Ilya Pavlov <piv@devmem.ru>"
 
 ENV PYTHONUNBUFFERED=1 \
