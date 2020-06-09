@@ -2,6 +2,7 @@
 Django==1.11.29
 django-bootstrap3==11.1.0
 django-crispy-forms==1.8.1
+django-decorator-include==1.4.1
 django-extensions==2.2.9
 django-filter==1.1.0
 django-tables2==1.21.2

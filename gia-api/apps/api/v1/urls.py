@@ -1,4 +1,6 @@
+from decorator_include import decorator_include
 from django.conf.urls import include, url
+from django.views.decorators.cache import never_cache
 from rest_framework import routers
 from rest_framework_jwt.views import refresh_jwt_token, verify_jwt_token
 from rest_framework_swagger.views import get_swagger_view
@@ -20,7 +22,7 @@ router.register(r"datafile", views.DataFileViewSet)
 router.register(r"subscription", views.SubscriptionViewSet, basename="subscription")
 
 urlpatterns = [
-    url(r"^auth/", include("rest_auth.urls")),
+    url(r"^auth/", decorator_include(never_cache, "rest_auth.urls")),
     url(r"^auth/registration/", include("rest_auth.registration.urls")),
     url(r"^auth/token-refresh/$", refresh_jwt_token),
     url(r"^auth/token-verify/$", verify_jwt_token),
