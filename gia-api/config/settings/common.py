@@ -292,6 +292,7 @@ JWT_AUTH = {
     "JWT_ALLOW_REFRESH": False,
     "JWT_EXPIRATION_DELTA": datetime.timedelta(days=7),
     "JWT_AUTH_HEADER_PREFIX": "JWT",
+    "JWT_PAYLOAD_HANDLER": "apps.api.v1.jwt_auth.utils.jwt_create_payload",
 }
 
 REST_USE_JWT = True
