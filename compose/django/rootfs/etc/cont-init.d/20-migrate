@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv sh
+
+exec python /app/manage.py migrate

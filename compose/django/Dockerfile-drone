@@ -1,39 +1,18 @@
 FROM registry.home.devmem.ru/python:3.7-alpine
-LABEL maintainer="Ilya Pavlov <piv@devmem.ru>"
 
-ENV PYTHONUNBUFFERED=1 \
-    TZ=Europe/Moscow
+ENV PYTHONUNBUFFERED=1
 
-RUN set -eux \
-    && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
+COPY ./compose/django/rootfs /
 
-# Requirements have to be pulled and installed here, otherwise caching won't work
 COPY ./gia-api/requirements /app/requirements
 
 RUN set -eux \
     && apk add --no-cache --virtual .build-deps \
         postgresql-dev \
     && pip install --no-cache-dir -U -r /app/requirements/production.txt \
-    && apk del .build-deps
+    && apk del --no-cache .build-deps \
+    && rm -rf /var/cache/apk/*
 
 COPY ./gia-api /app
-COPY ./compose/django/gunicorn.sh /gunicorn.sh
-COPY ./compose/django/entrypoint.sh /entrypoint.sh
-
-RUN set -eux \
-    && addgroup django \
-    && adduser -D -G django django \
-    && chown -R django /app \
-    && sed -i 's/\r//' /entrypoint.sh \
-    && sed -i 's/\r//' /gunicorn.sh \
-    && chmod +x /entrypoint.sh \
-    && chown django /entrypoint.sh \
-    && chmod +x /gunicorn.sh \
-    && chown django /gunicorn.sh
 
 WORKDIR /app
-
-USER django
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/gunicorn.sh"]
