@@ -13,10 +13,10 @@ djmail==1.1.0
 django-cors-middleware==1.5.0
 djangorestframework==3.11.0
 djangorestframework-filters==0.11.1
-djangorestframework-jwt==1.11.0
 django-rest-auth==0.9.5
 django-rest-swagger==2.2.0
 drf-extensions==0.6.0
+drf-jwt==1.16.1
 
 # Configuration
 django-dotenv==1.4.2

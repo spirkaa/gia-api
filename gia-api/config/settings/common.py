@@ -12,7 +12,7 @@ import datetime
 
 import environ
 
-ROOT_DIR = environ.Path(__file__) - 3  # (gia/config/settings/common.py - 3 = gia/)
+ROOT_DIR = environ.Path(__file__) - 3  # (app/config/settings/common.py - 3 = app/)
 APPS_DIR = ROOT_DIR.path("apps")
 env = environ.Env()
 
@@ -39,12 +39,11 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    # 'allauth.socialaccount.providers.facebook',
-    # 'allauth.socialaccount.providers.google',
-    # 'allauth.socialaccount.providers.vk',
     "corsheaders",
     "rest_framework",
     "rest_framework_filters",
+    "rest_framework_jwt",
+    "rest_framework_jwt.blacklist",
     "rest_framework_swagger",
     "rest_auth",
     "rest_auth.registration",
@@ -282,17 +281,18 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("rest_framework_filters.backends.DjangoFilterBackend",),
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        # 'rest_framework.authentication.SessionAuthentication',
         "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+        "rest_framework_jwt.blacklist.permissions.IsNotBlacklisted",
     ),
 }
 
 JWT_AUTH = {
     "JWT_ALLOW_REFRESH": False,
     "JWT_EXPIRATION_DELTA": datetime.timedelta(days=7),
+    "JWT_AUTH_HEADER_PREFIX": "JWT",
 }
 
 REST_USE_JWT = True
