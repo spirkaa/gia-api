@@ -1,10 +1,5 @@
 FROM postgres:12-alpine
 
-ENV TZ=Europe/Moscow
-
-RUN set -eux \
-    && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
-
 COPY scripts /usr/local/bin
 
 RUN set -eux \

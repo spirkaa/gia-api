@@ -1,13 +1,8 @@
 FROM jfloff/alpine-python:3.7
 LABEL maintainer="Ilya Pavlov <piv@devmem.ru>"
 
-ENV PYTHONUNBUFFERED=1 \
-    TZ=Europe/Moscow
+ENV PYTHONUNBUFFERED=1
 
-RUN set -eux \
-    && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
-
-# Requirements have to be pulled and installed here, otherwise caching won't work
 COPY ./gia-api/requirements /requirements
 
 RUN set -eux \
