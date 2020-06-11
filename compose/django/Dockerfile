@@ -1,4 +1,4 @@
-FROM jfloff/alpine-python:3.7
+FROM jfloff/alpine-python:3.8
 LABEL maintainer="Ilya Pavlov <piv@devmem.ru>"
 
 ENV PYTHONUNBUFFERED=1
@@ -15,9 +15,10 @@ RUN set -eux \
 RUN set -eux \
     && apk add --no-cache --virtual .build-deps \
         postgresql-dev \
-	&& pip install --upgrade pip \
+	&& pip install --no-cache-dir -U pip wheel \
     && pip install --no-cache-dir -U -r /app/requirements/production.txt \
-    && apk del .build-deps
+    && apk del --no-cache .build-deps \
+    && rm -rf /var/cache/apk/*
 
 COPY ./gia-api /app
 COPY ./compose/django/gunicorn.sh /gunicorn.sh
@@ -36,4 +37,7 @@ RUN set -eux \
 
 WORKDIR /app
 
+USER django
+
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/gunicorn.sh"]

@@ -9,8 +9,8 @@
 1. Последовательно выполнить команды
 
         docker-compose -f docker-compose.local.yml up -d --build
-        docker exec -it gia_django-local_1 python manage.py migrate
-        docker exec -it gia_django-local_1 python manage.py createsuperuser
+        docker exec -it gia-api_django-local_1 python manage.py migrate
+        docker exec -it gia-api_django-local_1 python manage.py createsuperuser
 
 1. Открыть админку Django <http://localhost:8000/admin>
 
