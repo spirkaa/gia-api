@@ -125,35 +125,10 @@ class Employee(TimeStampedModel):
         return reverse("rcoi:employee_update", args=(self.id,))
 
 
-class Territory(TimeStampedModel):
-    code = models.CharField("Код АТЕ", max_length=5, unique=True, db_index=True)
-    name = models.CharField("Наименование АТЕ", max_length=150, db_index=True)
-
-    class Meta:
-        verbose_name_plural = "Territories"
-        ordering = ["code"]
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse("rcoi:territory_detail", args=(self.id,))
-
-    def get_update_url(self):
-        return reverse("rcoi:territory_update", args=(self.id,))
-
-
 class Place(TimeStampedModel):
     code = models.CharField("Код ППЭ", max_length=5, db_index=True)
     name = models.CharField("Наименование ППЭ", max_length=500, db_index=True)
     addr = models.CharField("Адрес ППЭ", max_length=255, db_index=True)
-    ate = models.ForeignKey(
-        Territory,
-        related_name="places",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE,
-    )
 
     class Meta:
         unique_together = (("code", "name", "addr"),)
