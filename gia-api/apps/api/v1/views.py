@@ -16,7 +16,7 @@ class DateViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Date.objects.all()
     serializer_class = serializers.DateSerializer
-    filter_class = filters.DateFilter
+    filterset_class = filters.DateFilter
 
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
@@ -24,7 +24,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Level.objects.all()
     serializer_class = serializers.LevelSerializer
-    filter_class = filters.LevelFilter
+    filterset_class = filters.LevelFilter
 
 
 class PositionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -32,7 +32,7 @@ class PositionViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Position.objects.all()
     serializer_class = serializers.PositionSerializer
-    filter_class = filters.PositionFilter
+    filterset_class = filters.PositionFilter
 
 
 class OrganisationViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
@@ -41,7 +41,7 @@ class OrganisationViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     serializer_detail_class = serializers.OrganisationDetailSerializer
-    filter_class = filters.OrganisationFilter
+    filterset_class = filters.OrganisationFilter
 
 
 class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
@@ -57,7 +57,7 @@ class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
     ).all()
     serializer_class = serializers.EmployeeSerializer
     serializer_detail_class = serializers.EmployeeDetailSerializer
-    filter_class = filters.EmployeeFilter
+    filterset_class = filters.EmployeeFilter
 
 
 class PlaceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -65,7 +65,7 @@ class PlaceViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Place.objects.select_related()
     serializer_class = serializers.PlaceSerializer
-    filter_class = filters.PlaceFilter
+    filterset_class = filters.PlaceFilter
 
 
 class ExamViewSet(viewsets.ReadOnlyModelViewSet):
@@ -73,7 +73,7 @@ class ExamViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Exam.objects.select_related()
     serializer_class = serializers.ExamSerializer
-    filter_class = filters.ExamFilter
+    filterset_class = filters.ExamFilter
 
 
 class ExamFlatViewSet(viewsets.ReadOnlyModelViewSet):
@@ -81,7 +81,7 @@ class ExamFlatViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Exam.objects.select_related()
     serializer_class = serializers.ExamFlatSerializer
-    filter_class = filters.ExamFilter
+    filterset_class = filters.ExamFilter
 
 
 class ExamFullViewSet(viewsets.ReadOnlyModelViewSet):
@@ -89,7 +89,7 @@ class ExamFullViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Exam.objects.select_related()
     serializer_class = serializers.ExamFullSerializer
-    filter_class = filters.ExamFilter
+    filterset_class = filters.ExamFilter
 
 
 class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -109,6 +109,8 @@ class DataFileViewSet(viewsets.ReadOnlyModelViewSet):
 @method_decorator(never_cache, name="dispatch")
 class SubscriptionViewSet(viewsets.GenericViewSet):
     """ ViewSet for managing User to Employee subscriptions """
+
+    swagger_schema = None
 
     serializer_class = serializers.SubscriptionSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]

@@ -13,6 +13,9 @@ steps:
       tags:
         - ${DRONE_COMMIT_SHA:0:8}
         - latest
+    when:
+      branch:
+        - master
 
   - name: postgres
     image: plugins/docker
@@ -23,6 +26,9 @@ steps:
       context: ./compose/postgres
       tags:
         - latest
+    when:
+      branch:
+        - master
 
   - name: redis
     image: plugins/docker
@@ -33,3 +39,6 @@ steps:
       context: ./compose/redis
       tags:
         - latest
+    when:
+      branch:
+        - master

@@ -117,6 +117,7 @@ class EmployeesAnnotatedField(serializers.Field):
                 "exams__place__ate",
                 "exams__position",
             )
+            .order_by("name")
             .all()
         )
         ser = EmployeeForOrgSerializer(s, many=True)

@@ -116,7 +116,9 @@ class OrganisationDetailView(DetailViewWithContext):
 
     def get_context_data(self, **kwargs):
         context = super(OrganisationDetailView, self).get_context_data(**kwargs)
-        context["employees"] = self.object.employees.annotate(num_exams=Count("exams"))
+        context["employees"] = self.object.employees.annotate(
+            num_exams=Count("exams")
+        ).order_by("name")
         return context
 
 

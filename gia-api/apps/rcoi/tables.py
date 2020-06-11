@@ -32,16 +32,16 @@ class PlaceTable(tables.Table):
 
 
 class ExamTable(tables.Table):
-    date = tables.DateColumn(accessor="date.date")
-    level = tables.Column(accessor="level.level")
-    code = tables.Column(accessor="place.code")
+    date = tables.DateColumn(accessor="date__date")
+    level = tables.Column(accessor="level__level")
+    code = tables.Column(accessor="place__code")
     place = tables.TemplateColumn(
         template_name="rcoi/cols/exam_place.html", verbose_name="Наименование ППЭ"
     )
     place__addr = tables.TemplateColumn(
         template_name="rcoi/cols/exam_addr.html", verbose_name="Адрес ППЭ"
     )
-    position = tables.Column(accessor="position.name")
+    position = tables.Column(accessor="position__name")
     employee = tables.TemplateColumn(
         template_name="rcoi/cols/exam_employee.html", verbose_name="ФИО"
     )

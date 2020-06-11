@@ -1,5 +1,5 @@
 """
-Django settings for gia project.
+Django settings for gia-api project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
@@ -22,31 +22,31 @@ DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    "django.contrib.sessions",
     "django.contrib.postgres",
     "django.contrib.sites",
     "django.contrib.sitemaps",
+    "django.contrib.staticfiles",
 ]
 THIRD_PARTY_APPS = [
-    "django_extensions",
-    "django_tables2",
-    "django_filters",
-    "crispy_forms",
-    "bootstrap3",
-    "djmail",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "bootstrap3",
     "corsheaders",
+    "crispy_forms",
+    "django_extensions",
+    "django_filters",
+    "django_tables2",
+    "djmail",
+    "drf_yasg",
+    "rest_auth",
+    "rest_auth.registration",
     "rest_framework",
     "rest_framework_filters",
     "rest_framework_jwt",
     "rest_framework_jwt.blacklist",
-    "rest_framework_swagger",
-    "rest_auth",
-    "rest_auth.registration",
 ]
 LOCAL_APPS = ["apps.rcoi", "apps.api.v1"]
 
@@ -212,7 +212,7 @@ ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
-ADMIN_URL = r"^admin/"
+ADMIN_URL = "admin/"
 
 LOGGING = {
     "version": 1,
@@ -258,6 +258,7 @@ LOGGING = {
             "level": env("DJANGO_LOG_LEVEL", default="INFO"),
             "propagate": False,
         },
+        "drf_yasg": {"handlers": ["console", "file"], "level": "INFO",},
         "": {
             "handlers": ["console", "file"],
             "level": env("DJANGO_LOG_LEVEL", default="INFO"),
@@ -275,10 +276,11 @@ FILTERS_HELP_TEXT_FILTER = False
 CORS_ORIGIN_ALLOW_ALL = True
 
 REST_FRAMEWORK = {
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
-    "DEFAULT_FILTER_BACKENDS": ("rest_framework_filters.backends.DjangoFilterBackend",),
+    "DEFAULT_FILTER_BACKENDS": (
+        "rest_framework_filters.backends.RestFrameworkFilterBackend",
+    ),
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
@@ -308,6 +310,10 @@ ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_USERNAME_REQUIRED = False
 
 SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
     "LOGIN_URL": "/api/v1/auth/login",
     "LOGOUT_URL": "/api/v1/auth/logout",
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header",}
+    },
 }

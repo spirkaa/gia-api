@@ -2,8 +2,8 @@ import datetime
 import logging
 
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
 from django.db import connection, models
+from django.urls import reverse
 from django_extensions.db.models import TimeStampedModel
 
 from apps.rcoi import xlsx_to_csv
