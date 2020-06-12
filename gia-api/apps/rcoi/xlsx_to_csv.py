@@ -126,6 +126,10 @@ def rename_org(value):
     :return: modified name
     :rtype: str
     """
+    if " образовательное учреждение" in value:
+        value = value.replace(
+            " образовательное учреждение", " общеобразовательное учреждение",
+        )
     value = value.replace(
         "Федеральное государственное бюджетное общеобразовательное учреждение высшего образования",
         "ФГБОУ ВО",
@@ -261,55 +265,54 @@ def rename_org(value):
     return value
 
 
-def parse_xlsx(filename):
+def parse_xlsx(filepath):
     """
-    Process Excel file and convert it to list of rows
+    Parse Excel file and output result as list of lists (rows)
 
-    :type filename: str
-    :param filename: local xlsx file name
-    :return: list of rows
+    :type filepath: str
+    :param filepath: local path to excel file
+    :return: list of lists
     :rtype: list
     """
-    wb = load_workbook(filename)
-    ws = wb[wb.sheetnames[0]]
-    if len(tuple(ws.columns)) < 7:
+    workbook = load_workbook(filepath)
+    sheet = workbook[workbook.sheetnames[0]]
+
+    filename = filepath.split("/")[-1]  # linux
+    if filename == filepath:
+        filename = filepath.split("\\")[-1]  # windows
+    filename_parts = filename.split("__")
+    exam_date = filename_parts[0]
+    exam_level = filename_parts[1]
+
+    if len(tuple(sheet.columns)) < 7:
         logger.debug("skip file %s: wrong number of columns", filename)
         return []
-    data = tuple(ws.rows)
-    row_count = len(data)
-    filename_clean = filename.split("/")[-1]
-    if filename_clean == filename:
-        filename_clean = filename.split("\\")[-1]
-    filename_splitted = filename_clean.split("__")
-    date = filename_splitted[0]
-    level = filename_splitted[1]
+
+    sheet_data = tuple(sheet.rows)
+    sheet_rows_count = len(sheet_data)
+
     logger.debug(
         "parse file: %s (date %s, level %s, rows %s)",
-        filename_clean,
-        date,
-        level,
-        row_count - 2,
+        filename,
+        exam_date,
+        exam_level,
+        sheet_rows_count - 2,
     )
-    l_data = []
-    for row_num in range(2, row_count):
-        row = data[row_num]
-        l_row = [filename_clean, date, level]
-        if isinstance(row[0].value, int):
-            # Пропускаем 1 ячейку с порядковым номером
-            for cell_num in range(1, len(row)):
+
+    result = []
+    for row_index in range(2, sheet_rows_count):  # skip 2 rows (headers)
+        row = sheet_data[row_index]
+        formatted_row = [filepath, exam_date, exam_level]
+        if isinstance(row[0].value, int):  # process only rows where 1 cell = int
+            for cell_num in range(1, len(row)):  # skip 1 cell (int counter)
                 cell = row[cell_num].value
                 if cell:
                     cell = re_work(cell)
-                    if " образовательное учреждение" in cell:
-                        cell = cell.replace(
-                            " образовательное учреждение",
-                            " общеобразовательное учреждение",
-                        )
                     cell = rename_org(cell)
-                l_row.append(cell)
-            if l_row[5]:
-                l_data.append(l_row)
-    return l_data
+                formatted_row.append(cell)  # append all cells, even blank
+            if formatted_row[5]:  # why check this?
+                result.append(formatted_row)
+    return result
 
 
 def save_to_csv(csv_file):
@@ -383,6 +386,10 @@ def save_to_stream(path):
 
 
 def main():
+    """
+    Download and process files, then output result to local CSV file
+
+    """
     path = "data"
     if not os.path.exists(path):
         os.makedirs(path)
