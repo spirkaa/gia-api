@@ -192,6 +192,10 @@ class Subscription(TimeStampedModel):
 
 
 def send_subscriptions():
+    """
+    Send email with updates in user subscriptions
+
+    """
     from allauth.account.adapter import get_adapter
     from allauth.utils import build_absolute_uri
     from django.core import mail
@@ -227,6 +231,13 @@ def send_subscriptions():
 
 
 class RcoiUpdater:
+    """
+    Data processing class
+
+    :type data: dict
+    :type updated_files: list
+    """
+
     def __init__(self):
         try:
             self.data, self.updated_files = self.__prepare_data()
@@ -235,6 +246,10 @@ class RcoiUpdater:
             raise
 
     def run(self):
+        """
+        Run data processing
+
+        """
         if self.data:
             try:
                 self.__update_simple_tables()
@@ -248,7 +263,13 @@ class RcoiUpdater:
                 logger.exception("Update failed!")
                 raise
 
-    def __prepare_data(self):
+    @staticmethod
+    def __prepare_data():
+        """
+        Check if new data available and prepare it for processing
+
+        :return: data, updated files
+        """
         import csv
         import os
         import shutil
@@ -301,7 +322,12 @@ class RcoiUpdater:
             return data, updated_files
         return None, None
 
-    def __cleanup(self):
+    @staticmethod
+    def __cleanup():
+        """
+        Cleanup tables after processing
+
+        """
         from django.core.cache import cache
 
         cache.clear()
@@ -323,7 +349,19 @@ class RcoiUpdater:
             logger.debug("rows deleted: %s", count[0])
         cache.clear()
 
-    def __sql_insert_or_update(self, table, columns, data, uniq):
+    @staticmethod
+    def __sql_insert_or_update(table, columns, data, uniq):
+        """
+        Prepare raw SQL queries, then execute it with cursor
+
+        :param table: table name
+        :type table: str
+        :param columns: table columns
+        :type columns: tuple
+        :param data: table data
+        :type data: list
+        :param uniq: unique constraint
+        """
         from django.core.cache import cache
 
         cache.clear()
@@ -342,11 +380,19 @@ class RcoiUpdater:
             cursor.execute(sql, data)
 
     def __update_datafile(self):
+        """
+        Update DataFile table
+
+        """
         for file in self.updated_files:
             logger.debug("update or create file: %s", file["name"])
             DataFile.objects.update_or_create(url=file["url"], defaults=file)
 
     def __update_simple_tables(self):
+        """
+        Update simple tables with one data column
+
+        """
         for key in ("date", "level", "position", "organisation"):
             values = sorted(list(set(self.data[key])))
             stream = timestamp_list(values)
@@ -359,6 +405,10 @@ class RcoiUpdater:
             self.__sql_insert_or_update(table, columns, stream, col)
 
     def __update_employee(self):
+        """
+        Update Employee table
+
+        """
         organisation = Organisation.objects.all()
         organisation_db = {org.name: org.id for org in organisation}
 
@@ -371,6 +421,10 @@ class RcoiUpdater:
         self.__sql_insert_or_update(table, columns, stream, columns[:2])
 
     def __update_place(self):
+        """
+        Update Place table
+
+        """
         ppe_code = self.data["ppe_code"][:]
         for i, v in enumerate(ppe_code):
             ppe_code[i] = int(ppe_code[i])
@@ -385,6 +439,10 @@ class RcoiUpdater:
         self.__sql_insert_or_update(table, columns, stream, columns[:3])
 
     def __update_exam(self):
+        """
+        Update Exam table
+
+        """
         date = Date.objects.all()
         date_db = {str(d.date): d.id for d in date}
         date_id = self.data["date"][:]
@@ -440,11 +498,32 @@ class RcoiUpdater:
 
 
 def replace_items(s_list, s_dict):
+    """
+    Replace items in list with dict values (list item == dict key)
+
+    s_list = ['a', 'b', 'c']
+
+    s_dict = {'a': 1, 'b': 2, 'c': 3}
+
+    s_list = [1, 2, 3]
+
+    :param s_list:
+    :type s_list: list
+    :param s_dict:
+    :type s_dict: dict
+    """
     for i, item in enumerate(s_list):
         s_list[i] = s_dict.get(item)
 
 
 def timestamp_list(data):
+    """
+    Convert iterable to list and add two timestamps
+
+    :param data:
+    :return: list of timestamped lists
+    :rtype: list
+    """
     datetime_now = datetime.datetime.now()
     created = [datetime_now, datetime_now]
     data_list = []
@@ -459,6 +538,16 @@ def timestamp_list(data):
 
 
 def split_list(seq, chunks):
+    """
+    Convert list to list of lists of a given size
+
+    :param seq: source list
+    :type seq: list
+    :param chunks: size of every list
+    :type chunks: int
+    :return: list of lists
+    :rtype: list
+    """
     avg = (len(seq) // chunks) + 1
     out = []
     last = 0
@@ -469,6 +558,12 @@ def split_list(seq, chunks):
 
 
 def cursor_execute(sql):
+    """
+    Execute raw SQL query with cursor
+
+    :param sql: sql
+    :type sql: str
+    """
     # sql = 'DROP TABLE rcoi_subscription;'
     # sql = 'DELETE FROM rcoi_exam;'
     with connection.cursor() as cursor:
