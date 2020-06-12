@@ -88,11 +88,12 @@ def download_file(url, local_filename, path):
     :param path: local path
     """
     logger.debug("download file: %s", local_filename)
-    fs = requests.get(url, stream=True)
-    with open(os.path.join(path, local_filename), "wb") as f:
-        for chunk in fs.iter_content(chunk_size=1024):
-            if chunk:
-                f.write(chunk)
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(os.path.join(path, local_filename), "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
 
 
 # replace quotation marks
