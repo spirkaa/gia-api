@@ -42,6 +42,7 @@ if settings.DEBUG:
         path("500/", defaults.server_error),
     ]
 
-    import debug_toolbar
+    if settings.DEBUG_TOOLBAR:
+        import debug_toolbar
 
-    urlpatterns = [path("__debug__/", include(debug_toolbar.urls)),] + urlpatterns
+        urlpatterns = [path("__debug__/", include(debug_toolbar.urls)),] + urlpatterns
