@@ -10,16 +10,11 @@ from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    format="%(asctime)s [%(name)s:%(lineno)s] %(levelname)s - %(message)s",
-    level=logging.DEBUG,
-)
-logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 def get_files_info(url):
     """
-    Get remote file headers from URL
+    Compose custom info about remote files
 
     :type url: str
     :param url: file url
@@ -27,52 +22,58 @@ def get_files_info(url):
     :rtype: dict
     """
     logger.debug("get file links: %s", url)
-    headers = {
-        "content-type": "application/x-www-form-urlencoded",
-        "cache-control": "no-cache",
-    }
-    fmt_dt = "%a, %d %b %Y %H:%M:%S %Z"
-    url_base = "/".join(url.split("/")[:3])
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, "lxml")
-    content = soup.select('span[data-class="info"]')
     if "/ege/" in url:
         level = 11
     elif "/oge/" in url:
         level = 9
     else:
         level = "other"
-    blocks = [
-        (block.attrs.get("data-id"), block.attrs.get("data-ident")) for block in content
+
+    req = requests.get(url)
+    soup = BeautifulSoup(req.text, "lxml").select('span[data-class="info"]')
+    content_blocks = [
+        (block.attrs.get("data-id"), block.attrs.get("data-ident")) for block in soup
     ]
 
-    links = []
-    for block in blocks:
+    headers = {
+        "content-type": "application/x-www-form-urlencoded",
+        "cache-control": "no-cache",
+    }
+    url_base = "/".join(url.split("/")[:3])  # == http://domain.com
+
+    file_links = []
+    for block in content_blocks:
         payload = "id={}&data={}&val=1".format(*block)
-        r2 = requests.request("POST", url, data=payload, headers=headers)
-        soup2 = BeautifulSoup(r2.text, "lxml")
-        content2 = soup2.select("p a")
-        links += [
+        block_req = requests.request("POST", url, data=payload, headers=headers)
+        block_soup = BeautifulSoup(block_req.text, "lxml").select("p a")
+        file_links += [
             (block[1], url_base + a.attrs.get("href"))
-            for a in content2
+            for a in block_soup
             if "rab" in a.attrs.get("href")
         ]
 
-    files_info = []
-    for ident, url in links:
+    result = []
+    for block_ident, file_link in file_links:
+        # extract date YYYY-MM-DD from block_ident, then combine date, level, filename
         local_filename = "{}-{}-{}__{}__{}".format(
-            ident[0:4], ident[4:6], ident[6:8], level, url.split("/")[-1]
+            block_ident[0:4],
+            block_ident[4:6],
+            block_ident[6:8],
+            level,
+            file_link.split("/")[-1],
         )
-        r3 = requests.head(url)
-        lmd = datetime.strptime(r3.headers["Last-Modified"], fmt_dt)
-        file = {
+        file_req = requests.head(file_link)
+        last_modified = datetime.strptime(
+            file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
+        )
+        file_info = {
             "name": local_filename,
-            "url": url,
-            "size": r3.headers["Content-Length"],
-            "last_modified": lmd,
+            "url": file_link,
+            "size": file_req.headers["Content-Length"],
+            "last_modified": last_modified,
         }
-        files_info.append(file)
-    return files_info
+        result.append(file_info)
+    return result
 
 
 def download_file(url, local_filename, path):
@@ -409,4 +410,9 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.basicConfig(
+        format="%(asctime)s  [%(name)s:%(lineno)s]  %(levelname)s - %(message)s",
+        level=logging.DEBUG,
+    )
     main()
