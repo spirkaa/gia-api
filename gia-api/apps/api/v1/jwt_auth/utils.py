@@ -18,12 +18,8 @@ def jwt_create_payload(user):
         "username": user.get_username(),
         "iat": unix_epoch(issued_at_time),
         "exp": expiration_time,
+        "user_id": user.pk,
+        "email": user.email,
     }
-
-    if api_settings.JWT_PAYLOAD_INCLUDE_USER_ID:
-        payload["user_id"] = user.pk
-
-    if hasattr(user, "email"):
-        payload["email"] = user.email
 
     return payload
