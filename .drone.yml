@@ -1,6 +1,28 @@
 ---
 kind: pipeline
-type: docker
+name: testing
+
+services:
+  - name: postgres
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
+
+steps:
+  - name: test
+    image: registry.home.devmem.ru/python:3.8-alpine
+    environment:
+      DJANGO_DATABASE_URL: postgres://dbuser:dbpass@postgres:5432/dbuser
+      DJANGO_SETTINGS_MODULE: config.settings.local
+      PYTHONPATH: ${PYTHONPATH}:/drone/src/gia-api
+    commands:
+      - apk add --no-cache openssl-dev
+      - pip install --no-cache-dir -r gia-api/requirements/testing.txt
+      - pytest
+
+---
+kind: pipeline
 name: default
 
 steps:

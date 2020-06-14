@@ -1,0 +1,9 @@
+[run]
+branch = True
+# plugins = django_coverage_plugin
+omit =
+    */config/*
+    */migrations/*
+    *__init__.py
+    manage.py
+    *apps.py

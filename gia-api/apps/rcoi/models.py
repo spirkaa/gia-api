@@ -198,7 +198,6 @@ def send_subscriptions():
     """
     from allauth.account.adapter import get_adapter
     from allauth.utils import build_absolute_uri
-    from django.core import mail
 
     template_prefix = "mail/new_exams"
     location = "/employees/detail/"
@@ -222,12 +221,8 @@ def send_subscriptions():
             sub.save()
     if send_queue:
         adapter = get_adapter()
-        sender = mail.get_connection()
-        messages = []
         for email, context in send_queue.items():
-            msg = adapter.send_mail(template_prefix, email, {"context": context})
-            messages.append(msg)
-        sender.send_messages(messages)
+            adapter.send_mail(template_prefix, email, {"context": context})
 
 
 class RcoiUpdater:

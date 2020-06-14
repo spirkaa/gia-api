@@ -26,16 +26,4 @@ def jwt_create_payload(user):
     if hasattr(user, "email"):
         payload["email"] = user.email
 
-    if hasattr(user, "profile"):
-        payload["user_profile_id"] = (user.profile.pk if user.profile else None,)
-
-    if api_settings.JWT_ALLOW_REFRESH:
-        payload["orig_iat"] = unix_epoch(issued_at_time)
-
-    if api_settings.JWT_AUDIENCE is not None:
-        payload["aud"] = api_settings.JWT_AUDIENCE
-
-    if api_settings.JWT_ISSUER is not None:
-        payload["iss"] = api_settings.JWT_ISSUER
-
     return payload

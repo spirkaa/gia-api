@@ -16,7 +16,7 @@ REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
     "rest_framework.renderers.BrowsableAPIRenderer",
 ]
 
-if DEBUG and DEBUG_TOOLBAR:
+if DEBUG and DEBUG_TOOLBAR:  # pragma: no cover
     # django-debug-toolbar
     # ------------------------------------------------------------------------------
     INSTALLED_APPS += ["debug_toolbar"]

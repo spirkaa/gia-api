@@ -49,11 +49,7 @@ class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Employee.objects.select_related()
     queryset_detail = queryset.prefetch_related(
-        "exams__date",
-        "exams__level",
-        "exams__place",
-        "exams__place__ate",
-        "exams__position",
+        "exams__date", "exams__level", "exams__place", "exams__position",
     ).all()
     serializer_class = serializers.EmployeeSerializer
     serializer_detail_class = serializers.EmployeeDetailSerializer
@@ -150,9 +146,9 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
         if page is not None:
             serializer = serializers.SubscriptionDetailSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-
-        serializer = serializers.SubscriptionDetailSerializer(queryset, many=True)
-        return Response(serializer.data)
+        else:  # pragma: no cover
+            serializer = serializers.SubscriptionDetailSerializer(queryset, many=True)
+            return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

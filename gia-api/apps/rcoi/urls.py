@@ -12,11 +12,13 @@ urlpatterns = [
         cache_page(86400)(
             TemplateView.as_view(template_name="robots.txt", content_type="text/plain")
         ),
+        name="robotstxt",
     ),
     path(
         "sitemap.xml",
         cache_page(86400)(index),
         {"sitemaps": sitemaps_context, "sitemap_url_name": "rcoi:sitemap_section"},
+        name="sitemap",
     ),
     path(
         "sitemap-<path:section>.xml",

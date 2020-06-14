@@ -1,15 +1,10 @@
 import rest_framework_filters as filters
-from django_filters import Filter
-from django_filters.fields import Lookup
 
 from apps.rcoi import models
 
 
-class ListFilter(Filter):
-    def filter(self, qs, value):
-        if not value:
-            return qs
-        return super(ListFilter, self).filter(qs, Lookup(value.split(u","), "in"))
+class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
+    pass
 
 
 class DateFilter(filters.FilterSet):
@@ -50,7 +45,7 @@ class PositionFilter(filters.FilterSet):
 
 class EmployeeFilter(filters.FilterSet):
 
-    id = ListFilter()
+    id = NumberInFilter(field_name="id", lookup_expr="in")
 
     name = filters.CharFilter(lookup_expr="icontains", label="ФИО сотрудника")
     org_id = filters.CharFilter(field_name="org__id", label="id места работы")
@@ -65,7 +60,7 @@ class EmployeeFilter(filters.FilterSet):
 
 class PlaceFilter(filters.FilterSet):
 
-    id = ListFilter()
+    id = NumberInFilter(field_name="id", lookup_expr="in")
 
     name = filters.CharFilter(lookup_expr="icontains", label="Наименование ППЭ")
     addr = filters.CharFilter(lookup_expr="icontains", label="Адрес ППЭ")
@@ -77,7 +72,7 @@ class PlaceFilter(filters.FilterSet):
 
 class ExamFilter(filters.FilterSet):
 
-    id = ListFilter()
+    id = NumberInFilter(field_name="id", lookup_expr="in")
 
     date = filters.DateFilter(
         field_name="date__date", lookup_expr="icontains", label="Дата экзамена"

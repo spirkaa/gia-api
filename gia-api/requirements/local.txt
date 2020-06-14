@@ -1,5 +1,5 @@
 -r common.txt
+-r testing.txt
 django-debug-toolbar==2.2
 Werkzeug==1.0.1
 ipython==7.15.0
-coverage==5.1

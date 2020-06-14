@@ -410,7 +410,7 @@ def main():
     save_to_csv(csv_file)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.basicConfig(
         format="%(asctime)s  [%(name)s:%(lineno)s]  %(levelname)s - %(message)s",

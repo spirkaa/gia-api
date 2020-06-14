@@ -20,7 +20,7 @@ urlpatterns = [
     ),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG:  # pragma: no cover
     from django.views import defaults
 
     urlpatterns += [
