@@ -5,5 +5,5 @@ omit =
     */config/*
     */migrations/*
     *__init__.py
-    manage.py
+    *manage.py
     *apps.py

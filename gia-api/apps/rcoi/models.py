@@ -552,7 +552,7 @@ def split_list(seq, chunks):
     return out
 
 
-def cursor_execute(sql):
+def cursor_execute(sql):  # pragma: no cover
     """
     Execute raw SQL query with cursor
 

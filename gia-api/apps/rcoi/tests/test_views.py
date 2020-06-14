@@ -1,5 +1,6 @@
 import pytest
 from ddf import G
+from django.contrib.messages import get_messages
 from django.urls import reverse
 
 from apps.rcoi import models
@@ -106,12 +107,50 @@ def test_view_exam_detail(client):
     assert resp.status_code == 200
 
 
-def test_view_clear_caches(admin_client):
+def test_view_admin_clear_caches_post(admin_client):
     """
-    Test View - Admin Clear Caches
+    Test View - Admin Clear Caches (post)
     """
     url = reverse("rcoi:clear_caches")
     resp = admin_client.post(url)
+    assert resp.status_code == 302
+    assert resp.url == reverse("admin:index")
+
+
+def test_view_admin_clear_caches_get(admin_client):
+    """
+    Test View - Admin Clear Caches (get - do nothing)
+    """
+    url = reverse("rcoi:clear_caches")
+    resp = admin_client.get(url)
+    assert resp.status_code == 302
+    assert resp.url == reverse("admin:index")
+
+
+@pytest.mark.parametrize(
+    "return_value, message",
+    [[True, "База данных обновлена!"], [False, "Изменений нет!"]],
+)
+def test_view_admin_update_db_post(admin_client, mocker, return_value, message):
+    """
+    Test View - Admin Update DB (post)
+    """
+    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
+    mocker.patch("apps.rcoi.models.RcoiUpdater.run", return_value=return_value)
+    url = reverse("rcoi:update_db")
+    resp = admin_client.post(url)
+    all_messages = [msg for msg in get_messages(resp.wsgi_request)]
+    assert all_messages[0].message == message
+    assert resp.status_code == 302
+    assert resp.url == reverse("admin:index")
+
+
+def test_view_admin_update_db_get(admin_client):
+    """
+    Test View - Admin Update DB (get - do nothing)
+    """
+    url = reverse("rcoi:update_db")
+    resp = admin_client.get(url)
     assert resp.status_code == 302
     assert resp.url == reverse("admin:index")
 
@@ -151,4 +190,14 @@ def test_view_sitemap_section_404(client):
     """
     url = reverse("rcoi:sitemap_section", args=["test",])
     resp = client.get(url)
+    assert resp.status_code == 404
+
+
+@pytest.mark.parametrize("page_num", [100, "one"])
+def test_view_sitemap_section_page_404(client, page_num):
+    """
+    Test View - sitemap page (not found)
+    """
+    url = reverse("rcoi:sitemap_section", args=["employee",])
+    resp = client.get(url, {"p": page_num})
     assert resp.status_code == 404

@@ -223,24 +223,3 @@ def test_exam_get_update_url():
     obj = G(models.Exam)
     with pytest.raises(NoReverseMatch):
         assert obj.get_update_url()
-
-
-def test_send_subscriptions(mailoutbox):
-    """
-    Test - Send Subscriptions
-    """
-    employee = "test username"
-    emp = G(models.Employee, name=employee)
-    user = G(models.User)
-    G(
-        models.Exam, employee=emp,
-    )
-    G(
-        models.Subscription, user=user, employee=emp,
-    )
-
-    models.send_subscriptions()
-
-    assert len(mailoutbox) == 1
-    assert user.email in mailoutbox[0].to
-    assert emp.name in mailoutbox[0].body

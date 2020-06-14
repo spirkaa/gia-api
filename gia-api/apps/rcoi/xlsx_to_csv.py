@@ -19,7 +19,7 @@ def get_files_info(url):
     :type url: str
     :param url: file url
     :return: files headers
-    :rtype: dict
+    :rtype: list
     """
     logger.debug("get file links: %s", url)
     if "/ege/" in url:
@@ -119,7 +119,7 @@ def re_work(s):
     return s
 
 
-def rename_org(value):
+def rename_org(value):  # pragma: no cover
     """
     Replace parts of organization name
 
