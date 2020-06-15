@@ -116,15 +116,13 @@ def test_rcoi_updater_if_tmp_path_exists(mocker_xlsx_to_csv_simple, mocker):
     models.RcoiUpdater().run()
     exam_count = models.Exam.objects.count()
     assert exam_count == 1
+    mocker.resetall()
 
 
-def test_rcoi_updater_if_data_is_none(mocker):
+def test_rcoi_updater_if_data_is_none(mocker_rcoi_updater):
     """
     Test - DB Updater - data is None ('if' branch coverage)
     """
-    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
-    mocker.patch("apps.rcoi.models.RcoiUpdater.data", None, create=True)
-
     models.RcoiUpdater().run()
     exam_count = models.Exam.objects.count()
     assert exam_count == 0
@@ -139,3 +137,4 @@ def test_rcoi_updater_if_data_is_bad(mocker):
 
     with pytest.raises(Exception):
         models.RcoiUpdater().run()
+    mocker.resetall()

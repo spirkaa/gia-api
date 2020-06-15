@@ -92,8 +92,7 @@ def download_file(url, local_filename, path):
         r.raise_for_status()
         with open(os.path.join(path, local_filename), "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
+                f.write(chunk)
 
 
 # replace quotation marks
@@ -280,13 +279,13 @@ def parse_xlsx(filepath):
     sheet = workbook[workbook.sheetnames[0]]
 
     filename = filepath.split("/")[-1]  # linux
-    if filename == filepath:
+    if filename == filepath:  # pragma: no cover
         filename = filepath.split("\\")[-1]  # windows
     filename_parts = filename.split("__")
     exam_date = filename_parts[0]
     exam_level = filename_parts[1]
 
-    if len(tuple(sheet.columns)) < 7:
+    if len(tuple(sheet.columns)) < 7:  # pragma: no cover
         logger.debug("skip file %s: wrong number of columns", filename)
         return []
 
@@ -304,7 +303,7 @@ def parse_xlsx(filepath):
     result = []
     for row_index in range(2, sheet_rows_count):  # skip 2 rows (headers)
         row = sheet_data[row_index]
-        formatted_row = [filepath, exam_date, exam_level]
+        formatted_row = [filename, exam_date, exam_level]
         if isinstance(row[0].value, int):  # process only rows where 1 cell = int
             for cell_num in range(1, len(row)):  # skip 1 cell (int counter)
                 cell = row[cell_num].value
@@ -312,7 +311,7 @@ def parse_xlsx(filepath):
                     cell = re_work(cell)
                     cell = rename_org(cell)
                 formatted_row.append(cell)  # append all cells, even blank
-            if formatted_row[5]:  # why check this?
+            if formatted_row[5]:  # why check this?  # pragma: no cover
                 result.append(formatted_row)
     return result
 
@@ -343,7 +342,7 @@ def save_to_csv(csv_file):
     xlsx = os.path.join(os.path.split(csv_file)[0], "*.xlsx")
     for name in glob.glob(xlsx):
         data = parse_xlsx(name)
-        if not data:
+        if not data:  # pragma: no cover
             continue
         with open(csv_file, "a+", newline="", encoding="utf-8") as fp:
             a = csv.writer(fp, delimiter=";")
@@ -358,7 +357,6 @@ def save_to_stream(path):
     :type path: str
     :param path: local directory with xlsx files
     :return: memory file
-    :rtype: StringIO
     """
     from io import StringIO
 

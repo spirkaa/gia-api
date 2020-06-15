@@ -143,6 +143,7 @@ def test_view_admin_update_db_post(admin_client, mocker, return_value, message):
     assert all_messages[0].message == message
     assert resp.status_code == 302
     assert resp.url == reverse("admin:index")
+    mocker.resetall()
 
 
 def test_view_admin_update_db_get(admin_client):
