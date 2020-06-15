@@ -58,7 +58,46 @@ def test_send_subscriptions_when_no_subs(mailoutbox):
     assert len(mailoutbox) == 0
 
 
-def test_rcoi_updater_exception_no_datasource():
+def test_rcoi_updater(mocker_xlsx_to_csv):
+    """
+    Test - DB Updater
+    """
+    G(models.DataSource)
+
+    # Create an "updated" datafile with "old" exam for cleanup method (must delete exam)
+    updated_datafile = G(models.DataFile)
+    old_exam_in_updated_datafile = G(
+        models.Exam,
+        datafile=updated_datafile,
+        created=datetime.datetime(2019, 1, 1),
+        modified=datetime.datetime(2019, 1, 1),
+    )
+    # Create an "old" datafile with "old" exam for cleanup method (must skip exam)
+    old_exam_in_old_datafile = G(
+        models.Exam,
+        created=datetime.datetime(2019, 1, 1),
+        modified=datetime.datetime(2019, 1, 1),
+        datafile__created=datetime.datetime(2019, 1, 1),
+        datafile__modified=datetime.datetime(2019, 1, 1),
+    )
+
+    models.RcoiUpdater().run()
+
+    # assertions for cleanup method
+    assert not models.Exam.objects.filter(pk=old_exam_in_updated_datafile.id).exists()
+    assert models.Exam.objects.filter(pk=old_exam_in_old_datafile.id).exists()
+
+    # +2 from G() +1 from run() -1 from cleanup = 2
+    exam_count = models.Exam.objects.count()
+    assert exam_count == 2
+
+    # Second Run with the same data for branch coverage
+    models.RcoiUpdater().run()
+    exam_count = models.Exam.objects.count()
+    assert exam_count == 2
+
+
+def test_rcoi_updater_exception_no_datasource(mocker_xlsx_to_csv_simple):
     """
     Test - DB Updater fail
     """
@@ -66,17 +105,37 @@ def test_rcoi_updater_exception_no_datasource():
         assert models.RcoiUpdater().run()
 
 
-def test_rcoi_updater(mocker, file_info, csv_data):
+def test_rcoi_updater_if_tmp_path_exists(mocker_xlsx_to_csv_simple, mocker):
     """
-    Test - DB Updater
+    Test - DB Updater - tmp_path exists ('if' branch coverage)
     """
+    mocker.patch("os.path.exists", return_value=True)
+    mocker.patch("shutil.rmtree")
+
     G(models.DataSource)
-    mocker.patch("apps.rcoi.xlsx_to_csv.get_files_info", return_value=file_info)
-    mocker.patch("apps.rcoi.xlsx_to_csv.download_file")
-    mocker.patch("apps.rcoi.xlsx_to_csv.save_to_stream", return_value=csv_data)
     models.RcoiUpdater().run()
+    exam_count = models.Exam.objects.count()
+    assert exam_count == 1
 
-    exam = models.Exam.objects.count()
-    assert exam == 1
 
-    mocker.resetall()
+def test_rcoi_updater_if_data_is_none(mocker):
+    """
+    Test - DB Updater - data is None ('if' branch coverage)
+    """
+    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
+    mocker.patch("apps.rcoi.models.RcoiUpdater.data", None, create=True)
+
+    models.RcoiUpdater().run()
+    exam_count = models.Exam.objects.count()
+    assert exam_count == 0
+
+
+def test_rcoi_updater_if_data_is_bad(mocker):
+    """
+    Test - DB Updater - data is bad ('except' branch coverage)
+    """
+    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
+    mocker.patch("apps.rcoi.models.RcoiUpdater.data", "unexpected_data", create=True)
+
+    with pytest.raises(Exception):
+        models.RcoiUpdater().run()
