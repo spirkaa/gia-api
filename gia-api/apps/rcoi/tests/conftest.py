@@ -3,6 +3,7 @@ import datetime
 from io import StringIO
 
 import pytest
+from django.http import HttpResponse
 
 EXAM_FILE = {
     "name": "2020-06-13__11__rab_ppe_test.xlsx",
@@ -85,3 +86,18 @@ def mocker_xlsx_to_csv_simple(mocker, exams_csv):
     mocker.patch("apps.rcoi.xlsx_to_csv.save_to_stream", return_value=exams_csv)
     yield mocker
     mocker.resetall()
+
+
+def _max_age_resp():
+    return HttpResponse()
+
+
+def _max_age_resp_with_header():
+    r = HttpResponse()
+    r["cache-control"] = "max-age=1200"
+    return r
+
+
+@pytest.fixture(params=[_max_age_resp(), _max_age_resp_with_header()])
+def max_age_response(request):
+    return request.param
