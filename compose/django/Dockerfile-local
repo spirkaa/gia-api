@@ -1,23 +1,23 @@
-FROM jfloff/alpine-python:3.7
-LABEL maintainer="Ilya Pavlov <piv@devmem.ru>"
+#FROM jfloff/alpine-python:3.8
+FROM registry.home.devmem.ru/python:3.8-alpine
 
 ENV PYTHONUNBUFFERED=1
 
 COPY ./gia-api/requirements /requirements
 
-RUN set -eux \
-    && apk add --no-cache \
-        libpq \
-        libxslt-dev \
-        libxml2-dev \
-        libffi-dev
+#RUN set -eux \
+#    && apk add --no-cache \
+#        libpq \
+#        libxslt-dev \
+#        libxml2-dev \
+#        libffi-dev
 
 RUN set -eux \
     && apk add --no-cache --virtual .build-deps \
         postgresql-dev \
-	&& pip install --upgrade pip \
     && pip install --no-cache-dir -U -r /requirements/local.txt \
-    && apk del .build-deps \
+    && apk del --no-cache .build-deps \
+    && rm -rf /var/cache/apk/* \
     && rm -rf /requirements
 
 COPY ./compose/django/entrypoint.sh /entrypoint.sh

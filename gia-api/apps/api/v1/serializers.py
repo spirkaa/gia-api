@@ -111,12 +111,9 @@ class EmployeesAnnotatedField(serializers.Field):
         s = (
             value.annotate(num_exams=Count("exams"))
             .prefetch_related(
-                "exams__date",
-                "exams__level",
-                "exams__place",
-                "exams__place__ate",
-                "exams__position",
+                "exams__date", "exams__level", "exams__place", "exams__position",
             )
+            .order_by("name")
             .all()
         )
         ser = EmployeeForOrgSerializer(s, many=True)

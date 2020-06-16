@@ -116,7 +116,9 @@ class OrganisationDetailView(DetailViewWithContext):
 
     def get_context_data(self, **kwargs):
         context = super(OrganisationDetailView, self).get_context_data(**kwargs)
-        context["employees"] = self.object.employees.annotate(num_exams=Count("exams"))
+        context["employees"] = self.object.employees.annotate(
+            num_exams=Count("exams")
+        ).order_by("name")
         return context
 
 
@@ -186,7 +188,7 @@ def update_db_view(request):
                 messages.info(request, "База данных обновлена!")
             else:
                 messages.info(request, "Изменений нет!")
-        except:  # noqa
+        except:  # noqa  # pragma: no cover
             messages.error(request, sys.exc_info())
     return redirect(reverse("admin:index"))
 
@@ -200,6 +202,6 @@ def clear_caches_view(request):
 
             res = cache.clear()
             messages.info(request, "Кэш очищен! Удалено ключей: {}".format(res))
-        except:  # noqa
+        except:  # noqa  # pragma: no cover
             messages.error(request, sys.exc_info())
     return redirect(reverse("admin:index"))

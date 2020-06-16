@@ -11,7 +11,8 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - "./gia-api/data/staging/redis:/data"
+      - "./gia-api/data/staging/redis:/data:z"
+    restart: unless-stopped
 
   postgres-staging:
     build:
@@ -19,21 +20,24 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "postgres_data_staging:/var/lib/postgresql/data"
-      - "./gia-api/data/staging/backups:/backups"
+      - "./gia-api/data/staging/backups:/backups:z"
     env_file: .env.staging
+    restart: unless-stopped
 
   django-staging:
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile-staging
     volumes:
-      - "./gia-api:/app"
-    command: /gunicorn.sh
-    user: django
+      - ".:/app:z"
+    command: >
+      sh -c "python /app/gia-api/manage.py collectstatic --noinput \
+        && gunicorn config.wsgi -w 4 -t 60 -b 0.0.0.0:5000 --chdir=/app"
     depends_on:
       - postgres-staging
       - redis-staging
     env_file: .env.staging
+    restart: unless-stopped
 
   nginx-staging:
     build:
@@ -44,3 +48,4 @@ services:
       - "443:443"
     depends_on:
       - django-staging
+    restart: unless-stopped

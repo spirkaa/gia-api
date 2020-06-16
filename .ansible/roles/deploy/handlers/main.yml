@@ -1,0 +1,3 @@
+---
+- name: "{{ gia_api_name }} - invalidate cache"
+  command: docker exec {{ gia_api_name }} python manage.py invalidate all

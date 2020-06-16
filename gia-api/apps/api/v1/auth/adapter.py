@@ -27,6 +27,6 @@ class AnotherDomainAccountAdapter(DefaultAccountAdapter):
         }
         if signup:
             email_template = "api/v1/auth/email_confirmation_signup"
-        else:
+        else:  # pragma: no cover
             email_template = "api/v1/auth/email_confirmation"
         self.send_mail(email_template, emailconfirmation.email_address.email, ctx)

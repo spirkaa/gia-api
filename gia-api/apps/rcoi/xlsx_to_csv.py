@@ -10,69 +10,70 @@ from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    format="%(asctime)s [%(name)s:%(lineno)s] %(levelname)s - %(message)s",
-    level=logging.DEBUG,
-)
-logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 def get_files_info(url):
     """
-    Get remote file headers from URL
+    Compose custom info about remote files
 
     :type url: str
     :param url: file url
     :return: files headers
-    :rtype: dict
+    :rtype: list
     """
     logger.debug("get file links: %s", url)
-    headers = {
-        "content-type": "application/x-www-form-urlencoded",
-        "cache-control": "no-cache",
-    }
-    fmt_dt = "%a, %d %b %Y %H:%M:%S %Z"
-    url_base = "/".join(url.split("/")[:3])
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, "lxml")
-    content = soup.select('span[data-class="info"]')
     if "/ege/" in url:
         level = 11
     elif "/oge/" in url:
         level = 9
     else:
         level = "other"
-    blocks = [
-        (block.attrs.get("data-id"), block.attrs.get("data-ident")) for block in content
+
+    req = requests.get(url)
+    soup = BeautifulSoup(req.text, "lxml").select('span[data-class="info"]')
+    content_blocks = [
+        (block.attrs.get("data-id"), block.attrs.get("data-ident")) for block in soup
     ]
 
-    links = []
-    for block in blocks:
+    headers = {
+        "content-type": "application/x-www-form-urlencoded",
+        "cache-control": "no-cache",
+    }
+    url_base = "/".join(url.split("/")[:3])  # == http://domain.com
+
+    file_links = []
+    for block in content_blocks:
         payload = "id={}&data={}&val=1".format(*block)
-        r2 = requests.request("POST", url, data=payload, headers=headers)
-        soup2 = BeautifulSoup(r2.text, "lxml")
-        content2 = soup2.select("p a")
-        links += [
+        block_req = requests.request("POST", url, data=payload, headers=headers)
+        block_soup = BeautifulSoup(block_req.text, "lxml").select("p a")
+        file_links += [
             (block[1], url_base + a.attrs.get("href"))
-            for a in content2
+            for a in block_soup
             if "rab" in a.attrs.get("href")
         ]
 
-    files_info = []
-    for ident, url in links:
+    result = []
+    for block_ident, file_link in file_links:
+        # extract date YYYY-MM-DD from block_ident, then combine date, level, filename
         local_filename = "{}-{}-{}__{}__{}".format(
-            ident[0:4], ident[4:6], ident[6:8], level, url.split("/")[-1]
+            block_ident[0:4],
+            block_ident[4:6],
+            block_ident[6:8],
+            level,
+            file_link.split("/")[-1],
         )
-        r3 = requests.head(url)
-        lmd = datetime.strptime(r3.headers["Last-Modified"], fmt_dt)
-        file = {
+        file_req = requests.head(file_link)
+        last_modified = datetime.strptime(
+            file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
+        )
+        file_info = {
             "name": local_filename,
-            "url": url,
-            "size": r3.headers["Content-Length"],
-            "last_modified": lmd,
+            "url": file_link,
+            "size": file_req.headers["Content-Length"],
+            "last_modified": last_modified,
         }
-        files_info.append(file)
-    return files_info
+        result.append(file_info)
+    return result
 
 
 def download_file(url, local_filename, path):
@@ -87,10 +88,10 @@ def download_file(url, local_filename, path):
     :param path: local path
     """
     logger.debug("download file: %s", local_filename)
-    fs = requests.get(url, stream=True)
-    with open(os.path.join(path, local_filename), "wb") as f:
-        for chunk in fs.iter_content(chunk_size=1024):
-            if chunk:
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(os.path.join(path, local_filename), "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
 
 
@@ -117,7 +118,7 @@ def re_work(s):
     return s
 
 
-def rename_org(value):
+def rename_org(value):  # pragma: no cover
     """
     Replace parts of organization name
 
@@ -126,6 +127,10 @@ def rename_org(value):
     :return: modified name
     :rtype: str
     """
+    if " образовательное учреждение" in value:
+        value = value.replace(
+            " образовательное учреждение", " общеобразовательное учреждение",
+        )
     value = value.replace(
         "Федеральное государственное бюджетное общеобразовательное учреждение высшего образования",
         "ФГБОУ ВО",
@@ -261,55 +266,54 @@ def rename_org(value):
     return value
 
 
-def parse_xlsx(filename):
+def parse_xlsx(filepath):
     """
-    Process Excel file and convert it to list of rows
+    Parse Excel file and output result as list of lists (rows)
 
-    :type filename: str
-    :param filename: local xlsx file name
-    :return: list of rows
+    :type filepath: str
+    :param filepath: local path to excel file
+    :return: list of lists
     :rtype: list
     """
-    wb = load_workbook(filename)
-    ws = wb[wb.sheetnames[0]]
-    if len(tuple(ws.columns)) < 7:
+    workbook = load_workbook(filepath)
+    sheet = workbook[workbook.sheetnames[0]]
+
+    filename = filepath.split("/")[-1]  # linux
+    if filename == filepath:  # pragma: no cover
+        filename = filepath.split("\\")[-1]  # windows
+    filename_parts = filename.split("__")
+    exam_date = filename_parts[0]
+    exam_level = filename_parts[1]
+
+    if len(tuple(sheet.columns)) < 7:  # pragma: no cover
         logger.debug("skip file %s: wrong number of columns", filename)
         return []
-    data = tuple(ws.rows)
-    row_count = len(data)
-    filename_clean = filename.split("/")[-1]
-    if filename_clean == filename:
-        filename_clean = filename.split("\\")[-1]
-    filename_splitted = filename_clean.split("__")
-    date = filename_splitted[0]
-    level = filename_splitted[1]
+
+    sheet_data = tuple(sheet.rows)
+    sheet_rows_count = len(sheet_data)
+
     logger.debug(
         "parse file: %s (date %s, level %s, rows %s)",
-        filename_clean,
-        date,
-        level,
-        row_count - 2,
+        filename,
+        exam_date,
+        exam_level,
+        sheet_rows_count - 2,
     )
-    l_data = []
-    for row_num in range(2, row_count):
-        row = data[row_num]
-        l_row = [filename_clean, date, level]
-        if isinstance(row[0].value, int):
-            # Пропускаем 1 ячейку с порядковым номером
-            for cell_num in range(1, len(row)):
+
+    result = []
+    for row_index in range(2, sheet_rows_count):  # skip 2 rows (headers)
+        row = sheet_data[row_index]
+        formatted_row = [filename, exam_date, exam_level]
+        if isinstance(row[0].value, int):  # process only rows where 1 cell = int
+            for cell_num in range(1, len(row)):  # skip 1 cell (int counter)
                 cell = row[cell_num].value
                 if cell:
                     cell = re_work(cell)
-                    if " образовательное учреждение" in cell:
-                        cell = cell.replace(
-                            " образовательное учреждение",
-                            " общеобразовательное учреждение",
-                        )
                     cell = rename_org(cell)
-                l_row.append(cell)
-            if l_row[5]:
-                l_data.append(l_row)
-    return l_data
+                formatted_row.append(cell)  # append all cells, even blank
+            if formatted_row[5]:  # why check this?  # pragma: no cover
+                result.append(formatted_row)
+    return result
 
 
 def save_to_csv(csv_file):
@@ -338,7 +342,7 @@ def save_to_csv(csv_file):
     xlsx = os.path.join(os.path.split(csv_file)[0], "*.xlsx")
     for name in glob.glob(xlsx):
         data = parse_xlsx(name)
-        if not data:
+        if not data:  # pragma: no cover
             continue
         with open(csv_file, "a+", newline="", encoding="utf-8") as fp:
             a = csv.writer(fp, delimiter=";")
@@ -353,7 +357,6 @@ def save_to_stream(path):
     :type path: str
     :param path: local directory with xlsx files
     :return: memory file
-    :rtype: StringIO
     """
     from io import StringIO
 
@@ -383,6 +386,10 @@ def save_to_stream(path):
 
 
 def main():
+    """
+    Download and process files, then output result to local CSV file
+
+    """
     path = "data"
     if not os.path.exists(path):
         os.makedirs(path)
@@ -401,5 +408,10 @@ def main():
     save_to_csv(csv_file)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.basicConfig(
+        format="%(asctime)s  [%(name)s:%(lineno)s]  %(levelname)s - %(message)s",
+        level=logging.DEBUG,
+    )
     main()

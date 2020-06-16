@@ -1,8 +1,5 @@
 """
-Django settings for gia project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/dev/topics/settings/
+Django settings for gia-api project.
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
@@ -16,37 +13,39 @@ ROOT_DIR = environ.Path(__file__) - 3  # (app/config/settings/common.py - 3 = ap
 APPS_DIR = ROOT_DIR.path("apps")
 env = environ.Env()
 
+DEBUG = env.bool("DJANGO_DEBUG", default=False)
+
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    "django.contrib.sessions",
     "django.contrib.postgres",
     "django.contrib.sites",
     "django.contrib.sitemaps",
+    "django.contrib.staticfiles",
 ]
 THIRD_PARTY_APPS = [
-    "django_extensions",
-    "django_tables2",
-    "django_filters",
-    "crispy_forms",
-    "bootstrap3",
-    "djmail",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "bootstrap3",
     "corsheaders",
+    "crispy_forms",
+    "django_extensions",
+    "django_filters",
+    "django_tables2",
+    "djmail",
+    "drf_yasg",
+    "rest_auth",
+    "rest_auth.registration",
     "rest_framework",
     "rest_framework_filters",
     "rest_framework_jwt",
     "rest_framework_jwt.blacklist",
-    "rest_framework_swagger",
-    "rest_auth",
-    "rest_auth.registration",
 ]
 LOCAL_APPS = ["apps.rcoi", "apps.api.v1"]
 
@@ -68,11 +67,6 @@ MIDDLEWARE = [
 
 SITE_ID = 1
 
-# DEBUG
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = env.bool("DJANGO_DEBUG", False)
-
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
@@ -83,21 +77,33 @@ FIXTURE_DIRS = [
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
 EMAIL_BACKEND = "djmail.backends.async.EmailBackend"
-DJMAIL_REAL_BACKEND = env(
+DJMAIL_REAL_BACKEND = env.str(
     "DJANGO_DJMAIL_REAL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
 )
 
-DEFAULT_FROM_EMAIL = env("DJANGO_DEFAULT_FROM_EMAIL", default="devmem.ru@gmail.com")
-EMAIL_SUBJECT_PREFIX = env("DJANGO_EMAIL_SUBJECT_PREFIX", default="[gia.devmem.ru] ")
-SERVER_EMAIL = DEFAULT_FROM_EMAIL
+EMAIL_USE_TLS = env.bool("DJANGO_EMAIL_USE_TLS", default=False)
+EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=25)
+EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", default="localhost")
+EMAIL_HOST_USER = env.str("DJANGO_EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env.str("DJANGO_EMAIL_HOST_PASSWORD", default="")
+
+DEFAULT_FROM_EMAIL = env.str("DJANGO_DEFAULT_FROM_EMAIL", default="webmaster@localhost")
+SERVER_EMAIL = env.str("DJANGO_SERVER_EMAIL", default="root@localhost")
+EMAIL_SUBJECT_PREFIX = env.str("DJANGO_EMAIL_SUBJECT_PREFIX", default="[Django]") + " "
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [
-    ("Ilya", "spirkaa@gmail.com"),
-]
+ADMINS = env.list(
+    "DJANGO_ADMINS_LIST",
+    default=[
+        (
+            env.str("DJANGO_ADMIN_NAME", default="admin"),
+            env.str("DJANGO_ADMIN_MAIL", default="admin@example.com"),
+        )
+    ],
+)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
@@ -106,18 +112,15 @@ MANAGERS = ADMINS
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-    "default": env.db("DATABASE_URL"),
+    "default": env.db("DJANGO_DATABASE_URL"),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# In a Windows environment this must be set to your system time zone.
-TIME_ZONE = "Europe/Moscow"
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TIME_ZONE
+TIME_ZONE = env.str("TZ", default="UTC")
+USE_TZ = False
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "ru-ru"
@@ -128,23 +131,16 @@ USE_I18N = True
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
 USE_L10N = True
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
-USE_TZ = False
-
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#templates
 TEMPLATES = [
     {
-        # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
         "DIRS": [str(APPS_DIR.path("templates")),],
         "APP_DIRS": True,
         "OPTIONS": {
-            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
             "debug": DEBUG,
-            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -154,7 +150,6 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                # Your stuff: custom template context processors go here
             ],
         },
     },
@@ -171,7 +166,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {"min_length": 9,},
+        "OPTIONS": {"min_length": 8,},
     },
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
@@ -212,7 +207,7 @@ ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
-ADMIN_URL = r"^admin/"
+ADMIN_URL = env.str("DJANGO_ADMIN_URL", default="admin/")
 
 LOGGING = {
     "version": 1,
@@ -244,9 +239,6 @@ LOGGING = {
         },
     },
     "loggers": {
-        # Silence SuspiciousOperation.DisallowedHost exception ('Invalid
-        # HTTP_HOST' header messages). Set the handler to 'null' so we don't
-        # get those annoying emails.
         "django.security.DisallowedHost": {"handlers": ["null"], "propagate": False,},
         "django.request": {
             "handlers": ["mail_admins"],
@@ -255,30 +247,24 @@ LOGGING = {
         },
         "apps.rcoi": {
             "handlers": ["console", "file", "mail_admins"],
-            "level": env("DJANGO_LOG_LEVEL", default="INFO"),
+            "level": env.str("DJANGO_LOG_LEVEL", default="INFO"),
             "propagate": False,
         },
+        "drf_yasg": {"handlers": ["console", "file"], "level": "INFO",},
         "": {
             "handlers": ["console", "file"],
-            "level": env("DJANGO_LOG_LEVEL", default="INFO"),
+            "level": env.str("DJANGO_LOG_LEVEL", default="INFO"),
         },
     },
 }
 
-# Your common stuff: Below this line define 3rd party library settings
-
-# See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
-CRISPY_TEMPLATE_PACK = "bootstrap3"
-
-FILTERS_HELP_TEXT_FILTER = False
-
-CORS_ORIGIN_ALLOW_ALL = True
-
+# ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
-    "DEFAULT_FILTER_BACKENDS": ("rest_framework_filters.backends.DjangoFilterBackend",),
+    "DEFAULT_FILTER_BACKENDS": (
+        "rest_framework_filters.backends.RestFrameworkFilterBackend",
+    ),
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
@@ -308,6 +294,18 @@ ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_USERNAME_REQUIRED = False
 
 SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
     "LOGIN_URL": "/api/v1/auth/login",
     "LOGOUT_URL": "/api/v1/auth/logout",
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header",}
+    },
 }
+
+CRISPY_TEMPLATE_PACK = "bootstrap3"
+
+FILTERS_HELP_TEXT_FILTER = False
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+DEBUG_TOOLBAR = env.bool("DJANGO_DEBUG_TOOLBAR", default=False)

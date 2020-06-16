@@ -1,15 +1,10 @@
 import rest_framework_filters as filters
-from django_filters import Filter
-from django_filters.fields import Lookup
 
 from apps.rcoi import models
 
 
-class ListFilter(Filter):
-    def filter(self, qs, value):
-        if not value:
-            return qs
-        return super(ListFilter, self).filter(qs, Lookup(value.split(u","), "in"))
+class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
+    pass
 
 
 class DateFilter(filters.FilterSet):
@@ -50,12 +45,12 @@ class PositionFilter(filters.FilterSet):
 
 class EmployeeFilter(filters.FilterSet):
 
-    id = ListFilter()
+    id = NumberInFilter(field_name="id", lookup_expr="in")
 
     name = filters.CharFilter(lookup_expr="icontains", label="ФИО сотрудника")
-    org_id = filters.CharFilter(name="org__id", label="id места работы")
+    org_id = filters.CharFilter(field_name="org__id", label="id места работы")
     org_name = filters.CharFilter(
-        name="org__name", lookup_expr="icontains", label="Место работы"
+        field_name="org__name", lookup_expr="icontains", label="Место работы"
     )
 
     class Meta:
@@ -65,7 +60,7 @@ class EmployeeFilter(filters.FilterSet):
 
 class PlaceFilter(filters.FilterSet):
 
-    id = ListFilter()
+    id = NumberInFilter(field_name="id", lookup_expr="in")
 
     name = filters.CharFilter(lookup_expr="icontains", label="Наименование ППЭ")
     addr = filters.CharFilter(lookup_expr="icontains", label="Адрес ППЭ")
@@ -77,32 +72,34 @@ class PlaceFilter(filters.FilterSet):
 
 class ExamFilter(filters.FilterSet):
 
-    id = ListFilter()
+    id = NumberInFilter(field_name="id", lookup_expr="in")
 
     date = filters.DateFilter(
-        name="date__date", lookup_expr="icontains", label="Дата экзамена"
+        field_name="date__date", lookup_expr="icontains", label="Дата экзамена"
     )
     level = filters.CharFilter(
-        name="level__level", lookup_expr="icontains", label="Уровень"
+        field_name="level__level", lookup_expr="icontains", label="Уровень"
     )
     pos = filters.CharFilter(
-        name="position__name", lookup_expr="icontains", label="Должность в ППЭ"
+        field_name="position__name", lookup_expr="icontains", label="Должность в ППЭ"
     )
-    p_id = filters.CharFilter(name="place__id", label="id ППЭ")
-    p_code = filters.CharFilter(name="place__code", label="Код ППЭ")
+    p_id = filters.CharFilter(field_name="place__id", label="id ППЭ")
+    p_code = filters.CharFilter(field_name="place__code", label="Код ППЭ")
     p_name = filters.CharFilter(
-        name="place__name", lookup_expr="icontains", label="Наименование ППЭ"
+        field_name="place__name", lookup_expr="icontains", label="Наименование ППЭ"
     )
     p_addr = filters.CharFilter(
-        name="place__addr", lookup_expr="icontains", label="Адрес ППЭ"
+        field_name="place__addr", lookup_expr="icontains", label="Адрес ППЭ"
     )
-    emp_id = filters.CharFilter(name="employee__id", label="id сотрудника")
+    emp_id = filters.CharFilter(field_name="employee__id", label="id сотрудника")
     emp_name = filters.CharFilter(
-        name="employee__name", lookup_expr="icontains", label="ФИО сотрудника"
+        field_name="employee__name", lookup_expr="icontains", label="ФИО сотрудника"
     )
-    emp_org_id = filters.CharFilter(name="employee__org__id", label="id места работы")
+    emp_org_id = filters.CharFilter(
+        field_name="employee__org__id", label="id места работы"
+    )
     emp_org_name = filters.CharFilter(
-        name="employee__org__name", lookup_expr="icontains", label="Место работы"
+        field_name="employee__org__name", lookup_expr="icontains", label="Место работы"
     )
 
     class Meta:
