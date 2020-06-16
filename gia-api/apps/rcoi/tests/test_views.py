@@ -166,13 +166,16 @@ def test_view_robotstxt(client):
     assert b"Sitemap:" in resp.content
 
 
-def test_view_sitemap(client):
+def test_view_sitemap_index(mocker, client):
     """
-    Test View - sitemap
+    Test View - sitemap index
     """
+    mocker.patch("apps.rcoi.sitemap.EmployeeSitemap.limit", 1)
+    G(models.Employee, n=2)
     url = reverse("rcoi:sitemap")
     resp = client.get(url)
     assert resp.status_code == 200
+    assert b"p=2" in resp.content
 
 
 @pytest.mark.parametrize("section", ["employee", "organisation", "static"])
@@ -180,25 +183,7 @@ def test_view_sitemap_section(client, section):
     """
     Test View - sitemap section
     """
+    G(models.Employee)
     url = reverse("rcoi:sitemap_section", args=[section,])
     resp = client.get(url)
     assert resp.status_code == 200
-
-
-def test_view_sitemap_section_404(client):
-    """
-    Test View - sitemap section (not found)
-    """
-    url = reverse("rcoi:sitemap_section", args=["test",])
-    resp = client.get(url)
-    assert resp.status_code == 404
-
-
-@pytest.mark.parametrize("page_num", [100, "one"])
-def test_view_sitemap_section_page_404(client, page_num):
-    """
-    Test View - sitemap page (not found)
-    """
-    url = reverse("rcoi:sitemap_section", args=["employee",])
-    resp = client.get(url, {"p": page_num})
-    assert resp.status_code == 404
