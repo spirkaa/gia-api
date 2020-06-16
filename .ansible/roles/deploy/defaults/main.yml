@@ -41,7 +41,7 @@ gia_api_django_database_url: postgres://{{ gia_db_user }}:{{ gia_db_pass }}@{{ g
 gia_api_django_cache_url: redis://{{ gia_redis_name }}:6379/1
 gia_api_django_admin_url: a/
 gia_api_django_admin_mail: piv@devmem.ru
-gia_api_django_email_subject_prefix: [gia.devmem.ru]
+gia_api_django_email_subject_prefix: "[gia.devmem.ru]"
 
 smtp_host: smtp.devmem.ru
 smtp_port: "587"
