@@ -1,6 +1,11 @@
 ---
 kind: pipeline
-name: testing
+name: test
+trigger:
+  event:
+    exclude:
+      - promote
+      - rollback
 
 services:
   - name: postgres
@@ -23,44 +28,83 @@ steps:
 
 ---
 kind: pipeline
-name: default
+name: build
+trigger:
+  branch:
+    - master
+  event:
+    exclude:
+      - promote
+      - rollback
+depends_on:
+  - test
 
 steps:
   - name: api
     image: plugins/docker
     settings:
-      repo: registry.home.devmem.ru/gia/api
       registry: registry.home.devmem.ru
+      repo: registry.home.devmem.ru/gia/api
       dockerfile: ./compose/django/Dockerfile-drone
+      cache_from: registry.home.devmem.ru/gia/api:latest
       tags:
         - ${DRONE_COMMIT_SHA:0:8}
         - latest
-    when:
-      branch:
-        - master
 
   - name: postgres
     image: plugins/docker
     settings:
-      repo: registry.home.devmem.ru/gia/postgres
       registry: registry.home.devmem.ru
+      repo: registry.home.devmem.ru/gia/postgres
       dockerfile: ./compose/postgres/Dockerfile
       context: ./compose/postgres
+      cache_from: registry.home.devmem.ru/gia/postgres:latest
       tags:
         - latest
-    when:
-      branch:
-        - master
 
   - name: redis
     image: plugins/docker
     settings:
-      repo: registry.home.devmem.ru/gia/redis
       registry: registry.home.devmem.ru
+      repo: registry.home.devmem.ru/gia/redis
       dockerfile: ./compose/redis/Dockerfile
       context: ./compose/redis
+      cache_from: registry.home.devmem.ru/gia/redis:latest
       tags:
         - latest
+
+---
+kind: pipeline
+name: deploy
+trigger:
+  branch:
+    - master
+  event:
+    - promote
+
+steps:
+  - name: ansible-syntax-check
+    image: plugins/ansible
+    settings:
+      requirements: .ansible/requirements.txt
+      playbook: .ansible/playbook.yml
+      inventory: .ansible/hosts
+      extra_vars: image_tag=${DRONE_COMMIT_SHA:0:8}
+      vault_password:
+        from_secret: ansible_vault_password
+      syntax_check: true
+
+  - name: ansible-deploy
+    image: plugins/ansible
+    settings:
+      requirements: .ansible/requirements.txt
+      playbook: .ansible/playbook.yml
+      inventory: .ansible/hosts
+      extra_vars: image_tag=${DRONE_COMMIT_SHA:0:8}
+      vault_password:
+        from_secret: ansible_vault_password
+      private_key:
+        from_secret: ansible_private_key
     when:
-      branch:
-        - master
+      target:
+        - prod
