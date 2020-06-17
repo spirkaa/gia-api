@@ -492,6 +492,80 @@ class RcoiUpdater:
             self.__sql_insert_or_update(table, columns, stream, columns[:6])
 
 
+class ExamImporter(RcoiUpdater):
+    """
+    Import exam data from single file url
+
+    :type data: dict
+    :type updated_files: list
+    """
+
+    def __init__(self, datafile_url, date, level):
+        """
+        :param datafile_url: url for file
+        :type datafile_url: str
+        :param date: exam date for file
+        :type date: str
+        :param level: exam level for file
+        :type level: str
+        """
+        self.datafile_url = datafile_url
+        self.date = date
+        self.level = level
+        try:
+            self.data, self.updated_files = self.__prepare_data()
+        except:  # noqa  # pragma: no cover
+            logger.exception("Prepare data for update failed!")
+            raise
+
+    def __prepare_data(self):
+        """
+        Check if new data available and prepare it for processing
+
+        :return: data, updated files
+        """
+        import csv
+        import os
+        import shutil
+        from collections import defaultdict
+
+        tmp_path = "tmp"
+
+        if not os.path.exists(tmp_path):
+            os.makedirs(tmp_path)
+
+        datafile = xlsx_to_csv.get_file_info(self.datafile_url, self.date, self.level)
+
+        datafile_updated = False
+        url = datafile["url"]
+        name = datafile["name"]
+        try:
+            f = DataFile.objects.get(url=url)
+            if f.last_modified != datafile["last_modified"]:
+                datafile_updated = True
+                logger.debug("%s: dates differ, DOWNLOAD", name)
+            else:
+                logger.debug("%s: dates are the same, SKIP", name)
+        except DataFile.DoesNotExist:
+            logger.debug("%s: file not found, DOWNLOAD", name)
+            DataFile.objects.create(**datafile)
+            datafile_updated = True
+
+        if datafile_updated:
+            data = defaultdict(list)
+            xlsx_to_csv.download_file(datafile["url"], datafile["name"], tmp_path)
+            csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
+
+            reader = csv.DictReader(csv_stream, delimiter="\t")
+            for row in reader:
+                for (k, v) in row.items():
+                    data[k].append(v)
+            logger.debug("cleanup downloaded files")
+            shutil.rmtree(tmp_path)
+            return data, [datafile]
+        return None, None
+
+
 def replace_items(s_list, s_dict):
     """
     Replace items in list with dict values (list item == dict key)

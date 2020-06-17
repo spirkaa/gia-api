@@ -4,6 +4,7 @@ import logging
 import os
 import re
 from datetime import datetime
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -11,6 +12,36 @@ from openpyxl import load_workbook
 
 logger = logging.getLogger(__name__)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+
+def get_file_info(url, date, level):
+    """
+    Compose info about single exam file from direct url
+
+    :type url: str
+    :param url: file url
+    :type date: str
+    :param date: exam date
+    :type level: str
+    :param level: exam level
+    :return: files headers
+    :rtype: dict
+    """
+    logger.debug("get file info: %s", url)
+    name = os.path.basename(urlparse(url).path)
+    local_filename = f"{date}__{level}__{name}"
+
+    file_req = requests.head(url)
+    last_modified = datetime.strptime(
+        file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
+    )
+    file_info = {
+        "name": local_filename,
+        "url": url,
+        "size": file_req.headers["Content-Length"],
+        "last_modified": last_modified,
+    }
+    return file_info
 
 
 def get_files_info(url):
