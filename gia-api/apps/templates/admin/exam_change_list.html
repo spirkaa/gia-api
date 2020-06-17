@@ -1,7 +1,7 @@
 {% extends 'admin/change_list.html' %}
 {% block object-tools-items %}
 <li>
-    <a href="{% url 'admin:exam_import' %}" class="addlink">Импорт экзаменов</a>
+    <a href="{% url 'admin:exam_import' %}" class="addlink">Импорт {{ opts.verbose_name }}</a>
 </li>
 {{ block.super }}
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends 'admin/change_form.html' %}
 {% block content %}
-<form enctype="multipart/form-data" action="{{ form_url }}" method="post" id="{{ opts.model_name }}_import_form" novalidate>{% csrf_token %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %} action="{{ form_url }}" method="post" id="{{ opts.model_name }}_import_form" novalidate>{% csrf_token %}
 <div>
     {% block field_sets %}
     {% for fieldset in adminform %}

@@ -1,9 +1,9 @@
 import sys
+from urllib.parse import urlparse
 
 from django import forms
 from django.contrib import admin
 from django.contrib.admin import widgets
-from django.core.validators import FileExtensionValidator
 from django.shortcuts import redirect, render
 from django.urls import path, reverse
 
@@ -69,12 +69,50 @@ class PlaceAdmin(admin.ModelAdmin):
 admin.site.register(models.Place, PlaceAdmin)
 
 
+class DataSourceAdmin(admin.ModelAdmin):
+    list_display = ("name", "url", "created", "modified", "id")
+    list_filter = ("name", "url", "created", "modified")
+
+
+admin.site.register(models.DataSource, DataSourceAdmin)
+
+
+class DataFileAdmin(admin.ModelAdmin):
+    list_display = ("name", "size", "last_modified", "created", "modified", "id")
+    list_filter = ("name", "created", "modified")
+
+
+admin.site.register(models.DataFile, DataFileAdmin)
+
+
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("user", "employee", "last_send", "created", "modified", "id")
+
+
+admin.site.register(models.Subscription, SubscriptionAdmin)
+
+
+def datafile_url_validator(value):
+    domain = "rcoi.mcko.ru"
+    ext = ".xlsx"
+    url = urlparse(value)
+    if url.netloc != domain:
+        raise forms.ValidationError(f"Ссылка должна вести на сайт {domain}")
+    if not url.path.endswith(ext):
+        raise forms.ValidationError(f"Ссылка должна заканчиваться на {ext}")
+
+
 class ExamImportForm(forms.Form):
-    date = forms.ModelChoiceField(queryset=models.Date.objects.all(),)
-    level = forms.ModelChoiceField(queryset=models.Level.objects.all(),)
-    exam_file = forms.FileField(
-        validators=[FileExtensionValidator(allowed_extensions=["xlsx"])],
-        help_text="Файл в формате .xlsx",
+    date = forms.ModelChoiceField(
+        queryset=models.Date.objects.all(), help_text="Дата экзамена"
+    )
+    level = forms.ModelChoiceField(
+        queryset=models.Level.objects.all(), help_text="Уровень экзамена"
+    )
+    datafile_url = forms.URLField(
+        widget=forms.URLInput(attrs={"class": "vURLField"}),
+        help_text="Ссылка с сайта rcoi.mcko.ru на файл в формате .xlsx",
+        validators=[datafile_url_validator],
     )
 
     def __init__(self, *args, **kwargs):
@@ -122,34 +160,37 @@ class ExamAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def exam_import(self, request):
-        info = self.model._meta.app_label, self.model._meta.model_name
+        app_label, model_name = self.model._meta.app_label, self.model._meta.model_name
 
         if request.method == "POST":
             form = ExamImportForm(request.POST, request.FILES)
+
             if form.is_valid():
-                exam_file = request.FILES["exam_file"]
-                date = form.cleaned_data["date"]
-                level = form.cleaned_data["level"]
+                data = form.cleaned_data
+                datafile_name = urlparse(data["datafile_url"]).path.split("/")[-1]
 
                 # noinspection PyBroadException
                 try:
+                    models.ExamImporter(**data).run()
                     self.message_user(
-                        request,
-                        f"Экзамены из файла '{exam_file.name}' на {date} для {level} класса успешно добавлены",
+                        request, f"Файл {datafile_name} обработан",
                     )
                 except:  # noqa  # pragma: no cover
                     self.message_user(request, sys.exc_info(), level=40)
 
-                return redirect(reverse("admin:%s_%s_changelist" % info))
+                return redirect(reverse(f"admin:{app_label}_{model_name}_changelist"))
         else:
             form = ExamImportForm()
 
         context = {
+            "add": True,
             "title": "Импорт экзаменов",
-            "app_label": self.model._meta.app_label,
+            "app_label": app_label,
             "opts": self.opts,
-            "has_change_permission": self.has_change_permission(request),
             "has_view_permission": self.has_view_permission(request),
+            "has_add_permission": self.has_add_permission(request),
+            "has_change_permission": self.has_change_permission(request),
+            "has_delete_permission": self.has_delete_permission(request),
             "media": self.media,
             "form": form,
             "adminform": admin.helpers.AdminForm(
@@ -159,30 +200,9 @@ class ExamAdmin(admin.ModelAdmin):
             ),
         }
 
+        context.update({"has_file_field": context["adminform"].form.is_multipart()})
+
         return render(request, "admin/exam_import_form.html", context)
 
 
 admin.site.register(models.Exam, ExamAdmin)
-
-
-class DataSourceAdmin(admin.ModelAdmin):
-    list_display = ("name", "url", "created", "modified", "id")
-    list_filter = ("name", "url", "created", "modified")
-
-
-admin.site.register(models.DataSource, DataSourceAdmin)
-
-
-class DataFileAdmin(admin.ModelAdmin):
-    list_display = ("name", "size", "last_modified", "created", "modified", "id")
-    list_filter = ("name", "created", "modified")
-
-
-admin.site.register(models.DataFile, DataFileAdmin)
-
-
-class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("user", "employee", "last_send", "created", "modified", "id")
-
-
-admin.site.register(models.Subscription, SubscriptionAdmin)
