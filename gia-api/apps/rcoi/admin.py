@@ -2,6 +2,7 @@ import sys
 
 from django import forms
 from django.contrib import admin
+from django.contrib.admin import widgets
 from django.core.validators import FileExtensionValidator
 from django.shortcuts import redirect, render
 from django.urls import path, reverse
@@ -69,12 +70,27 @@ admin.site.register(models.Place, PlaceAdmin)
 
 
 class ExamImportForm(forms.Form):
-    # date = forms.ModelChoiceField(queryset=models.Date.objects.all(), required=True)
-    # level = forms.ModelChoiceField(queryset=models.Level.objects.all(), required=True)
+    date = forms.ModelChoiceField(queryset=models.Date.objects.all(),)
+    level = forms.ModelChoiceField(queryset=models.Level.objects.all(),)
     exam_file = forms.FileField(
         validators=[FileExtensionValidator(allowed_extensions=["xlsx"])],
         help_text="Файл в формате .xlsx",
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["date"].widget = widgets.RelatedFieldWidgetWrapper(
+            self.fields["date"].widget,
+            models.Exam._meta.get_field("date").remote_field,
+            admin.site,
+            can_change_related=True,
+        )
+        self.fields["level"].widget = widgets.RelatedFieldWidgetWrapper(
+            self.fields["level"].widget,
+            models.Exam._meta.get_field("level").remote_field,
+            admin.site,
+            can_change_related=True,
+        )
 
 
 class ExamAdmin(admin.ModelAdmin):
@@ -95,7 +111,7 @@ class ExamAdmin(admin.ModelAdmin):
     change_list_template = "admin/exam_change_list.html"
 
     def get_urls(self):
-        urls = super(ExamAdmin, self).get_urls()
+        urls = super().get_urls()
         my_urls = [
             path(
                 "import/",
@@ -112,12 +128,14 @@ class ExamAdmin(admin.ModelAdmin):
             form = ExamImportForm(request.POST, request.FILES)
             if form.is_valid():
                 exam_file = request.FILES["exam_file"]
+                date = form.cleaned_data["date"]
+                level = form.cleaned_data["level"]
 
                 # noinspection PyBroadException
                 try:
                     self.message_user(
                         request,
-                        f"Экзамены из файла '{exam_file.name}' успешно добавлены",
+                        f"Экзамены из файла '{exam_file.name}' на {date} для {level} класса успешно добавлены",
                     )
                 except:  # noqa  # pragma: no cover
                     self.message_user(request, sys.exc_info(), level=40)
@@ -131,6 +149,8 @@ class ExamAdmin(admin.ModelAdmin):
             "app_label": self.model._meta.app_label,
             "opts": self.opts,
             "has_change_permission": self.has_change_permission(request),
+            "has_view_permission": self.has_view_permission(request),
+            "media": self.media,
             "form": form,
             "adminform": admin.helpers.AdminForm(
                 form,
