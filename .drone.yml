@@ -16,13 +16,12 @@ services:
 
 steps:
   - name: test
-    image: registry.home.devmem.ru/python:3.8-alpine
+    image: registry.home.devmem.ru/gia/api:latest
     environment:
       DJANGO_DATABASE_URL: postgres://dbuser:dbpass@postgres:5432/dbuser
       DJANGO_SETTINGS_MODULE: config.settings.local
       PYTHONPATH: ${PYTHONPATH}:/drone/src/gia-api
     commands:
-      - apk add --no-cache openssl-dev
       - pip install --no-cache-dir -r gia-api/requirements/testing.txt
       - pytest
 
