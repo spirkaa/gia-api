@@ -1,0 +1,13 @@
+{% extends 'admin/change_form.html' %}
+{% block content %}
+<form enctype="multipart/form-data" method="post" action="{% url 'admin:exam_import' %}" id="{{ opts.model_name }}_import_form">{% csrf_token %}
+<div>
+    {% block field_sets %}
+    {% for fieldset in adminform %}
+        {% include "admin/includes/fieldset.html" %}
+    {% endfor %}
+    {% endblock %}
+    <input type="submit" value="Импорт" name="_import">
+</div>
+</form>
+{% endblock %}

@@ -1,4 +1,10 @@
+import sys
+
+from django import forms
 from django.contrib import admin
+from django.core.validators import FileExtensionValidator
+from django.shortcuts import redirect, render
+from django.urls import path, reverse
 
 from . import models
 
@@ -62,6 +68,15 @@ class PlaceAdmin(admin.ModelAdmin):
 admin.site.register(models.Place, PlaceAdmin)
 
 
+class ExamImportForm(forms.Form):
+    # date = forms.ModelChoiceField(queryset=models.Date.objects.all(), required=True)
+    # level = forms.ModelChoiceField(queryset=models.Level.objects.all(), required=True)
+    exam_file = forms.FileField(
+        validators=[FileExtensionValidator(allowed_extensions=["xlsx"])],
+        help_text="Файл в формате .xlsx",
+    )
+
+
 class ExamAdmin(admin.ModelAdmin):
     list_display = (
         "datafile",
@@ -76,6 +91,55 @@ class ExamAdmin(admin.ModelAdmin):
     )
     list_filter = ("level", "datafile__name", "date__date")
     search_fields = ("date__date", "place__code", "place__name", "employee__name")
+
+    change_list_template = "admin/exam_change_list.html"
+
+    def get_urls(self):
+        urls = super(ExamAdmin, self).get_urls()
+        my_urls = [
+            path(
+                "import/",
+                self.admin_site.admin_view(self.exam_import),
+                name="exam_import",
+            )
+        ]
+        return my_urls + urls
+
+    def exam_import(self, request):
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        if request.method == "POST":
+            form = ExamImportForm(request.POST, request.FILES)
+            if form.is_valid():
+                exam_file = request.FILES["exam_file"]
+
+                # noinspection PyBroadException
+                try:
+                    self.message_user(
+                        request,
+                        f"Экзамены из файла '{exam_file.name}' успешно добавлены",
+                    )
+                except:  # noqa  # pragma: no cover
+                    self.message_user(request, sys.exc_info(), level=40)
+
+                return redirect(reverse("admin:%s_%s_changelist" % info))
+        else:
+            form = ExamImportForm()
+
+        context = {
+            "title": "Импорт экзаменов",
+            "app_label": self.model._meta.app_label,
+            "opts": self.opts,
+            "has_change_permission": self.has_change_permission(request),
+            "form": form,
+            "adminform": admin.helpers.AdminForm(
+                form,
+                list([(None, {"fields": form.base_fields})]),
+                self.get_prepopulated_fields(request),
+            ),
+        }
+
+        return render(request, "admin/exam_import_form.html", context)
 
 
 admin.site.register(models.Exam, ExamAdmin)
