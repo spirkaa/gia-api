@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 
 logger = logging.getLogger(__name__)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 def get_files_info(url):
@@ -409,7 +410,6 @@ def main():
 
 
 if __name__ == "__main__":  # pragma: no cover
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.basicConfig(
         format="%(asctime)s  [%(name)s:%(lineno)s]  %(levelname)s - %(message)s",
         level=logging.DEBUG,
