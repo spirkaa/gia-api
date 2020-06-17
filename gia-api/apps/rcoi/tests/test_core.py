@@ -138,3 +138,30 @@ def test_rcoi_updater_if_data_is_bad(mocker):
     with pytest.raises(Exception):
         models.RcoiUpdater().run()
     mocker.resetall()
+
+
+def test_exam_importer(mocker_xlsx_to_csv_simple, exam_file_diff_date):
+    """
+    Test - Exam Importer
+    """
+    exam_url = "http://123"
+    exam_date = datetime.date(2020, 6, 1)
+    exam_level = "123"
+
+    # no file
+    r1 = models.ExamImporter(exam_url, exam_date, exam_level)
+    assert len(r1.data) == 9
+
+    # same file
+    r2 = models.ExamImporter(exam_url, exam_date, exam_level)
+    assert r2.data is None
+
+    # updated file
+    mocker_xlsx_to_csv_simple.patch(
+        "apps.rcoi.xlsx_to_csv.get_file_info", return_value=exam_file_diff_date
+    )
+    r3 = models.ExamImporter(exam_url, exam_date, exam_level)
+    # print(r3)
+    assert (
+        len(r3.data) == 0
+    )  # because of mocker, stream stays at the end after first read

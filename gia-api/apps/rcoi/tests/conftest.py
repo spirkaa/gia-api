@@ -58,6 +58,11 @@ def csv_data_row():
 
 
 @pytest.fixture
+def exam_file_diff_date():
+    return EXAM_FILE_DIFF_DATE
+
+
+@pytest.fixture
 def exams_csv(csv_headers, csv_data_row):
     """
     csv file
@@ -88,6 +93,7 @@ def mocker_xlsx_to_csv_simple(mocker, exams_csv):
     mock of 'apps.rcoi.xlsx_to_csv'
     """
     mocker.patch("apps.rcoi.xlsx_to_csv.get_files_info", return_value=[EXAM_FILE])
+    mocker.patch("apps.rcoi.xlsx_to_csv.get_file_info", return_value=EXAM_FILE)
     mocker.patch("apps.rcoi.xlsx_to_csv.download_file")
     mocker.patch("apps.rcoi.xlsx_to_csv.save_to_csv")
     mocker.patch("apps.rcoi.xlsx_to_csv.save_to_stream", return_value=exams_csv)
@@ -109,6 +115,20 @@ def mocker_rcoi_updater(mocker):
     """
     mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
     mocker.patch("apps.rcoi.models.RcoiUpdater.data", None, create=True)
+    yield mocker
+    mocker.resetall()
+
+
+@pytest.fixture
+def mocker_exam_importer(mocker):
+    """
+    mock of 'apps.rcoi.models.RcoiUpdater'
+    """
+    mocker.patch(
+        "apps.rcoi.models.ExamImporter.__init__",
+        lambda x, datafile_url, date, level: None,
+    )
+    mocker.patch("apps.rcoi.models.ExamImporter.data", None, create=True)
     yield mocker
     mocker.resetall()
 

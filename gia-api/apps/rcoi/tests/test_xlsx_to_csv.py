@@ -1,11 +1,37 @@
 import csv
 import os
-from datetime import datetime
+from datetime import date, datetime
 
 import pytest
 import responses
 
 from apps.rcoi import xlsx_to_csv
+
+
+def test_get_file_info():
+    """
+    Test Parser - Get File Info
+    """
+    url = "http://rcoi.mcko.ru/"
+    filename = "rab_ppe_test.xlsx"
+    exam_url = url + filename
+    exam_date = date(2020, 6, 1)
+    exam_level = "11"
+    size = "1024000"
+    last_modified = "Fri, 15 May 2020 16:23:42 GMT"
+    lm_dt = datetime.strptime(last_modified, "%a, %d %b %Y %H:%M:%S %Z")
+
+    responses.add(
+        responses.HEAD,
+        exam_url,
+        headers={"Content-Length": size, "Last-Modified": last_modified},
+    )
+
+    r = xlsx_to_csv.get_file_info(exam_url, exam_date, exam_level)
+    assert r["name"] == f"{exam_date}__{exam_level}__{filename}"
+    assert r["size"] == size
+    assert r["last_modified"] == lm_dt
+    assert r["url"] == exam_url
 
 
 @pytest.mark.parametrize("level", ["oge", "ege", "wtf"])
