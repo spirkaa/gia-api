@@ -21,7 +21,7 @@
 {% block meta %}
     <link rel="canonical" href="{{ link_rel }}"/>
 {% endblock %}
-{% include 'metrika.html' %}
+{% if not debug %}{% block metrika %}{% include 'metrika.html' %}{% endblock %}{% endif %}
 </head>
 
 <body>

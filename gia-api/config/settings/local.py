@@ -16,13 +16,14 @@ REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
     "rest_framework.renderers.BrowsableAPIRenderer",
 ]
 
+if DEBUG:  # pragma: no cover
+    INTERNAL_IPS = type(str("c"), (), {"__contains__": lambda *a: True})()
+
 if DEBUG and DEBUG_TOOLBAR:  # pragma: no cover
     # django-debug-toolbar
     # ------------------------------------------------------------------------------
     INSTALLED_APPS += ["debug_toolbar"]
     MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
-
-    INTERNAL_IPS = type(str("c"), (), {"__contains__": lambda *a: True})()
 
     def show_toolbar(request):
         return True
