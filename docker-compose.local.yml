@@ -23,7 +23,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ".:/app"
+      - ".:/app:z"
     command: python /app/gia-api/manage.py runserver_plus 0.0.0.0:8000
     depends_on:
       - postgres-local

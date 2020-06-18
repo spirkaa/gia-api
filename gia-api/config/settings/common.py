@@ -38,6 +38,7 @@ THIRD_PARTY_APPS = [
     "django_extensions",
     "django_filters",
     "django_tables2",
+    "django_prometheus",
     "djmail",
     "drf_yasg",
     "rest_auth",
@@ -55,6 +56,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -63,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 SITE_ID = 1
@@ -112,7 +115,9 @@ MANAGERS = ADMINS
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    "default": env.db("DJANGO_DATABASE_URL"),
+    "default": env.db_url(
+        "DJANGO_DATABASE_URL", engine="django_prometheus.db.backends.postgresql"
+    ),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 

@@ -46,12 +46,16 @@ CACHE_MIDDLEWARE = [
     "django_brotli.middleware.BrotliMiddleware",
     "django.middleware.http.ConditionalGetMiddleware",
 ]
-MIDDLEWARE = MIDDLEWARE[:1] + CACHE_MIDDLEWARE + MIDDLEWARE[1:]
-MIDDLEWARE.append("django.middleware.cache.FetchFromCacheMiddleware")
+MIDDLEWARE = MIDDLEWARE[:2] + CACHE_MIDDLEWARE + MIDDLEWARE[2:]
+MIDDLEWARE = (
+    MIDDLEWARE[:-1]
+    + ["django.middleware.cache.FetchFromCacheMiddleware"]
+    + MIDDLEWARE[-1:]
+)
 
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
+        "BACKEND": "django_prometheus.cache.backends.redis.RedisCache",
         "LOCATION": env.str("DJANGO_CACHE_URL"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",

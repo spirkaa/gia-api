@@ -9,6 +9,9 @@ django-tables2==2.3.1
 django-allauth==0.42.0
 djmail==2.0.0
 
+# Monitoring
+django-prometheus==2.0.0
+
 # REST
 django-cors-headers==3.3.0
 djangorestframework==3.11.0
