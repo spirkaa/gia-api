@@ -6,7 +6,7 @@ services:
       context: ./compose/redis
       dockerfile: Dockerfile
     volumes:
-      - "./redis/data:/data"
+      - "./redis/data:/data:z"
     restart: always
 
   postgres:
@@ -14,8 +14,8 @@ services:
       context: ./compose/postgres
       dockerfile: Dockerfile
     volumes:
-      - "./db/data:/var/lib/postgresql/data"
-      - "./db/backups:/backups"
+      - "./db/data:/var/lib/postgresql/data:z"
+      - "./db/backups:/backups:z"
     env_file: .env
     restart: always
 
@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile
+    tmpfs:
+      - "/tmp"
     depends_on:
       - postgres
       - redis

@@ -28,20 +28,25 @@ CACHE_MIDDLEWARE = [
     "django_brotli.middleware.BrotliMiddleware",
     "django.middleware.http.ConditionalGetMiddleware",
 ]
-MIDDLEWARE = MIDDLEWARE[:1] + CACHE_MIDDLEWARE + MIDDLEWARE[1:]
-if DEBUG and env.bool("DJANGO_DEBUG_TOOLBAR", default=False):
+MIDDLEWARE = MIDDLEWARE[:2] + CACHE_MIDDLEWARE + MIDDLEWARE[2:]
+
+if DEBUG and DEBUG_TOOLBAR:
     # django-debug-toolbar must be after all cache
+    MIDDLEWARE = (
+        MIDDLEWARE[:-2]
+        + ["django.middleware.cache.FetchFromCacheMiddleware"]
+        + MIDDLEWARE[-2:]
+    )
+else:
     MIDDLEWARE = (
         MIDDLEWARE[:-1]
         + ["django.middleware.cache.FetchFromCacheMiddleware"]
         + MIDDLEWARE[-1:]
     )
-else:
-    MIDDLEWARE.append("django.middleware.cache.FetchFromCacheMiddleware")
 
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
+        "BACKEND": "django_prometheus.cache.backends.redis.RedisCache",
         "LOCATION": env.str("DJANGO_CACHE_URL"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
