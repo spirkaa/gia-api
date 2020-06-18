@@ -31,7 +31,7 @@ class TemplateViewWithContext(TemplateView):
     template_name = None
 
     def get_context_data(self, **kwargs):
-        context = super(TemplateViewWithContext, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["sources"] = DataSource.objects.all()
         try:
             context["updated"] = DataFile.objects.latest("modified").modified
@@ -56,7 +56,7 @@ class FilteredSingleTableView(TemplateViewWithContext):
         return self.model.objects.select_related()
 
     def get_context_data(self, **kwargs):
-        context = super(FilteredSingleTableView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         filter = self.filter_class(
             self.request.GET, queryset=self.get_queryset(**kwargs)
         )
@@ -99,7 +99,7 @@ class DetailViewWithContext(DetailView):
     model = None
 
     def get_context_data(self, **kwargs):
-        context = super(DetailViewWithContext, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["sources"] = DataSource.objects.all()
         try:
             context["updated"] = DataFile.objects.latest("modified").modified
@@ -115,7 +115,7 @@ class OrganisationDetailView(DetailViewWithContext):
     model = Organisation
 
     def get_context_data(self, **kwargs):
-        context = super(OrganisationDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["employees"] = self.object.employees.annotate(
             num_exams=Count("exams")
         ).order_by("name")
@@ -126,10 +126,10 @@ class EmployeeDetailView(DetailViewWithContext):
     model = Employee
 
     def get_queryset(self):
-        return super(EmployeeDetailView, self).get_queryset().select_related()
+        return super().get_queryset().select_related()
 
     def get_context_data(self, **kwargs):
-        context = super(EmployeeDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["exams"] = self.object.exams.select_related()
         return context
 

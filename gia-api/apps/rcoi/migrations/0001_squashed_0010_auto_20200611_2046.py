@@ -10,19 +10,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("rcoi", "0001_initial"),
-        ("rcoi", "0002_auto_20170527_2043"),
-        ("rcoi", "0003_auto_20170529_1550"),
-        ("rcoi", "0004_auto_20170604_2353"),
-        ("rcoi", "0005_auto_20170605_1044"),
-        ("rcoi", "0006_auto_20170605_2052"),
-        ("rcoi", "0007_auto_20170613_1047"),
-        ("rcoi", "0008_auto_20170622_2242"),
-        ("rcoi", "0009_auto_20180523_1350"),
-        ("rcoi", "0010_auto_20200611_2046"),
-    ]
-
     initial = True
 
     dependencies = [
