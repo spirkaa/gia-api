@@ -49,9 +49,6 @@ class Date(TimeStampedModel):
     def get_absolute_url(self):
         return reverse("rcoi:date_detail", args=(self.id,))
 
-    def get_update_url(self):
-        return reverse("rcoi:date_update", args=(self.id,))
-
 
 class Level(TimeStampedModel):
     level = models.CharField(
@@ -67,9 +64,6 @@ class Level(TimeStampedModel):
     def get_absolute_url(self):
         return reverse("rcoi:level_detail", args=(self.id,))
 
-    def get_update_url(self):
-        return reverse("rcoi:level_update", args=(self.id,))
-
 
 class Organisation(TimeStampedModel):
     name = models.CharField("Место работы", max_length=500, unique=True, db_index=True)
@@ -82,9 +76,6 @@ class Organisation(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse("rcoi:organisation_detail", args=(self.id,))
-
-    def get_update_url(self):
-        return reverse("rcoi:organisation_update", args=(self.id,))
 
 
 class Position(TimeStampedModel):
@@ -100,9 +91,6 @@ class Position(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse("rcoi:position_detail", args=(self.id,))
-
-    def get_update_url(self):
-        return reverse("rcoi:position_update", args=(self.id,))
 
 
 class Employee(TimeStampedModel):
@@ -121,9 +109,6 @@ class Employee(TimeStampedModel):
     def get_absolute_url(self):
         return reverse("rcoi:employee_detail", args=(self.id,))
 
-    def get_update_url(self):
-        return reverse("rcoi:employee_update", args=(self.id,))
-
 
 class Place(TimeStampedModel):
     code = models.CharField("Код ППЭ", max_length=5, db_index=True)
@@ -139,9 +124,6 @@ class Place(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse("rcoi:place_detail", args=(self.id,))
-
-    def get_update_url(self):
-        return reverse("rcoi:place_update", args=(self.id,))
 
 
 class Exam(TimeStampedModel):
@@ -169,9 +151,6 @@ class Exam(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse("rcoi:exam_detail", args=(self.id,))
-
-    def get_update_url(self):
-        return reverse("rcoi:exam_update", args=(self.id,))
 
 
 class Subscription(TimeStampedModel):
