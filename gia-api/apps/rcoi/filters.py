@@ -7,7 +7,7 @@ from . import models
 
 class FilterWithHelper(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):
-        super(FilterWithHelper, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "get"
         self.helper.form_class = "form-inline"
@@ -18,7 +18,7 @@ class FilterWithHelper(django_filters.FilterSet):
 
 class EmployeeFilter(FilterWithHelper):
     def __init__(self, *args, **kwargs):
-        super(EmployeeFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper.layout = Layout("name", "org__name", Submit("filter", "Найти"))
 
     name = django_filters.CharFilter(lookup_expr="icontains", label="ФИО сотрудника")
@@ -31,7 +31,7 @@ class EmployeeFilter(FilterWithHelper):
 
 class PlaceFilter(FilterWithHelper):
     def __init__(self, *args, **kwargs):
-        super(PlaceFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper.layout = Layout("code", "name", "addr", Submit("filter", "Найти"))
 
     code = django_filters.CharFilter(label="Код ППЭ")
@@ -45,7 +45,7 @@ class PlaceFilter(FilterWithHelper):
 
 class ExamFilter(FilterWithHelper):
     def __init__(self, *args, **kwargs):
-        super(ExamFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
             "date",
             "level",
