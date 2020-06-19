@@ -14,7 +14,7 @@ class EmployeeTable(tables.Table):
     class Meta:
         model = models.Employee
         sequence = ("name", "org")
-        exclude = ("id", "created", "modified")
+        exclude = ("id", "created", "modified", "search_vector")
 
 
 class PlaceTable(tables.Table):
@@ -28,7 +28,7 @@ class PlaceTable(tables.Table):
     class Meta:
         model = models.Place
         sequence = ("code", "name", "addr")
-        exclude = ("id", "created", "modified", "ate")
+        exclude = ("id", "created", "modified", "search_vector")
 
 
 class ExamTable(tables.Table):
