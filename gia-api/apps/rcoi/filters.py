@@ -4,7 +4,7 @@ import operator
 import django_filters
 from crispy_forms.bootstrap import FieldWithButtons
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Submit
+from crispy_forms.layout import HTML, Field, Layout, Submit
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVectorField
 from django.db.models import F, Q
 
@@ -66,6 +66,16 @@ class FilterWithHelper(django_filters.FilterSet):
         self.helper.layout = Layout(
             FieldWithButtons(
                 Field("search", placeholder="Поиск...", autofocus=""),
+                HTML(
+                    """
+                    <a href="{{ request.path }}"
+                        role="button"
+                        class="btn btn-default{% if not request.GET.urlencode %} disabled{% endif %}"
+                        title="Очистить">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                    """
+                ),
                 Submit("", "Найти"),
             ),
         )
