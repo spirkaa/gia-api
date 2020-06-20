@@ -53,7 +53,7 @@ class ExamTable(tables.Table):
     place = tables.TemplateColumn(
         template_name="rcoi/cols/exam_place.html",
         verbose_name="Наименование ППЭ",
-        attrs={"td": {"data-title": "Наименование ППЭ"}},
+        attrs={"td": {"data-title": "Наим. ППЭ"}},
     )
     place__addr = tables.TemplateColumn(
         template_name="rcoi/cols/exam_addr.html",
