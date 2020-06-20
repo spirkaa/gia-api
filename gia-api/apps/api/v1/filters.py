@@ -1,6 +1,7 @@
 import rest_framework_filters as filters
 
 from apps.rcoi import models
+from apps.rcoi.filters import SearchVectorFilter
 
 
 class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
@@ -28,19 +29,25 @@ class LevelFilter(filters.FilterSet):
 class OrganisationFilter(filters.FilterSet):
 
     name = filters.CharFilter(lookup_expr="icontains", label="Место работы")
+    search = SearchVectorFilter(
+        search_fields=["search_vector"], label="Поиск", help_text="Full Text Search"
+    )
 
     class Meta:
         model = models.Organisation
-        fields = ("name",)
+        fields = ("name", "search")
 
 
 class PositionFilter(filters.FilterSet):
 
     name = filters.CharFilter(lookup_expr="icontains", label="Должность в ППЭ")
+    search = SearchVectorFilter(
+        search_fields=["search_vector"], label="Поиск", help_text="Full Text Search"
+    )
 
     class Meta:
         model = models.Position
-        fields = ("name",)
+        fields = ("name", "search")
 
 
 class EmployeeFilter(filters.FilterSet):
@@ -52,10 +59,15 @@ class EmployeeFilter(filters.FilterSet):
     org_name = filters.CharFilter(
         field_name="org__name", lookup_expr="icontains", label="Место работы"
     )
+    search = SearchVectorFilter(
+        search_fields=["search_vector", "org__search_vector"],
+        label="Поиск",
+        help_text="Full Text Search",
+    )
 
     class Meta:
         model = models.Employee
-        fields = ("id", "name", "org_id", "org_name")
+        fields = ("id", "name", "org_id", "org_name", "search")
 
 
 class PlaceFilter(filters.FilterSet):
@@ -64,10 +76,13 @@ class PlaceFilter(filters.FilterSet):
 
     name = filters.CharFilter(lookup_expr="icontains", label="Наименование ППЭ")
     addr = filters.CharFilter(lookup_expr="icontains", label="Адрес ППЭ")
+    search = SearchVectorFilter(
+        search_fields=["search_vector"], label="Поиск", help_text="Full Text Search"
+    )
 
     class Meta:
         model = models.Place
-        fields = ("id", "code", "name", "addr")
+        fields = ("id", "code", "name", "addr", "search")
 
 
 class ExamFilter(filters.FilterSet):
@@ -101,6 +116,16 @@ class ExamFilter(filters.FilterSet):
     emp_org_name = filters.CharFilter(
         field_name="employee__org__name", lookup_expr="icontains", label="Место работы"
     )
+    search = SearchVectorFilter(
+        search_fields=[
+            "employee__search_vector",
+            "employee__org__search_vector",
+            "position__search_vector",
+            "place__search_vector",
+        ],
+        label="Поиск",
+        help_text="Full Text Search",
+    )
 
     class Meta:
         model = models.Exam
@@ -117,4 +142,5 @@ class ExamFilter(filters.FilterSet):
             "emp_name",
             "emp_org_id",
             "emp_org_name",
+            "search",
         )
