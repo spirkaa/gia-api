@@ -2,6 +2,8 @@ import datetime
 import logging
 
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import connection, models
 from django.urls import reverse
 from django_extensions.db.models import TimeStampedModel
@@ -67,9 +69,11 @@ class Level(TimeStampedModel):
 
 class Organisation(TimeStampedModel):
     name = models.CharField("Место работы", max_length=500, unique=True, db_index=True)
+    search_vector = SearchVectorField(blank=True, null=True)
 
     class Meta:
         ordering = ["name"]
+        indexes = [GinIndex(fields=["search_vector"])]
 
     def __str__(self):
         return self.name
@@ -82,9 +86,11 @@ class Position(TimeStampedModel):
     name = models.CharField(
         "Должность в ППЭ", max_length=100, unique=True, db_index=True
     )
+    search_vector = SearchVectorField(blank=True, null=True)
 
     class Meta:
         ordering = ["name"]
+        indexes = [GinIndex(fields=["search_vector"])]
 
     def __str__(self):
         return self.name
@@ -98,10 +104,12 @@ class Employee(TimeStampedModel):
     org = models.ForeignKey(
         Organisation, related_name="employees", on_delete=models.CASCADE
     )
+    search_vector = SearchVectorField(blank=True, null=True)
 
     class Meta:
         unique_together = (("name", "org"),)
         ordering = ["name"]
+        indexes = [GinIndex(fields=["search_vector"])]
 
     def __str__(self):
         return self.name
@@ -114,10 +122,12 @@ class Place(TimeStampedModel):
     code = models.CharField("Код ППЭ", max_length=5, db_index=True)
     name = models.CharField("Наименование ППЭ", max_length=500, db_index=True)
     addr = models.CharField("Адрес ППЭ", max_length=255, db_index=True)
+    search_vector = SearchVectorField(blank=True, null=True)
 
     class Meta:
         unique_together = (("code", "name", "addr"),)
         ordering = ["name"]
+        indexes = [GinIndex(fields=["search_vector"])]
 
     def __str__(self):
         return self.name

@@ -30,6 +30,7 @@ class OrganisationAdmin(admin.ModelAdmin):
     list_display = ("name", "created", "modified", "id")
     list_filter = ("created", "modified")
     search_fields = ("name",)
+    exclude = ("search_vector",)
 
 
 admin.site.register(models.Organisation, OrganisationAdmin)
@@ -39,6 +40,7 @@ class PositionAdmin(admin.ModelAdmin):
     list_display = ("name", "created", "modified", "id")
     list_filter = ("created", "modified")
     search_fields = ("name",)
+    exclude = ("search_vector",)
 
 
 admin.site.register(models.Position, PositionAdmin)
@@ -48,6 +50,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_display = ("name", "org", "created", "modified", "id")
     list_filter = ("created", "modified")
     search_fields = ("name", "org__name")
+    exclude = ("search_vector",)
 
 
 admin.site.register(models.Employee, EmployeeAdmin)
@@ -64,6 +67,7 @@ class PlaceAdmin(admin.ModelAdmin):
     )
     list_filter = ("created", "modified")
     search_fields = ("name", "code")
+    exclude = ("search_vector",)
 
 
 admin.site.register(models.Place, PlaceAdmin)

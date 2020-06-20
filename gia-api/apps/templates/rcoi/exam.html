@@ -2,6 +2,7 @@
 {% load bootstrap3 %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
+{% load tz %}
 
 {% block description %}{% block title %}Распределение организаторов ЕГЭ и ОГЭ в пункты проведения экзаменов{% endblock %}{% endblock %}
 
@@ -28,21 +29,19 @@
     <h1>Список организаторов ЕГЭ и ОГЭ</h1>
 {% endblock %}
 {% block content %}
-    <div>
-        <div class="text-center bottom-buffer">
-            <div class="bottom-buffer">
-                <small>
-                    Поиск работает по любому полю, заполнять все нет необходимости.
-                    Для начала поиска укажите в соответствующем поле что-нибудь из списка:
-                    фамилию без инициалов,
-                    номер или название школы без ГБОУ и №,
-                    название улицы без ул. и дома и т.д.
-                </small>
-            </div>
-            <div>{% crispy filter.form filter.form.helper %}</div>
+    <div class="row">
+        <div class="col-md-3 col-sm-3"></div>
+        <div class="col-md-6 col-sm-6">
+            {% if updated %}{% localtime off %}
+            <div class="text-center bottom-buffer">Данные актуальны на {{ updated|date:"d.m.Y, H:i" }}</div>
+            {% endlocaltime %}{% endif %}
+            {% crispy filter.form filter.form.helper %}
         </div>
+        <div class="col-md-3 col-sm-3"></div>
     </div>
     <div class="row" id="row-main">
-        {% render_table table 'table.html' %}
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">{% render_table table 'table.html' %}</div>
+        <div class="col-lg-1"></div>
     </div>
 {% endblock %}

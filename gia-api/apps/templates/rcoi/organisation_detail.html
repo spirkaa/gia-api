@@ -7,20 +7,26 @@
     </h1>
 {% endblock %}
 {% block content %}
-    <table class="table table-condensed table-hover">
-        <thead>
-        <tr>
-            <th></th>
-            <th>Количество экзаменов</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for employee in employees %}
-            <tr>
-                <td><a href="{{ employee.get_absolute_url }}">{{ employee.name }}</a></td>
-                <td>{{ employee.num_exams }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="row" id="row-main">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+            <table class="table table-condensed table-hover">
+                <thead>
+                <tr>
+                    <th>Всего: {{ employees.count }}</th>
+                    <th>Количество экзаменов</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for employee in employees %}
+                    <tr>
+                        <td><a href="{{ employee.get_absolute_url }}">{{ employee.name }}</a></td>
+                        <td>{{ employee.num_exams }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-1"></div>
+    </div>
 {% endblock %}
