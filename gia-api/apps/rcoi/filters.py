@@ -19,10 +19,17 @@ class SearchVectorFilter(django_filters.CharFilter):
     def __init__(
         self, field_name=None, lookup_expr="icontains", *, search_fields, **kwargs
     ):
+        """
+        :type search_fields: list
+        """
         super().__init__(field_name, lookup_expr, **kwargs)
         self.search_fields = search_fields
 
     def filter(self, qs, value):
+        """
+        :type qs: object
+        :type value: str
+        """
         if value in django_filters.filters.EMPTY_VALUES:
             return qs
 
