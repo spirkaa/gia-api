@@ -58,7 +58,8 @@ class FilterWithHelper(django_filters.FilterSet):
         self.helper.form_id = "filter"
         self.helper.layout = Layout(
             FieldWithButtons(
-                Field("search", placeholder="Поиск..."), Submit("", "Найти")
+                Field("search", placeholder="Поиск...", autofocus=""),
+                Submit("", "Найти"),
             ),
         )
         self._meta.filter_overrides = {
