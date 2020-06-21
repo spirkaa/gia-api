@@ -68,12 +68,14 @@ class FilterWithHelper(django_filters.FilterSet):
                 Field("search", placeholder="Поиск...", autofocus=""),
                 HTML(
                     """
+                    {% if request.GET.search %}
                     <a href="{{ request.path }}"
                         role="button"
-                        class="btn btn-default{% if not request.GET.urlencode %} disabled{% endif %}"
+                        class="btn btn-default"
                         title="Очистить">
                         <span class="glyphicon glyphicon-remove"></span>
                     </a>
+                    {% endif %}
                     """
                 ),
                 Submit("", "Найти"),
