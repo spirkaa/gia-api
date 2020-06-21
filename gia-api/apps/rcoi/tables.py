@@ -26,7 +26,7 @@ class PlaceTable(tables.Table):
     name = tables.TemplateColumn(
         template_name="rcoi/cols/place_name.html",
         verbose_name="Наименование ППЭ",
-        attrs={"td": {"data-title": "Наименование ППЭ"}},
+        attrs={"td": {"data-title": "Наим. ППЭ"}},
     )
     addr = tables.TemplateColumn(
         template_name="rcoi/cols/place_addr.html",
