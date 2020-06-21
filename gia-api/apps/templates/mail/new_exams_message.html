@@ -114,7 +114,7 @@
                         <td class="body-text"
                             style="font-size: 13px;color: #afafaf;">{{ exam.place.name }}</td>
                         <td class="body-text" style="font-size: 13px;color: #afafaf;">
-                            <a href="https://yandex.ru/maps/?text={{ exam.place.addr }}"
+                            <a href="https://yandex.ru/maps/?text={{ exam.place.addr|urlencode }}"
                                target="_blank"
                                rel="noopener noreferrer"
                                title="Открыть карту">{{ exam.place.addr }}</a>
@@ -125,7 +125,7 @@
                         <td class="body-text" style="font-size: 13px;">{{ exam.position }}</td>
                         <td class="body-text" style="font-size: 13px;">{{ exam.place.name }}</td>
                         <td class="body-text" style="font-size: 13px;">
-                            <a href="https://yandex.ru/maps/?text={{ exam.place.addr }}"
+                            <a href="https://yandex.ru/maps/?text={{ exam.place.addr|urlencode }}"
                                target="_blank"
                                rel="noopener noreferrer"
                                title="Открыть карту">{{ exam.place.addr }}</a>

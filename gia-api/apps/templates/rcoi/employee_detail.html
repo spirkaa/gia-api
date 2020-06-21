@@ -40,7 +40,7 @@
                         <td data-title="Наим. ППЭ">{{ exam.place.name }}</td>
                         <td data-title="Адрес ППЭ">
                             <a{% if todays_date > exam.date.date|date:"Y-m-d" %} class="text-muted"{% endif %}
-                               href="https://yandex.ru/maps/?text={{ exam.place.addr }}"
+                               href="https://yandex.ru/maps/?text={{ exam.place.addr|urlencode }}"
                                target="_blank"
                                rel="noopener noreferrer"
                                title="Открыть карту">{{ exam.place.addr }}
