@@ -65,7 +65,13 @@ class FilterWithHelper(django_filters.FilterSet):
         self.helper.form_id = "filter"
         self.helper.layout = Layout(
             FieldWithButtons(
-                Field("search", placeholder="Поиск...", autofocus=""),
+                Field(
+                    "search",
+                    placeholder="Поиск...",
+                    aria_Label="Поиск",
+                    autocomplete="off",
+                    autofocus="",
+                ),
                 HTML(
                     """
                     {% if request.GET.search %}
@@ -73,7 +79,7 @@ class FilterWithHelper(django_filters.FilterSet):
                         role="button"
                         class="btn btn-default"
                         title="Очистить">
-                        <span class="glyphicon glyphicon-remove"></span>
+                        ✕
                     </a>
                     {% endif %}
                     """
