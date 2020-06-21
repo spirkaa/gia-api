@@ -98,39 +98,28 @@
             <tr>
                 <th></th>
                 <th class="body-text" style="font-size: 13px;color: #676767;">Дата экзамена</th>
-                <th class="body-text" style="font-size: 13px;color: #676767;">Должность в ППЭ</th>
+                <th class="body-text" style="font-size: 13px;color: #676767;">Код ППЭ</th>
                 <th class="body-text" style="font-size: 13px;color: #676767;">Наименование ППЭ</th>
                 <th class="body-text" style="font-size: 13px;color: #676767;">Адрес ППЭ</th>
+                <th class="body-text" style="font-size: 13px;color: #676767;">Должность в ППЭ</th>
             </tr>
             </thead>
             <tbody>
             {% for exam in sub.exams %}
-                <tr>
-                    {% now "Y-m-d" as todays_date %}
-                    {% if todays_date > exam.date.date|date:"Y-m-d" %}
-                        <td>&#10004;</td>
-                        <td class="body-text" style="font-size: 13px;color: #afafaf;">{{ exam.date }}</td>
-                        <td class="body-text" style="font-size: 13px;color: #afafaf;">{{ exam.position }}</td>
-                        <td class="body-text"
-                            style="font-size: 13px;color: #afafaf;">{{ exam.place.name }}</td>
-                        <td class="body-text" style="font-size: 13px;color: #afafaf;">
-                            <a href="https://yandex.ru/maps/?text={{ exam.place.addr|urlencode }}"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               title="Открыть карту">{{ exam.place.addr }}</a>
-                        </td>
-                    {% else %}
-                        <td></td>
-                        <td class="body-text" style="font-size: 13px;">{{ exam.date }}</td>
-                        <td class="body-text" style="font-size: 13px;">{{ exam.position }}</td>
-                        <td class="body-text" style="font-size: 13px;">{{ exam.place.name }}</td>
-                        <td class="body-text" style="font-size: 13px;">
-                            <a href="https://yandex.ru/maps/?text={{ exam.place.addr|urlencode }}"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               title="Открыть карту">{{ exam.place.addr }}</a>
-                        </td>
-                    {% endif %}
+                {% now "Y-m-d" as todays_date %}
+                <tr{% if todays_date > exam.date.date|date:"Y-m-d" %} class="body-text" style="font-size: 13px;color: #afafaf;"{% endif %}>
+                    <td>{% if todays_date > exam.date.date|date:"Y-m-d" %}&#10004;{% endif %}</td>
+                    <td>{{ exam.date.date|date:"SHORT_DATE_FORMAT" }}</td>
+                    <td>{{ exam.place.code }}</td>
+                    <td>{{ exam.place.name }}</td>
+                    <td>
+                        <a {% if todays_date > exam.date.date|date:"Y-m-d" %} class="body-text" style="font-size: 13px;color: #afafaf;"{% endif %}
+                           href="https://yandex.ru/maps/?text={{ exam.place.addr|urlencode }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           title="Открыть карту">{{ exam.place.addr }}</a>
+                    </td>
+                    <td>{{ exam.position }}</td>
                 </tr>
             {% endfor %}
             </tbody>
