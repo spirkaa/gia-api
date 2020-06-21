@@ -21,10 +21,12 @@
 {% block meta %}
     <link rel="canonical" href="{{ link_rel }}"/>
 {% endblock %}
-{% if not debug %}{% block metrika %}{% include 'metrika.html' %}{% endblock %}{% endif %}
+    <meta name="yandex-verification" content="723ef451b4fdc615" />
+    <meta name="google-site-verification" content="wNtUwZKAhonLIomY0X-MORs_j0pXBtO7WrHXcHsIWkM" />
 </head>
 
 <body>
+{% if not debug %}{% block metrika %}{% include 'metrika.html' %}{% endblock %}{% endif %}
 {% block nav %}{% include 'rcoi/nav.html' %}{% endblock %}
 {% bootstrap_messages %}
 <div class="container-fluid">
