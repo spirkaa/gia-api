@@ -124,3 +124,45 @@ class ExamFilter(FilterWithHelper):
     class Meta:
         model = models.Exam
         fields = ["search"]
+
+
+class PlaceWithExamsFilter(FilterWithHelper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.form_class = "form-inline form-group text-center"
+        self.helper.layout = Layout(
+            "date",
+            Field(
+                "search",
+                placeholder="Поиск...",
+                aria_Label="Поиск",
+                autocomplete="off",
+                autofocus="",
+            ),
+            HTML(
+                """
+                {% if request.GET.search or request.GET.date %}
+                <a href="{{ request.path }}"
+                    role="button"
+                    class="btn btn-default"
+                    title="Очистить">
+                    ✕
+                </a>
+                {% endif %}
+                """
+            ),
+            Submit("", "Найти"),
+        )
+
+    search = SearchVectorFilter(
+        search_fields=[
+            "employee__search_vector",
+            "employee__org__search_vector",
+            "position__search_vector",
+        ],
+        label="Поиск",
+    )
+
+    class Meta:
+        model = models.Exam
+        fields = ["date", "search"]

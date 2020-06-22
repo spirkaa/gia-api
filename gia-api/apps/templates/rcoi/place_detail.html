@@ -1,18 +1,18 @@
-{% extends "base.html" %}
-{% block content %}
-    <p><a class="btn btn-default" href="{% url 'rcoi:place' %}">Place Listing</a></p>
-    <table class="table">
-        <tr>
-            <td>code</td>
-            <td>{{ object.code }}</td>
-        </tr>
-        <tr>
-            <td>name</td>
-            <td>{{ object.name }}</td>
-        </tr>
-        <tr>
-            <td>addr</td>
-            <td>{{ object.addr }}</td>
-        </tr>
-    </table>
+{% extends "rcoi/exam.html" %}
+{% block description %}Организаторы ППЭ {{ place.code }} {{ place.name }} задействованность{% endblock %}
+{% block title %}ППЭ {{ place.code }} {{ place.name }} задействованность руководитель организаторы{% endblock %}
+{% block page_header %}
+    <h1>ППЭ {{ place.code }} ({{ place.name }})<br/>
+        <small>
+            <a
+                href="https://yandex.ru/maps/?text={{ place.addr|urlencode }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Открыть карту">
+                <span class="glyphicon glyphicon-map-marker"></span> {{ place.addr }}
+            </a>
+        </small>
+    </h1>
+    <hr />
+    <p>Список организаторов, распределенных в данный пункт проведения экзаменов</p>
 {% endblock %}

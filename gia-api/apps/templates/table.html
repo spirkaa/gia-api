@@ -2,6 +2,7 @@
 {% load django_tables2 %}
 {% load i18n %}
 {% block table-wrapper %}
+    <p class="text-center">Найдено результатов: <strong>{{ table.page.paginator.count }}</strong></p>
     <div class="table-container table-responsive no-more-tables">
         {% block table %}
             <table {% render_attrs table.attrs class="table table-condensed table-hover" %}>
