@@ -2,7 +2,7 @@
 {% block description %}Организаторы ППЭ {{ place.code }} {{ place.name }} задействованность{% endblock %}
 {% block title %}ППЭ {{ place.code }} {{ place.name }} задействованность руководитель организаторы{% endblock %}
 {% block page_header %}
-    <h1>ППЭ {{ place.code }} ({{ place.name }})<br/>
+    <h1>
         <small>
             <a
                 href="https://yandex.ru/maps/?text={{ place.addr|urlencode }}"
@@ -12,7 +12,7 @@
                 <span class="glyphicon glyphicon-map-marker"></span> {{ place.addr }}
             </a>
         </small>
+        <br/>
+        ППЭ {{ place.code }} ({{ place.name }})
     </h1>
-    <hr />
-    <p>Список организаторов, распределенных в данный пункт проведения экзаменов</p>
 {% endblock %}
