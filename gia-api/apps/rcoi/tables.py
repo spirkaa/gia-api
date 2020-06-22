@@ -51,20 +51,10 @@ class ExamTable(tables.Table):
     level = tables.Column(
         accessor="level__level", attrs={"td": {"data-title": "Уровень"}}
     )
-    place__code = tables.TemplateColumn(
-        template_name="rcoi/cols/exam_place_code.html",
-        verbose_name="Код ППЭ",
-        attrs={"td": {"data-title": "Код ППЭ"}},
-    )
     place = tables.TemplateColumn(
-        template_name="rcoi/cols/exam_place_name.html",
-        verbose_name="Наименование ППЭ",
-        attrs={"td": {"data-title": "Наим. ППЭ"}},
-    )
-    place__addr = tables.TemplateColumn(
-        template_name="rcoi/cols/exam_place_addr.html",
-        verbose_name="Адрес ППЭ",
-        attrs={"td": {"data-title": "Адрес ППЭ"}},
+        template_name="rcoi/cols/exam_place.html",
+        verbose_name="Код ППЭ, наименование, адрес",
+        attrs={"td": {"data-title": "ППЭ"}},
     )
     position = tables.Column(
         accessor="position__name",
@@ -87,12 +77,10 @@ class ExamTable(tables.Table):
         sequence = (
             "date",
             "level",
-            "place__code",
-            "place",
-            "place__addr",
-            "position",
             "employee",
             "employee__org",
+            "position",
+            "place",
         )
         exclude = ("id", "created", "modified", "datafile")
 
