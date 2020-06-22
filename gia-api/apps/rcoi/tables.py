@@ -22,26 +22,16 @@ class EmployeeTable(tables.Table):
 
 
 class PlaceTable(tables.Table):
-    code = tables.TemplateColumn(
-        template_name="rcoi/cols/place_code.html",
-        verbose_name="Код ППЭ",
-        attrs={"td": {"data-title": "Код ППЭ"}},
-    )
-    name = tables.TemplateColumn(
-        template_name="rcoi/cols/place_name.html",
-        verbose_name="Наименование ППЭ",
-        attrs={"td": {"data-title": "Наим. ППЭ"}},
-    )
-    addr = tables.TemplateColumn(
-        template_name="rcoi/cols/place_addr.html",
-        verbose_name="Адрес ППЭ",
-        attrs={"td": {"data-title": "Адрес ППЭ"}},
+    place = tables.TemplateColumn(
+        template_name="rcoi/cols/place.html",
+        verbose_name="",
+        attrs={"td": {"data-title": "ППЭ"}},
     )
 
     class Meta:
         model = models.Place
-        sequence = ("code", "name", "addr")
-        exclude = ("id", "created", "modified", "search_vector")
+        sequence = ("place",)
+        exclude = ("id", "created", "modified", "search_vector", "code", "name", "addr")
 
 
 class ExamTable(tables.Table):
