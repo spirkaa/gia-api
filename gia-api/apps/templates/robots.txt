@@ -301,7 +301,9 @@ Disallow: /api
 Disallow: /date
 Disallow: /level
 Disallow: /position
-Disallow: *filter=
+Disallow: *search=
+Disallow: *sort=
+Disallow: *date=
 
 Host: https://gia-api.devmem.ru
 Sitemap: https://gia-api.devmem.ru/sitemap.xml
