@@ -33,7 +33,7 @@
         <div class="col-md-3 col-sm-3"></div>
         <div class="col-md-6 col-sm-6">
             {% if updated %}{% localtime off %}
-            <div class="text-center bottom-buffer">Данные актуальны на {{ updated|date:"d.m.Y, H:i" }}</div>
+            <div class="text-center bottom-buffer">Обновлено {{ updated|date:"d.m.Y, H:i" }}</div>
             {% endlocaltime %}{% endif %}
             {% crispy filter.form filter.form.helper %}
         </div>

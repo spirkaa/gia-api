@@ -36,14 +36,25 @@
                     <tr{% if todays_date > exam.date.date|date:"Y-m-d" %} class="text-muted"{% endif %}>
                         <td>{% if todays_date > exam.date.date|date:"Y-m-d" %}&#10004;{% endif %}</td>
                         <td data-title="Дата">{{ exam.date.date|date:"SHORT_DATE_FORMAT" }}</td>
-                        <td data-title="Код ППЭ" >{{ exam.place.code }}</td>
-                        <td data-title="Наим. ППЭ">{{ exam.place.name }}</td>
+                        <td data-title="Код ППЭ" >
+                            <strong>
+                                <a{% if todays_date > exam.date.date|date:"Y-m-d" %} class="text-muted"{% endif %}
+                                        href="{{ exam.place.get_absolute_url }}">{{ exam.place.code }}
+                                </a>
+                            </strong>
+                        </td>
+                        <td data-title="Наим. ППЭ">
+                            <a{% if todays_date > exam.date.date|date:"Y-m-d" %} class="text-muted"{% endif %}
+                                    href="{{ exam.place.get_absolute_url }}">{{ exam.place.name }}
+                            </a>
+                        </td>
                         <td data-title="Адрес ППЭ">
                             <a{% if todays_date > exam.date.date|date:"Y-m-d" %} class="text-muted"{% endif %}
-                               href="https://yandex.ru/maps/?text={{ exam.place.addr|urlencode }}"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               title="Открыть карту">{{ exam.place.addr }}
+                                    href="https://yandex.ru/maps/?text={{ exam.place.addr|urlencode }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Открыть карту">
+                                <span class="glyphicon glyphicon-map-marker"></span> {{ exam.place.addr }}
                             </a>
                         </td>
                         <td data-title="Должность">{{ exam.position }}</td>

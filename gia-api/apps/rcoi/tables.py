@@ -22,22 +22,16 @@ class EmployeeTable(tables.Table):
 
 
 class PlaceTable(tables.Table):
-    code = tables.Column(attrs={"td": {"data-title": "Код ППЭ"}})
-    name = tables.TemplateColumn(
-        template_name="rcoi/cols/place_name.html",
-        verbose_name="Наименование ППЭ",
-        attrs={"td": {"data-title": "Наим. ППЭ"}},
-    )
-    addr = tables.TemplateColumn(
-        template_name="rcoi/cols/place_addr.html",
-        verbose_name="Адрес ППЭ",
-        attrs={"td": {"data-title": "Адрес ППЭ"}},
+    place = tables.TemplateColumn(
+        template_name="rcoi/cols/place.html",
+        verbose_name="",
+        attrs={"td": {"data-title": "ППЭ"}},
     )
 
     class Meta:
         model = models.Place
-        sequence = ("code", "name", "addr")
-        exclude = ("id", "created", "modified", "search_vector")
+        sequence = ("place",)
+        exclude = ("id", "created", "modified", "search_vector", "code", "name", "addr")
 
 
 class ExamTable(tables.Table):
@@ -47,18 +41,10 @@ class ExamTable(tables.Table):
     level = tables.Column(
         accessor="level__level", attrs={"td": {"data-title": "Уровень"}}
     )
-    code = tables.Column(
-        accessor="place__code", attrs={"td": {"data-title": "Код ППЭ"}}
-    )
     place = tables.TemplateColumn(
         template_name="rcoi/cols/exam_place.html",
-        verbose_name="Наименование ППЭ",
-        attrs={"td": {"data-title": "Наим. ППЭ"}},
-    )
-    place__addr = tables.TemplateColumn(
-        template_name="rcoi/cols/exam_addr.html",
-        verbose_name="Адрес ППЭ",
-        attrs={"td": {"data-title": "Адрес ППЭ"}},
+        verbose_name="Код ППЭ, наименование, адрес",
+        attrs={"td": {"data-title": "ППЭ"}},
     )
     position = tables.Column(
         accessor="position__name",
@@ -81,11 +67,45 @@ class ExamTable(tables.Table):
         sequence = (
             "date",
             "level",
-            "code",
-            "place",
-            "place__addr",
-            "position",
             "employee",
             "employee__org",
+            "position",
+            "place",
         )
         exclude = ("id", "created", "modified", "datafile")
+
+
+class PlaceWithExamsTable(tables.Table):
+    date = tables.DateColumn(
+        accessor="date__date", attrs={"td": {"data-title": "Дата"}}
+    )
+    level = tables.Column(
+        accessor="level__level", attrs={"td": {"data-title": "Уровень"}}
+    )
+
+    employee = tables.TemplateColumn(
+        template_name="rcoi/cols/exam_employee.html",
+        verbose_name="ФИО",
+        attrs={"td": {"data-title": "ФИО"}},
+    )
+    employee__org = tables.TemplateColumn(
+        template_name="rcoi/cols/exam_org.html",
+        verbose_name="Место работы",
+        attrs={"td": {"data-title": "Место работы"}},
+    )
+    position = tables.Column(
+        accessor="position__name",
+        verbose_name="Должность",
+        attrs={"td": {"data-title": "Должность"}},
+    )
+
+    class Meta:
+        model = models.Exam
+        sequence = (
+            "date",
+            "level",
+            "employee",
+            "employee__org",
+            "position",
+        )
+        exclude = ("id", "created", "modified", "datafile", "place")

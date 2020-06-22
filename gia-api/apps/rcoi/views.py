@@ -10,7 +10,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic import DetailView, ListView, TemplateView
 from django_tables2 import RequestConfig
 
-from .filters import EmployeeFilter, ExamFilter, PlaceFilter
+from .filters import EmployeeFilter, ExamFilter, PlaceFilter, PlaceWithExamsFilter
 from .models import (
     DataFile,
     DataSource,
@@ -23,7 +23,7 @@ from .models import (
     Position,
     RcoiUpdater,
 )
-from .tables import EmployeeTable, ExamTable, PlaceTable
+from .tables import EmployeeTable, ExamTable, PlaceTable, PlaceWithExamsTable
 
 
 class TemplateViewWithContext(TemplateView):
@@ -134,6 +134,21 @@ class EmployeeDetailView(DetailViewWithContext):
         return context
 
 
+class PlaceDetailView(FilteredSingleTableView):
+    model = Exam
+    table_class = PlaceWithExamsTable
+    filter_class = PlaceWithExamsFilter
+    template_name = "rcoi/place_detail.html"
+
+    def get_queryset(self, **kwargs):
+        return self.model.objects.filter(place=self.kwargs.get("pk")).select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["place"] = Place.objects.filter(pk=self.kwargs.get("pk")).get()
+        return context
+
+
 class DateListView(ListView):
     model = Date
 
@@ -160,18 +175,6 @@ class PositionListView(ListView):
 
 class PositionDetailView(DetailView):
     model = Position
-
-
-class EmployeeListView(ListView):
-    model = Employee
-
-
-class PlaceListView(ListView):
-    model = Place
-
-
-class PlaceDetailView(DetailView):
-    model = Place
 
 
 class ExamDetailView(DetailView):
