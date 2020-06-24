@@ -1,10 +1,9 @@
-from django.contrib.sitemaps import views as sitemap_views
 from django.urls import path
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 
 from . import views
-from .sitemap import sitemaps_context
+from .sitemap import index, sitemap, sitemaps_context
 
 urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
@@ -17,13 +16,13 @@ urlpatterns = [
     ),
     path(
         "sitemap.xml",
-        cache_page(86400)(sitemap_views.index),
+        cache_page(86400)(index),
         {"sitemaps": sitemaps_context, "sitemap_url_name": "rcoi:sitemap_section"},
         name="sitemap",
     ),
     path(
         "sitemap-<section>.xml",
-        cache_page(86400)(sitemap_views.sitemap),
+        cache_page(86400)(sitemap),
         {"sitemaps": sitemaps_context},
         name="sitemap_section",
     ),
