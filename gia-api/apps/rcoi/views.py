@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.requests import RequestSite
 from django.db.models import Count
+from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDictKeyError
@@ -147,6 +148,12 @@ class PlaceDetailView(FilteredSingleTableView):
         context = super().get_context_data(**kwargs)
         context["place"] = Place.objects.filter(pk=self.kwargs.get("pk")).get()
         return context
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return super().get(request, *args, **kwargs)
+        except Place.DoesNotExist:
+            raise Http404
 
 
 class DateListView(ListView):

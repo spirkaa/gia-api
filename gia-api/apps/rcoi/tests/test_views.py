@@ -91,10 +91,23 @@ def test_view_place_detail(client):
     """
     Test View - Place - Detail
     """
-    obj = G(models.Place)
-    url = reverse("rcoi:place_detail", args=[obj.pk,])
+    name = "test place"
+    place = G(models.Place, name=name)
+    G(models.Exam, place=place)
+    url = reverse("rcoi:place_detail", args=[place.pk,])
     resp = client.get(url)
     assert resp.status_code == 200
+    assert bytes(name, "utf-8") in resp.content
+    assert len(resp.context["table"].paginated_rows) == 1
+
+
+def test_view_place_detail_404(client):
+    """
+    Test View - Place - Detail (not found)
+    """
+    url = reverse("rcoi:place_detail", args=[777,])
+    resp = client.get(url)
+    assert resp.status_code == 404
 
 
 def test_view_exam_detail(client):
