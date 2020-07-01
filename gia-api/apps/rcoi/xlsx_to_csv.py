@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from datetime import datetime
-from urllib.parse import urlparse
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -28,8 +28,8 @@ def get_file_info(url, date, level):
     :rtype: dict
     """
     logger.debug("get file info: %s", url)
-    name = os.path.basename(urlparse(url).path)
-    local_filename = f"{date}__{level}__{name}"
+    ext = os.path.splitext(url)[1]
+    local_filename = f"{date}__{level}__{ext}"
 
     file_req = requests.head(url)
     last_modified = datetime.strptime(
@@ -55,11 +55,11 @@ def get_files_info(url):
     """
     logger.debug("get file links: %s", url)
     if "/ege/" in url:
-        level = 11
+        level = "11"
     elif "/oge/" in url:
-        level = 9
+        level = "9"
     else:
-        level = "other"
+        level = "0"
 
     req = requests.get(url)
     soup = BeautifulSoup(req.text, "lxml").select('span[data-class="info"]')
@@ -71,7 +71,6 @@ def get_files_info(url):
         "content-type": "application/x-www-form-urlencoded",
         "cache-control": "no-cache",
     }
-    url_base = "/".join(url.split("/")[:3])  # == http://domain.com
 
     file_links = []
     for block in content_blocks:
@@ -79,7 +78,7 @@ def get_files_info(url):
         block_req = requests.request("POST", url, data=payload, headers=headers)
         block_soup = BeautifulSoup(block_req.text, "lxml").select("p a")
         file_links += [
-            (block[1], url_base + a.attrs.get("href"))
+            (block[1], urljoin(url, a.attrs.get("href")))
             for a in block_soup
             if "rab" in a.attrs.get("href")
         ]
@@ -92,7 +91,7 @@ def get_files_info(url):
             block_ident[4:6],
             block_ident[6:8],
             level,
-            file_link.split("/")[-1],
+            os.path.splitext(file_link)[1],
         )
         file_req = requests.head(file_link)
         last_modified = datetime.strptime(
@@ -120,9 +119,14 @@ def download_file(url, local_filename, path):
     :param path: local path
     """
     logger.debug("download file: %s", local_filename)
+    f = os.path.join(path, local_filename)
+    if os.path.exists(f):
+        raise NotImplementedError(
+            "Dumb protection if there are more than 1 file for exam date"
+        )
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
-        with open(os.path.join(path, local_filename), "wb") as f:
+        with open(f, "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
 

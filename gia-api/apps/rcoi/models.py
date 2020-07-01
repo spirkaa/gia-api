@@ -27,7 +27,7 @@ class DataSource(TimeStampedModel):
 
 
 class DataFile(TimeStampedModel):
-    name = models.CharField("Имя файла", max_length=50)
+    name = models.CharField("Имя файла", max_length=50, unique=True)
     url = models.URLField("Ссылка на файл", unique=True)
     size = models.IntegerField("Content-Length", blank=True, null=True)
     last_modified = models.DateTimeField("Last-Modified", blank=True, null=True)
@@ -274,11 +274,16 @@ class RcoiUpdater:
 
         updated_files = []
         for file in files_info:
-            url = file["url"]
             name = file["name"]
             try:
-                f = DataFile.objects.get(url=url)
+                f = DataFile.objects.get(name=name)
                 if f.last_modified != file["last_modified"]:
+                    if f.modified >= datetime.datetime.now() - datetime.timedelta(
+                        minutes=5
+                    ):
+                        raise NotImplementedError(
+                            "Dumb protection if there are more than 1 file for exam date"
+                        )
                     updated_files.append(file)
                     logger.debug("%s: dates differ, DOWNLOAD", name)
                 else:
@@ -369,8 +374,9 @@ class RcoiUpdater:
 
         """
         for file in self.updated_files:
-            logger.debug("update or create file: %s", file["name"])
-            DataFile.objects.update_or_create(url=file["url"], defaults=file)
+            name = file["name"]
+            logger.debug("update or create file: %s", name)
+            DataFile.objects.update_or_create(name=name, defaults=file)
 
     def __update_simple_tables(self):
         """
@@ -526,10 +532,9 @@ class ExamImporter(RcoiUpdater):
         datafile = xlsx_to_csv.get_file_info(self.datafile_url, self.date, self.level)
 
         datafile_updated = False
-        url = datafile["url"]
         name = datafile["name"]
         try:
-            f = DataFile.objects.get(url=url)
+            f = DataFile.objects.get(name=name)
             if f.last_modified != datafile["last_modified"]:
                 datafile_updated = True
                 logger.debug("%s: dates differ, DOWNLOAD", name)

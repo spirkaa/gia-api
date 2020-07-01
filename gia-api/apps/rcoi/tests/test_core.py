@@ -97,6 +97,41 @@ def test_rcoi_updater(mocker_xlsx_to_csv):
     assert exam_count == 2
 
 
+def test_rcoi_updater_same_file(mocker_xlsx_to_csv_single_file, exam_file):
+    """
+    Test - DB Updater - must process update because last_modified field for file is different
+    """
+
+    exam_file_diff_date = exam_file.copy()
+    exam_file_diff_date.update(
+        {"last_modified": datetime.datetime(2020, 6, 1, 1, 1, 1)}
+    )
+
+    G(models.DataSource)
+    G(models.DataFile, modified=datetime.datetime(2019, 1, 1), **exam_file_diff_date)
+
+    models.RcoiUpdater().run()
+    exam_count = models.Exam.objects.count()
+    assert exam_count == 1
+
+
+def test_rcoi_updater_same_file_fail(mocker_xlsx_to_csv_single_file, exam_file):
+    """
+    Test - DB Updater - must fail when trying to process the same file within 5 minutes range
+    """
+
+    exam_file_diff_date = exam_file.copy()
+    exam_file_diff_date.update(
+        {"last_modified": datetime.datetime(2020, 6, 1, 1, 1, 1)}
+    )
+
+    G(models.DataSource)
+    G(models.DataFile, **exam_file_diff_date)
+
+    with pytest.raises(NotImplementedError):
+        assert models.RcoiUpdater().run()
+
+
 def test_rcoi_updater_exception_no_datasource(mocker_xlsx_to_csv_simple):
     """
     Test - DB Updater fail

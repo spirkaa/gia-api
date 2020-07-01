@@ -6,7 +6,7 @@ import pytest
 from django.http import HttpResponse
 
 EXAM_FILE = {
-    "name": "2020-06-13__11__rab_ppe_test.xlsx",
+    "name": "2020-06-13__11__.xlsx",
     "url": "http://rcoi.mcko.ru/2020-06-13__11__rab_ppe_test.xlsx",
     "size": "1024000",
     "last_modified": datetime.datetime(2020, 5, 15, 16, 23, 42),
@@ -19,7 +19,7 @@ SAME_FILE_DIFF_DATE = [EXAM_FILE, EXAM_FILE_DIFF_DATE]
 DIFF_FILES = [
     EXAM_FILE,
     {
-        "name": "2020-06-14__11__rab_ppe_test.xlsx",
+        "name": "2020-06-14__11__.xlsx",
         "url": "http://rcoi.mcko.ru/2020-06-14__11__rab_ppe_test.xlsx",
         "size": "2048000",
         "last_modified": datetime.datetime(2020, 5, 16, 0, 0, 0),
@@ -45,7 +45,7 @@ def csv_headers():
 @pytest.fixture
 def csv_data_row():
     return [
-        "2020-06-13__11__rab_ppe_test.xlsx",
+        "2020-06-13__11__.xlsx",
         "2020-06-13",
         "11",
         "1000",
@@ -55,6 +55,11 @@ def csv_data_row():
         "employee",
         "org",
     ]
+
+
+@pytest.fixture
+def exam_file():
+    return EXAM_FILE
 
 
 @pytest.fixture
@@ -75,12 +80,24 @@ def exams_csv(csv_headers, csv_data_row):
     return stream
 
 
-@pytest.fixture(params=[DIFF_FILES, SAME_FILE_DIFF_DATE])
-def mocker_xlsx_to_csv(request, mocker, exams_csv):
+@pytest.fixture
+def mocker_xlsx_to_csv(mocker, exams_csv):
     """
     mock of 'apps.rcoi.xlsx_to_csv'
     """
-    mocker.patch("apps.rcoi.xlsx_to_csv.get_files_info", return_value=request.param)
+    mocker.patch("apps.rcoi.xlsx_to_csv.get_files_info", return_value=DIFF_FILES)
+    mocker.patch("apps.rcoi.xlsx_to_csv.download_file")
+    mocker.patch("apps.rcoi.xlsx_to_csv.save_to_stream", return_value=exams_csv)
+    yield mocker
+    mocker.resetall()
+
+
+@pytest.fixture
+def mocker_xlsx_to_csv_single_file(mocker, exams_csv):
+    """
+    mock of 'apps.rcoi.xlsx_to_csv'
+    """
+    mocker.patch("apps.rcoi.xlsx_to_csv.get_files_info", return_value=[EXAM_FILE])
     mocker.patch("apps.rcoi.xlsx_to_csv.download_file")
     mocker.patch("apps.rcoi.xlsx_to_csv.save_to_stream", return_value=exams_csv)
     yield mocker

@@ -28,7 +28,7 @@ def test_get_file_info():
     )
 
     r = xlsx_to_csv.get_file_info(exam_url, exam_date, exam_level)
-    assert r["name"] == f"{exam_date}__{exam_level}__{filename}"
+    assert r["name"] == f"{exam_date}__{exam_level}__{os.path.splitext(exam_url)[1]}"
     assert r["size"] == size
     assert r["last_modified"] == lm_dt
     assert r["url"] == exam_url
@@ -79,16 +79,23 @@ def test_download_file(mocker):
     body = b"body"
     responses.add(responses.GET, url, body=body)
     mocker.patch("builtins.open", mocker.mock_open())
+
     xlsx_to_csv.download_file(url, name, path)
     open().write.assert_any_call(body)
+
+    # If file exists
+    mocker.patch("os.path.exists", return_value=True)
+    with pytest.raises(NotImplementedError):
+        assert xlsx_to_csv.download_file(url, name, path)
+
     mocker.resetall()
 
 
 def test_parse_xlsx(settings):
     """
-    Test Parser - Parse xlsx
+    Test Parser - Parse real xlsx file
     """
-    filename = "2020-06-13__11__rab_ppe_test.xlsx"
+    filename = "2020-06-13__11__.xlsx"
     filepath = os.path.join(settings.APPS_DIR, "rcoi", "tests", "xlsx", filename)
     res = xlsx_to_csv.parse_xlsx(filepath)
     assert len(res) == 10
