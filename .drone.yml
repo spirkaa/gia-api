@@ -1,32 +1,5 @@
 ---
 kind: pipeline
-name: test
-trigger:
-  event:
-    exclude:
-      - promote
-      - rollback
-
-services:
-  - name: postgres
-    image: postgres:12-alpine
-    environment:
-      POSTGRES_USER: dbuser
-      POSTGRES_PASSWORD: dbpass
-
-steps:
-  - name: test
-    image: registry.home.devmem.ru/gia/api:latest
-    environment:
-      DJANGO_DATABASE_URL: postgres://dbuser:dbpass@postgres:5432/dbuser
-      DJANGO_SETTINGS_MODULE: config.settings.local
-      PYTHONPATH: ${PYTHONPATH}:/drone/src/gia-api
-    commands:
-      - pip install --no-cache-dir -r gia-api/requirements/testing.txt
-      - pytest
-
----
-kind: pipeline
 name: build
 trigger:
   branch:
@@ -35,8 +8,6 @@ trigger:
     exclude:
       - promote
       - rollback
-depends_on:
-  - test
 
 steps:
   - name: api
@@ -71,6 +42,35 @@ steps:
       cache_from: registry.home.devmem.ru/gia/redis:latest
       tags:
         - latest
+
+---
+kind: pipeline
+name: test
+trigger:
+  event:
+    exclude:
+      - promote
+      - rollback
+depends_on:
+  - build
+
+services:
+  - name: postgres
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
+
+steps:
+  - name: test
+    image: registry.home.devmem.ru/gia/api:latest
+    environment:
+      DJANGO_DATABASE_URL: postgres://dbuser:dbpass@postgres:5432/dbuser
+      DJANGO_SETTINGS_MODULE: config.settings.local
+      PYTHONPATH: ${PYTHONPATH}:/drone/src/gia-api
+    commands:
+      - pip install --no-cache-dir -r gia-api/requirements/testing.txt
+      - pytest
 
 ---
 kind: pipeline
