@@ -19,3 +19,6 @@ exclude = '''
 profile = 'black'
 multi_line_output = 3
 known_first_party = 'apps'
+
+[tool.pytest.ini_options]
+addopts = '--cov=gia-api --cov-report term-missing:skip-covered'
