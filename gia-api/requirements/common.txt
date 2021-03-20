@@ -1,9 +1,9 @@
 # Django
-django==2.2.17
+django==2.2.19
 django-bootstrap3==12.1.0
-django-crispy-forms==1.10.0
+django-crispy-forms==1.11.1
 django-decorator-include==3.0
-django-extensions==3.1.0
+django-extensions==3.1.1
 django-filter==2.4.0
 django-tables2==2.3.4
 django-allauth==0.44.0
@@ -13,12 +13,12 @@ djmail==2.0.0
 django-prometheus==2.1.0
 
 # REST
-django-cors-headers==3.6.0
+django-cors-headers==3.7.0
 djangorestframework==3.12.2
 djangorestframework-filters==1.0.0.dev2
 django-rest-auth==0.9.5
-drf-extensions==0.6.0
-drf-jwt==1.17.3
+drf-extensions==0.7.0
+drf-jwt==1.18.0
 drf-yasg==1.20.0
 
 # Configuration
@@ -32,4 +32,4 @@ psycopg2==2.8.6
 requests==2.25.1
 beautifulsoup4==4.9.3
 lxml==4.6.2
-openpyxl==3.0.6
+openpyxl==3.0.7
