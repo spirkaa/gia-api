@@ -2,6 +2,7 @@ FROM jfloff/alpine-python:3.8
 LABEL maintainer="Ilya Pavlov <piv@devmem.ru>"
 
 ENV PYTHONUNBUFFERED=1
+ARG CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
 COPY ./gia-api/requirements /app/requirements
 
