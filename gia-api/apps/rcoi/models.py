@@ -466,7 +466,7 @@ class RcoiUpdater:
         replace_items(datafile_id, datafile_db)
 
         exams = list(
-            zip(date_id, level_id, place_id, employee_id, position_id, datafile_id)
+            set(zip(date_id, level_id, place_id, employee_id, position_id, datafile_id))
         )
 
         table = "exam"
