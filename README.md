@@ -80,3 +80,13 @@
     RcoiUpdater().run()
     exit()
     docker-compose restart
+
+## Новый сезон
+
+### Очистить таблицы и начать автоинкремент id с начала.
+
+    docker exec -it gia-db psql -U gia
+    TRUNCATE rcoi_datafile, rcoi_date, rcoi_employee, rcoi_exam, rcoi_level, rcoi_organisation, rcoi_place, rcoi_position, rcoi_subscription RESTART IDENTITY;
+    exit;
+
+### Вручную отправить письмо подписчикам, чтобы подписались заново.
