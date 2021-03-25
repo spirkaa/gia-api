@@ -131,175 +131,87 @@ def download_file(url, local_filename, path):
                 f.write(chunk)
 
 
-# replace quotation marks
-s0 = re.compile(r'["„“”«»\'‘’]')
-# remove spaces before punctuation marks
-s1 = re.compile(r"\s+(?=[.,:;!?])")
-# 1. (add space after punctuation marks |
-# 2. add space before "№" |
-# 3. replace whitespace chars with only one space)
-s2 = re.compile(r"(?<=[.,:;!№?])(?![.,:;!№?\s])|(?<=\w)(?=№)|\s+")
+# quotation marks
+re_quotes = re.compile(r'[<>"„“”«»‘’\']')
+# spaces before punctuation marks
+re_punctuation = re.compile(r"\s+(?=[.,:;!?])")
+# (after punctuation marks | before "№" | whitespace chars)
+re_spaces = re.compile(r"(?<=[.,:;!№?])(?![.,:;!№?\s])|(?<=\w)(?=№)|\s+")
 
 
-def re_work(s):
+def apply_regexp(value):
     """
-    Format string with precompiled regexp rules
+    Apply precompiled regexp rules
 
-    :type s: str
-    :param s: string
+    :type value: str
+    :param value: string
     :return: formatted string
     :rtype: str
     """
-    s = s2.sub(" ", s1.sub("", s0.sub(" ", str(s)))).strip()
+    s = re_spaces.sub(
+        " ", re_punctuation.sub("", re_quotes.sub(" ", str(value)))
+    ).strip()
     return s
 
 
-def rename_org(value):  # pragma: no cover
+def format_org_name(value):
     """
-    Replace parts of organization name
+    Replace full organization name with abbreviation
 
     :type value: str
     :param value: original name
     :return: modified name
     :rtype: str
     """
-    if " образовательное учреждение" in value:
-        value = value.replace(
-            " образовательное учреждение", " общеобразовательное учреждение",
-        )
-    value = value.replace(
-        "Федеральное государственное бюджетное общеобразовательное учреждение высшего образования",
-        "ФГБОУ ВО",
-    )
-    value = value.replace(
-        "федеральное государственное бюджетное общеобразовательное учреждение высшего образования",
-        "ФГБОУ ВО",
-    )
-    value = value.replace(
-        "Федеральное государственное бюджетное общеобразовательное учреждение", "ФГБОУ"
-    )
-    value = value.replace(
-        "Автономная некоммерческая образовательная организация", "АНОО"
-    )
-    value = value.replace(
-        "Автономная некомерческая организация высшего образования", "АНОВО"
-    )
-    value = value.replace(
-        "Автономная некоммерческая общеобразовательная организация", "АНОО"
-    )
-    value = value.replace(
-        "Государственное автономное общеобразовательное учреждение города Москвы",
-        "ГАОУ",
-    )
-    value = value.replace(
-        "Государственное автономное общеобразовательное учреждение дополнительного профессионального образования города Москвы",  # noqa
-        "ГАОУ ДПО",
-    )
-    value = value.replace(
-        "Государственное автономное общеобразовательное учреждение высшего образования города Москвы",
-        "ГАОУ ВО",
-    )
-    value = value.replace(
-        "Государственное автономное профессиональное общеобразовательное учреждение города Москвы",
-        "ГАПОУ",
-    )
-    value = value.replace(
-        "Государственное бюджетное профессиональное общеобразовательное учреждение города Москвы",
-        "ГБПОУ",
-    )
-    value = value.replace(
-        "Государственное бюджетное профессиональное общеобразовательное учреждение (колледж) города Москвы",  # noqa
-        "ГБПОУ",
-    )
-    value = value.replace(
-        "Государственное бюджетное профессиональное общеобразовательное учреждение г. Москвы",
-        "ГБПОУ",
-    )
-    value = value.replace("ГБПОУ г. Москвы", "ГБПОУ")
-    value = value.replace(
-        "Государственное бюджетное общеобразовательное учреждение города Москвы", "ГБОУ"
-    )
-    value = value.replace(
-        "Государственное бюджетное общеобразовательноеучреждение города Москвы", "ГБОУ"
-    )
-    value = value.replace(
-        "Государственное бюджетное общеобразовательное учреждение", "ГБОУ"
-    )
-    value = value.replace(
-        "государственное бюджетное общеобразовательное учреждение", "ГБОУ"
-    )
-    value = value.replace("Государственное бюджетное учреждение города Москвы", "ГБУ")
-    value = value.replace(
-        "Государственное бюджетное учреждение средняя общеобразовательная школа",
-        "ГБУ СОШ",
-    )
-    value = value.replace(
-        "Государственное казенное общеобразовательное учреждение города Москвы", "ГКОУ"
-    )
-    value = value.replace(
-        "Муниципальное автономное общеобразовательное учреждение", "МАОУ"
-    )
-    value = value.replace(
-        "Негосударственная общеобразовательная организация частное учреждение", "НООЧУ"
-    )
-    value = value.replace(
-        "Негосударственное образовательное частное учреждение", "НОЧУ"
-    )
-    value = value.replace(
-        "Негосударственное образовательное частное учреждения", "НОЧУ"
-    )
-    value = value.replace(
-        "Негосударственное некоммерческое общеобразовательное учреждение", "ННОУ"
-    )
-    value = value.replace("Негосударственное общеобразовательное учреждение", "НОУ")
-    value = value.replace(
-        "Негосударственное общеобразовательное частное учреждение", "НОЧУ"
-    )
-    value = value.replace(
-        "Негосударственное частное учреждение общеобразовательная организация", "НЧУОО"
-    )
-    value = value.replace("Некоммерческое образовательное частное учреждение", "НОЧУ")
-    value = value.replace(
-        "Общеобразовательная автономная некоммерческая организация", "ОАНО"
-    )
-    value = value.replace("Автономная некоммерческая организация", "АНО")
-    value = value.replace("Общеобразовательное частное учреждение", "ОЧУ")
-    value = value.replace("Образовательное частное учреждение", "ОЧУ")
-    value = value.replace("Общеобразовательная организация частное учреждение", "ООЧУ")
-    value = value.replace(
-        "Общеобщеобразовательная автономная некоммерческая организация", "ОАНО"
-    )
-    value = value.replace("средняя общеобразовательная школа", "СОШ")
-    value = value.replace("Средняя общеобразовательная школа", "СОШ")
-    value = value.replace(
-        "Федеральное государственное автономное общеобразовательное учреждение", "ФГАОУ"
-    )
-    value = value.replace(
-        "федеральное государственное бюджетное общеобразовательное учреждение", "ФГБОУ"
-    )
-    value = value.replace(
-        "Федеральное государственное бюджетное общеобразовательное учреждение", "ФГБОУ"
-    )
-    value = value.replace(
-        "Федеральное государственное казенное общеобразовательное учреждение", "ФГКОУ"
-    )
-    value = value.replace(
-        "Федеральное государственное казённое общеобразовательное учреждение", "ФГКОУ"
-    )
-    value = value.replace("Частное общеобразовательное учреждение", "ЧОУ")
-    value = value.replace("Частное учреждение общеобразовательная организация", "ЧУ ОО")
-    value = value.replace("Частное учреждение Общеобразовательная организация", "ЧУ ОО")
-    value = value.replace(
-        "Частное учреждение средняя общеобразовательная школа", "ЧУ СОШ"
-    )
-    value = value.replace(
-        "Частное учреждение средняя общеобразовательное школа", "ЧУ СОШ"
-    )
-    value = value.replace(
-        "Частное учреждение Средняя общеобразовательная школа", "ЧУ СОШ"
-    )
-    value = value.replace("Частное учреждение", "ЧУ")
+    org_names = {
+        "Государствнное": "Государственное",
+        "уччреждение": "учреждение",
+        "бюджетного": "бюджетное",
+        " образовательное": " общеобразовательное",
+        "им.": "имени",
+        "Государственное бюджетное общеобразовательное учреждение города Москвы": "ГБОУ",
+        "Государственное бюджетное общеобразовательное учреждение": "ГБОУ",
+        "Государственное казенное общеобразовательное учреждение города Москвы": "ГКОУ",
+        "Государственное автономное общеобразовательное учреждение города Москвы": "ГАОУ",
+        "Государственное автономное профессиональное общеобразовательное учреждение города Москвы": "ГАПОУ",
+        "Государственное бюджетное профессиональное общеобразовательное учреждение города Москвы": "ГБПОУ",
+        "Муниципальное автономное общеобразовательное учреждение": "МАОУ",
+    }
+    for name, abbreviation in org_names.items():
+        value = value.replace(name, abbreviation)
     return value
+
+
+def format_addr(value):
+    """
+    Remove district name from street address
+
+    :type value: str
+    :param value: original street address
+    :return: modified street address
+    :rtype: str
+    """
+    districts = [
+        "Восточный",
+        "Западный",
+        "Зеленоградский",
+        "Новомосковский",
+        "Северный",
+        "Северо-Восточный",
+        "Северо-Западный",
+        "Троицкий",
+        "Центральный",
+        "Юго-Восточный",
+        "Юго-Западный",
+        "Южный",
+    ]
+    addr = value.split(" ")
+    district = addr[1].rstrip(",")
+    if district in districts:
+        del addr[1]
+        return " ".join(addr)
+    else:
+        return value
 
 
 def parse_xlsx(filepath):
@@ -344,8 +256,13 @@ def parse_xlsx(filepath):
             for cell_num in range(1, len(row)):  # skip 1 cell (int counter)
                 cell = row[cell_num].value
                 if cell:
-                    cell = re_work(cell)
-                    cell = rename_org(cell)
+                    cell = apply_regexp(cell)
+                    if cell_num == 2 or cell_num == 6:  # org name
+                        cell = format_org_name(cell)
+                    if cell_num == 3:  # org address
+                        cell = format_addr(cell)
+                    if cell_num == 5:  # employee name
+                        cell = " ".join([part.capitalize() for part in cell.split()])
                 formatted_row.append(cell)  # append all cells, even blank
             if formatted_row[5]:  # why check this?  # pragma: no cover
                 result.append(formatted_row)
