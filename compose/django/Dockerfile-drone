@@ -1,4 +1,4 @@
-FROM registry.home.devmem.ru/python:3.8-alpine
+FROM registry.home.devmem.ru/python:3.9-alpine
 
 ENV PYTHONUNBUFFERED=1
 ARG CRYPTOGRAPHY_DONT_BUILD_RUST=1
