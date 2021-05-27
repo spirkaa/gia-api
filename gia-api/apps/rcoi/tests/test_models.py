@@ -90,7 +90,12 @@ def test_exam_str():
     place = "school"
     employee = "test"
     test_str = str(date) + ", " + place + ", " + employee
-    obj = G(models.Exam, date__date=date, place__name=place, employee__name=employee,)
+    obj = G(
+        models.Exam,
+        date__date=date,
+        place__name=place,
+        employee__name=employee,
+    )
     assert obj.__str__() == test_str
 
 
@@ -101,7 +106,11 @@ def test_subscription_str():
     user = "user"
     employee = "test"
     test_str = user + " --> " + employee
-    obj = G(models.Subscription, user__username=user, employee__name=employee,)
+    obj = G(
+        models.Subscription,
+        user__username=user,
+        employee__name=employee,
+    )
     assert obj.__str__() == test_str
 
 

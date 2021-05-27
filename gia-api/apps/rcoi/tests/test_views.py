@@ -17,7 +17,14 @@ def test_view_home(client):
     assert resp.status_code == 200
 
 
-@pytest.mark.parametrize("model_name", ["employee", "place", "exam",])
+@pytest.mark.parametrize(
+    "model_name",
+    [
+        "employee",
+        "place",
+        "exam",
+    ],
+)
 def test_view_model_list_custom(client, model_name):
     """
     Test View - Model List View (custom)
@@ -27,7 +34,15 @@ def test_view_model_list_custom(client, model_name):
     assert resp.status_code == 200
 
 
-@pytest.mark.parametrize("model_name", ["date", "level", "organisation", "position",])
+@pytest.mark.parametrize(
+    "model_name",
+    [
+        "date",
+        "level",
+        "organisation",
+        "position",
+    ],
+)
 def test_view_model_list_view(model_name, client):
     """
     Test View - Model List View
@@ -42,7 +57,12 @@ def test_view_date_detail(client):
     Test View - Date - Detail
     """
     obj = G(models.Date)
-    url = reverse("rcoi:date_detail", args=[obj.pk,])
+    url = reverse(
+        "rcoi:date_detail",
+        args=[
+            obj.pk,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 200
 
@@ -52,7 +72,12 @@ def test_view_level_detail(client):
     Test View - Level - Detail
     """
     obj = G(models.Level)
-    url = reverse("rcoi:level_detail", args=[obj.pk,])
+    url = reverse(
+        "rcoi:level_detail",
+        args=[
+            obj.pk,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 200
 
@@ -62,7 +87,12 @@ def test_view_organisation_detail(client):
     Test View - Organisation - Detail
     """
     obj = G(models.Organisation)
-    url = reverse("rcoi:organisation_detail", args=[obj.pk,])
+    url = reverse(
+        "rcoi:organisation_detail",
+        args=[
+            obj.pk,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 200
 
@@ -72,7 +102,12 @@ def test_view_position_detail(client):
     Test View - Position - Detail
     """
     obj = G(models.Position)
-    url = reverse("rcoi:position_detail", args=[obj.pk,])
+    url = reverse(
+        "rcoi:position_detail",
+        args=[
+            obj.pk,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 200
 
@@ -82,7 +117,12 @@ def test_view_employee_detail(client):
     Test View - Employee - Detail
     """
     obj = G(models.Employee)
-    url = reverse("rcoi:employee_detail", args=[obj.pk,])
+    url = reverse(
+        "rcoi:employee_detail",
+        args=[
+            obj.pk,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 200
 
@@ -94,7 +134,12 @@ def test_view_place_detail(client):
     name = "test place"
     place = G(models.Place, name=name)
     G(models.Exam, place=place)
-    url = reverse("rcoi:place_detail", args=[place.pk,])
+    url = reverse(
+        "rcoi:place_detail",
+        args=[
+            place.pk,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 200
     assert bytes(name, "utf-8") in resp.content
@@ -105,7 +150,12 @@ def test_view_place_detail_404(client):
     """
     Test View - Place - Detail (not found)
     """
-    url = reverse("rcoi:place_detail", args=[777,])
+    url = reverse(
+        "rcoi:place_detail",
+        args=[
+            777,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 404
 
@@ -115,7 +165,12 @@ def test_view_exam_detail(client):
     Test View - Exam - Detail
     """
     obj = G(models.Exam)
-    url = reverse("rcoi:exam_detail", args=[obj.pk,])
+    url = reverse(
+        "rcoi:exam_detail",
+        args=[
+            obj.pk,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 200
 
@@ -197,7 +252,12 @@ def test_view_sitemap_section(client, section):
     Test View - sitemap section
     """
     G(models.Exam)
-    url = reverse("rcoi:sitemap_section", args=[section,])
+    url = reverse(
+        "rcoi:sitemap_section",
+        args=[
+            section,
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 200
 
@@ -206,7 +266,12 @@ def test_view_sitemap_section_404(client):
     """
     Test View - sitemap section (not found)
     """
-    url = reverse("rcoi:sitemap_section", args=["test",])
+    url = reverse(
+        "rcoi:sitemap_section",
+        args=[
+            "test",
+        ],
+    )
     resp = client.get(url)
     assert resp.status_code == 404
 
@@ -216,6 +281,11 @@ def test_view_sitemap_section_page_404(client, page_num):
     """
     Test View - sitemap page (not found)
     """
-    url = reverse("rcoi:sitemap_section", args=["employee",])
+    url = reverse(
+        "rcoi:sitemap_section",
+        args=[
+            "employee",
+        ],
+    )
     resp = client.get(url, {"p": page_num})
     assert resp.status_code == 404

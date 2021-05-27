@@ -48,7 +48,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["-date"],},
+            options={
+                "ordering": ["-date"],
+            },
         ),
         migrations.CreateModel(
             name="Level",
@@ -84,7 +86,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["level"],},
+            options={
+                "ordering": ["level"],
+            },
         ),
         migrations.CreateModel(
             name="Organisation",
@@ -120,7 +124,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["name"],},
+            options={
+                "ordering": ["name"],
+            },
         ),
         migrations.CreateModel(
             name="Position",
@@ -156,7 +162,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["name"],},
+            options={
+                "ordering": ["name"],
+            },
         ),
         migrations.CreateModel(
             name="Place",
@@ -243,7 +251,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["name"], "unique_together": {("name", "org")},},
+            options={
+                "ordering": ["name"],
+                "unique_together": {("name", "org")},
+            },
         ),
         migrations.CreateModel(
             name="DataFile",
@@ -284,7 +295,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["-last_modified"],},
+            options={
+                "ordering": ["-last_modified"],
+            },
         ),
         migrations.CreateModel(
             name="DataSource",

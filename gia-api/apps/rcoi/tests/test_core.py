@@ -16,10 +16,13 @@ def test_send_subscriptions(mailoutbox):
     emp = G(models.Employee, name=employee)
     user = G(models.User)
     G(
-        models.Exam, employee=emp,
+        models.Exam,
+        employee=emp,
     )
     G(
-        models.Subscription, user=user, employee=emp,
+        models.Subscription,
+        user=user,
+        employee=emp,
     )
 
     models.send_subscriptions()
@@ -37,7 +40,8 @@ def test_send_subscriptions_when_already_sent(mailoutbox):
     emp = G(models.Employee, name=employee)
     user = G(models.User)
     G(
-        models.Exam, employee=emp,
+        models.Exam,
+        employee=emp,
     )
     G(
         models.Subscription,

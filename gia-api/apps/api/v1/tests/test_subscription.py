@@ -17,7 +17,8 @@ def test_api_subscription_add(client, authenticated_user):
 
     employee = G(models.Employee)
     G(
-        models.Exam, employee=employee,
+        models.Exam,
+        employee=employee,
     )
 
     url = reverse("apiv1:subscription-list")
@@ -38,7 +39,8 @@ def test_api_subscription_add_fail(client, authenticated_user):
 
     employee = G(models.Employee)
     G(
-        models.Exam, employee=employee,
+        models.Exam,
+        employee=employee,
     )
     G(models.Subscription, user=user, employee=employee)
 
@@ -60,7 +62,8 @@ def test_api_subscription_add_limit(client, authenticated_user):
 
     employee = G(models.Employee)
     G(
-        models.Exam, employee=employee,
+        models.Exam,
+        employee=employee,
     )
     G(models.Subscription, user=user, n=100)
 
@@ -82,11 +85,17 @@ def test_api_subscription_delete(client, authenticated_user):
 
     employee = G(models.Employee)
     G(
-        models.Exam, employee=employee,
+        models.Exam,
+        employee=employee,
     )
     obj = G(models.Subscription, user=user, employee=employee)
 
-    url = reverse("apiv1:subscription-detail", args=[obj.pk,])
+    url = reverse(
+        "apiv1:subscription-detail",
+        args=[
+            obj.pk,
+        ],
+    )
     resp = client.delete(url, HTTP_AUTHORIZATION=f"{auth_header}")
     content = json.loads(resp.content)
     assert resp.status_code == 200
@@ -101,11 +110,17 @@ def test_api_subscription_delete_fail(client, authenticated_user):
 
     employee = G(models.Employee)
     G(
-        models.Exam, employee=employee,
+        models.Exam,
+        employee=employee,
     )
     obj = G(models.Subscription, employee=employee)
 
-    url = reverse("apiv1:subscription-detail", args=[obj.pk,])
+    url = reverse(
+        "apiv1:subscription-detail",
+        args=[
+            obj.pk,
+        ],
+    )
     resp = client.delete(url, HTTP_AUTHORIZATION=f"{auth_header}")
     assert resp.status_code == 404
 
@@ -119,7 +134,8 @@ def test_api_subscription_view_list(client, authenticated_user):
 
     employee = G(models.Employee)
     G(
-        models.Exam, employee=employee,
+        models.Exam,
+        employee=employee,
     )
     G(models.Subscription, user=user, employee=employee)
 

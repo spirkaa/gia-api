@@ -88,7 +88,9 @@ class FilterWithHelper(django_filters.FilterSet):
             ),
         )
         self._meta.filter_overrides = {
-            SearchVectorField: {"filter_class": SearchVectorFilter,}
+            SearchVectorField: {
+                "filter_class": SearchVectorFilter,
+            }
         }
 
 

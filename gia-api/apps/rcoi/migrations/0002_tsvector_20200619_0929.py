@@ -72,7 +72,8 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterModelOptions(
-            name="datasource", options={"ordering": ["-modified"]},
+            name="datasource",
+            options={"ordering": ["-modified"]},
         ),
         migrations.RunSQL(
             sql="""

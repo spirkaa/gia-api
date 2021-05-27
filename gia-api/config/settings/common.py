@@ -142,7 +142,9 @@ USE_L10N = True
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [str(APPS_DIR.path("templates")),],
+        "DIRS": [
+            str(APPS_DIR.path("templates")),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "debug": DEBUG,
@@ -171,10 +173,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {"min_length": 8,},
+        "OPTIONS": {
+            "min_length": 8,
+        },
     },
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
 # STATIC FILE CONFIGURATION
@@ -221,11 +229,20 @@ LOGGING = {
         "default": {
             "format": "%(asctime)s  [%(name)s:%(lineno)s]  %(levelname)s - %(message)s",
         },
-        "simple": {"format": "%(levelname)s %(message)s",},
+        "simple": {
+            "format": "%(levelname)s %(message)s",
+        },
     },
-    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse",}},
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        }
+    },
     "handlers": {
-        "null": {"level": "DEBUG", "class": "logging.NullHandler",},
+        "null": {
+            "level": "DEBUG",
+            "class": "logging.NullHandler",
+        },
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
@@ -244,7 +261,10 @@ LOGGING = {
         },
     },
     "loggers": {
-        "django.security.DisallowedHost": {"handlers": ["null"], "propagate": False,},
+        "django.security.DisallowedHost": {
+            "handlers": ["null"],
+            "propagate": False,
+        },
         "django.request": {
             "handlers": ["mail_admins"],
             "level": "ERROR",
@@ -255,7 +275,10 @@ LOGGING = {
             "level": env.str("DJANGO_LOG_LEVEL", default="INFO"),
             "propagate": False,
         },
-        "drf_yasg": {"handlers": ["console", "file"], "level": "INFO",},
+        "drf_yasg": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+        },
         "": {
             "handlers": ["console", "file"],
             "level": env.str("DJANGO_LOG_LEVEL", default="INFO"),
@@ -303,7 +326,11 @@ SWAGGER_SETTINGS = {
     "LOGIN_URL": "/api/v1/auth/login",
     "LOGOUT_URL": "/api/v1/auth/logout",
     "SECURITY_DEFINITIONS": {
-        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header",}
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        }
     },
 }
 

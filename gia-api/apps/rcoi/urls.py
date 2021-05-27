@@ -30,15 +30,23 @@ urlpatterns = [
     path("admin/clear_caches/", views.clear_caches_view, name="clear_caches"),
     # urls for Date
     path("date/", views.DateListView.as_view(), name="date_list"),
-    path("date/detail/<int:pk>/", views.DateDetailView.as_view(), name="date_detail",),
+    path(
+        "date/detail/<int:pk>/",
+        views.DateDetailView.as_view(),
+        name="date_detail",
+    ),
     # urls for Level
     path("level/", views.LevelListView.as_view(), name="level_list"),
     path(
-        "level/detail/<int:pk>/", views.LevelDetailView.as_view(), name="level_detail",
+        "level/detail/<int:pk>/",
+        views.LevelDetailView.as_view(),
+        name="level_detail",
     ),
     # urls for Organisation
     path(
-        "organisation/", views.OrganisationListView.as_view(), name="organisation_list",
+        "organisation/",
+        views.OrganisationListView.as_view(),
+        name="organisation_list",
     ),
     path(
         "organisation/detail/<int:pk>/",
@@ -62,9 +70,15 @@ urlpatterns = [
     # urls for Place
     path("place/", views.PlaceTableView.as_view(), name="place"),
     path(
-        "place/detail/<int:pk>/", views.PlaceDetailView.as_view(), name="place_detail",
+        "place/detail/<int:pk>/",
+        views.PlaceDetailView.as_view(),
+        name="place_detail",
     ),
     # urls for Exam
     path("exam/", views.ExamTableView.as_view(), name="exam"),
-    path("exam/detail/<int:pk>/", views.ExamDetailView.as_view(), name="exam_detail",),
+    path(
+        "exam/detail/<int:pk>/",
+        views.ExamDetailView.as_view(),
+        name="exam_detail",
+    ),
 ]

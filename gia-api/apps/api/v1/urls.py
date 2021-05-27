@@ -9,7 +9,10 @@ from rest_framework_jwt.views import refresh_jwt_token, verify_jwt_token
 from . import views
 
 schema_view = get_schema_view(
-    openapi.Info(title="GIA API", default_version="v1",),
+    openapi.Info(
+        title="GIA API",
+        default_version="v1",
+    ),
     public=True,
     permission_classes=(permissions.AllowAny,),
 )

@@ -177,7 +177,8 @@ class ExamAdmin(admin.ModelAdmin):
                 try:
                     models.ExamImporter(**data).run()
                     self.message_user(
-                        request, f"Файл {datafile_name} обработан",
+                        request,
+                        f"Файл {datafile_name} обработан",
                     )
                 except:  # noqa  # pragma: no cover
                     self.message_user(request, sys.exc_info(), level=40)

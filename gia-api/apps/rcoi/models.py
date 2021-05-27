@@ -451,13 +451,22 @@ class RcoiUpdater:
         place = Place.objects.all()
         place_db = {(p.code, p.name, p.addr): p.id for p in place}
         place_id = list(
-            zip(self.data["ppe_code"], self.data["ppe_name"], self.data["ppe_addr"],)
+            zip(
+                self.data["ppe_code"],
+                self.data["ppe_name"],
+                self.data["ppe_addr"],
+            )
         )
         replace_items(place_id, place_db)
 
         employee = Employee.objects.all().select_related()
         employee_db = {(emp.name, emp.org.name): emp.id for emp in employee}
-        employee_id = list(zip(self.data["name"], self.data["organisation"],))
+        employee_id = list(
+            zip(
+                self.data["name"],
+                self.data["organisation"],
+            )
+        )
         replace_items(employee_id, employee_db)
 
         datafile = DataFile.objects.all()

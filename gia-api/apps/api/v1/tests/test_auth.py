@@ -65,7 +65,12 @@ def test_api_auth_register_fail(client, pass1, pass2):
     """
     url = reverse("apiv1:rest_register")
     resp = client.post(
-        url, data={"email": "test@test.com", "password1": pass1, "password2": pass2,}
+        url,
+        data={
+            "email": "test@test.com",
+            "password1": pass1,
+            "password2": pass2,
+        },
     )
     assert resp.status_code == 400
 

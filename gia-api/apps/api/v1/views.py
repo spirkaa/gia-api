@@ -49,7 +49,10 @@ class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
 
     queryset = models.Employee.objects.select_related()
     queryset_detail = queryset.prefetch_related(
-        "exams__date", "exams__level", "exams__place", "exams__position",
+        "exams__date",
+        "exams__level",
+        "exams__place",
+        "exams__position",
     ).all()
     serializer_class = serializers.EmployeeSerializer
     serializer_detail_class = serializers.EmployeeDetailSerializer
@@ -104,7 +107,7 @@ class DataFileViewSet(viewsets.ReadOnlyModelViewSet):
 
 @method_decorator(never_cache, name="dispatch")
 class SubscriptionViewSet(viewsets.GenericViewSet):
-    """ ViewSet for managing User to Employee subscriptions """
+    """ViewSet for managing User to Employee subscriptions"""
 
     swagger_schema = None
 
