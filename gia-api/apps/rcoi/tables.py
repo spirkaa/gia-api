@@ -35,11 +35,15 @@ class PlaceTable(tables.Table):
 
 
 class ExamTable(tables.Table):
-    date = tables.DateColumn(
-        accessor="date__date", attrs={"td": {"data-title": "Дата"}}
+    date = tables.TemplateColumn(
+        template_name="rcoi/cols/date.html",
+        verbose_name="Дата",
+        attrs={"td": {"data-title": "Дата", "style": "white-space: nowrap"}},
     )
     level = tables.Column(
-        accessor="level__level", attrs={"td": {"data-title": "Уровень"}}
+        accessor="level__level",
+        verbose_name="Уровень",
+        attrs={"td": {"data-title": "Уровень"}},
     )
     place = tables.TemplateColumn(
         template_name="rcoi/cols/exam_place.html",
@@ -76,13 +80,16 @@ class ExamTable(tables.Table):
 
 
 class PlaceWithExamsTable(tables.Table):
-    date = tables.DateColumn(
-        accessor="date__date", attrs={"td": {"data-title": "Дата"}}
+    date = tables.TemplateColumn(
+        template_name="rcoi/cols/date.html",
+        verbose_name="Дата",
+        attrs={"td": {"data-title": "Дата", "style": "white-space: nowrap"}},
     )
     level = tables.Column(
-        accessor="level__level", attrs={"td": {"data-title": "Уровень"}}
+        accessor="level__level",
+        verbose_name="Уровень",
+        attrs={"td": {"data-title": "Уровень"}},
     )
-
     employee = tables.TemplateColumn(
         template_name="rcoi/cols/exam_employee.html",
         verbose_name="ФИО",

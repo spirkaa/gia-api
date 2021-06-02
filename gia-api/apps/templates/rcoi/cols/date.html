@@ -1,0 +1,6 @@
+<a
+    href="{{ record.datafile.url }}"
+    rel="noopener noreferrer"
+    title="Скачать таблицу с официального сайта РЦОИ">
+    <span class="glyphicon glyphicon-download-alt"></span>
+</a>&nbsp;{{ record.date.date|date:"SHORT_DATE_FORMAT"|default:default }}
