@@ -32,6 +32,7 @@ def get_file_info(url, date, level):
     local_filename = f"{date}__{level}__{ext}"
 
     file_req = requests.head(url)
+    file_req.raise_for_status()
     last_modified = datetime.strptime(
         file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
     )
@@ -94,16 +95,17 @@ def get_files_info(url):
             os.path.splitext(file_link)[1],
         )
         file_req = requests.head(file_link)
-        last_modified = datetime.strptime(
-            file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
-        )
-        file_info = {
-            "name": local_filename,
-            "url": file_link,
-            "size": file_req.headers["Content-Length"],
-            "last_modified": last_modified,
-        }
-        result.append(file_info)
+        if file_req:
+            last_modified = datetime.strptime(
+                file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
+            )
+            file_info = {
+                "name": local_filename,
+                "url": file_link,
+                "size": file_req.headers["Content-Length"],
+                "last_modified": last_modified,
+            }
+            result.append(file_info)
     return result
 
 
