@@ -1,5 +1,5 @@
 # Django
-django==2.2.23
+django==2.2.25
 django-bootstrap3==15.0.0
 django-crispy-forms==1.11.2
 django-decorator-include==3.0
