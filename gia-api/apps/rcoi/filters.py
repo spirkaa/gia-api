@@ -34,7 +34,7 @@ class SearchVectorFilter(django_filters.CharFilter):
             return qs
 
         query = SearchQuery(
-            " | ".join(value.split()), search_type="raw", config="russian"
+            " | ".join(value.strip("\\").split()), search_type="raw", config="russian"
         )
 
         # sum of ranks of all vector fields

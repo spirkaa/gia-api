@@ -20,6 +20,10 @@ def test_search_vector_filter(name, query):
     qs = models.Place.objects.all()
     f = SearchVectorFilter(search_fields=["search_vector"])
 
+    # backslash strip
+    res = f.filter(qs, "\\")
+    assert res.count() == 0
+
     # no filter
     res = f.filter(qs, "")
     assert res == qs
