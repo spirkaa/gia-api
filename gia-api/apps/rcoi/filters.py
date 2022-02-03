@@ -71,6 +71,7 @@ class FilterWithHelper(django_filters.FilterSet):
                     aria_Label="Поиск",
                     autocomplete="off",
                     autofocus="",
+                    css_class="form-control",
                 ),
                 HTML(
                     """
