@@ -7,7 +7,7 @@ volumes:
 services:
   postgres-local:
     build:
-      context: ./compose/postgres
+      context: .docker/postgres
       dockerfile: Dockerfile
     ports:
       - "5432:5432"
@@ -19,7 +19,7 @@ services:
   django-local:
     build:
       context: .
-      dockerfile: ./compose/django/Dockerfile-local
+      dockerfile: .docker/django/Dockerfile-local
     ports:
       - "8000:8000"
     volumes:

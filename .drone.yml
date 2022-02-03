@@ -15,7 +15,7 @@ steps:
     settings:
       registry: registry.home.devmem.ru
       repo: registry.home.devmem.ru/gia/api
-      dockerfile: ./compose/django/Dockerfile-drone
+      dockerfile: .docker/django/Dockerfile-drone
       cache_from: registry.home.devmem.ru/gia/api:latest
       tags:
         - ${DRONE_COMMIT_SHA:0:8}
@@ -26,8 +26,8 @@ steps:
     settings:
       registry: registry.home.devmem.ru
       repo: registry.home.devmem.ru/gia/postgres
-      dockerfile: ./compose/postgres/Dockerfile
-      context: ./compose/postgres
+      dockerfile: .docker/postgres/Dockerfile
+      context: .docker/postgres
       cache_from: registry.home.devmem.ru/gia/postgres:latest
       tags:
         - latest
@@ -37,8 +37,8 @@ steps:
     settings:
       registry: registry.home.devmem.ru
       repo: registry.home.devmem.ru/gia/redis
-      dockerfile: ./compose/redis/Dockerfile
-      context: ./compose/redis
+      dockerfile: .docker/redis/Dockerfile
+      context: .docker/redis
       cache_from: registry.home.devmem.ru/gia/redis:latest
       tags:
         - latest

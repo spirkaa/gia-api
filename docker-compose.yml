@@ -3,7 +3,7 @@ version: '2'
 services:
   redis:
     build:
-      context: ./compose/redis
+      context: .docker/redis
       dockerfile: Dockerfile
     volumes:
       - "./redis/data:/data:z"
@@ -11,7 +11,7 @@ services:
 
   postgres:
     build:
-      context: ./compose/postgres
+      context: .docker/postgres
       dockerfile: Dockerfile
     volumes:
       - "./db/data:/var/lib/postgresql/data:z"
@@ -22,7 +22,7 @@ services:
   django:
     build:
       context: .
-      dockerfile: ./compose/django/Dockerfile
+      dockerfile: .docker/django/Dockerfile
     tmpfs:
       - "/tmp"
     depends_on:
@@ -33,7 +33,7 @@ services:
 
   nginx:
     build:
-      context: ./compose/nginx
+      context: .docker/nginx
       dockerfile: Dockerfile
     ports:
       - "8080:80"

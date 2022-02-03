@@ -6,7 +6,7 @@ volumes:
 services:
   redis-staging:
     build:
-      context: ./compose/redis
+      context: .docker/redis
       dockerfile: Dockerfile
     ports:
       - "6379:6379"
@@ -16,7 +16,7 @@ services:
 
   postgres-staging:
     build:
-      context: ./compose/postgres
+      context: .docker/postgres
       dockerfile: Dockerfile
     volumes:
       - "postgres_data_staging:/var/lib/postgresql/data"
@@ -27,7 +27,7 @@ services:
   django-staging:
     build:
       context: .
-      dockerfile: ./compose/django/Dockerfile-staging
+      dockerfile: .docker/django/Dockerfile-staging
     volumes:
       - ".:/app:z"
     tmpfs:
@@ -43,7 +43,7 @@ services:
 
   nginx-staging:
     build:
-      context: ./compose/nginx
+      context: .docker/nginx
       dockerfile: Dockerfile-staging
     ports:
       - "8080:80"
