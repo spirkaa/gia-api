@@ -9,7 +9,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'rcoi:home' %}">ГИА 2021 в Москве</a>
+            <a class="navbar-brand" href="{% url 'rcoi:home' %}">ГИА {% now "Y" %} в Москве</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -24,10 +24,13 @@
                     <a href="{% url 'rcoi:place' %}">ППЭ</a>
                 </li>
                 <li>
-                    <a href="https://gia.devmem.ru/about">О сайте</a>
+                    <a href="https://gia.devmem.ru/about" target="_blank">О сайте</a>
                 </li>
                 <li>
-                    <a href="{% url 'apiv1:schema-swagger-ui' %}">API</a>
+                    <a href="{% url 'apiv1:schema-swagger-ui' %}" target="_blank">API</a>
+                </li>
+                <li>
+                    <a href="https://github.com/spirkaa/gia-api" target="_blank">GitHub</a>
                 </li>
             </ul>
             {% if sources %}
