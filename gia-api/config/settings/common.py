@@ -41,12 +41,11 @@ THIRD_PARTY_APPS = [
     "django_prometheus",
     "djmail",
     "drf_yasg",
-    "rest_auth",
-    "rest_auth.registration",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
     "rest_framework",
+    "rest_framework.authtoken",
     "rest_framework_filters",
-    "rest_framework_jwt",
-    "rest_framework_jwt.blacklist",
 ]
 LOCAL_APPS = ["apps.rcoi", "apps.api.v1"]
 
@@ -295,23 +294,24 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ),
 }
 
-JWT_AUTH = {
-    "JWT_ALLOW_REFRESH": False,
-    "JWT_EXPIRATION_DELTA": datetime.timedelta(days=7),
-    "JWT_AUTH_HEADER_PREFIX": "JWT",
-    "JWT_PAYLOAD_HANDLER": "apps.api.v1.jwt_auth.utils.jwt_create_payload",
-}
-
 REST_USE_JWT = True
 REST_SESSION_LOGIN = False
+REST_AUTH_TOKEN_MODEL = None
 OLD_PASSWORD_FIELD_ENABLED = True
+REST_AUTH_SERIALIZERS = {
+    "JWT_TOKEN_CLAIMS_SERIALIZER": "apps.api.v1.simplejwt.serializers.CustomTokenObtainPairSerializer",
+}
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=7),
+    "AUTH_HEADER_TYPES": "JWT",
+}
 
 ACCOUNT_ADAPTER = "apps.api.v1.auth.adapter.AnotherDomainAccountAdapter"
 ACCOUNT_EMAIL_REQUIRED = True

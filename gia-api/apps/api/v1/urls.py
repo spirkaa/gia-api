@@ -4,7 +4,6 @@ from django.views.decorators.cache import never_cache
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions, routers
-from rest_framework_jwt.views import refresh_jwt_token, verify_jwt_token
 
 from . import views
 
@@ -33,10 +32,8 @@ router.register(r"subscription", views.SubscriptionViewSet, basename="subscripti
 
 urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
-    path("auth/", decorator_include(never_cache, "rest_auth.urls")),
-    path("auth/registration/", include("rest_auth.registration.urls")),
-    path("auth/token-refresh/", refresh_jwt_token),
-    path("auth/token-verify/", verify_jwt_token),
+    path("auth/", decorator_include(never_cache, "dj_rest_auth.urls")),
+    path("auth/registration/", include("dj_rest_auth.registration.urls")),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path(
         "swagger/",

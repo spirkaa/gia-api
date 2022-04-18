@@ -22,7 +22,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox):
     url = reverse("apiv1:rest_register")
     resp = client.post(url, data=data)
     assert resp.status_code == 201
-    assert "token" in resp.data
+    assert "access_token" in resp.data
     assert len(mailoutbox) == 1
     assert data["email"] in mailoutbox[0].to
 
@@ -30,7 +30,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox):
     logout_url = reverse("apiv1:rest_logout")
     logout_resp = client.post(logout_url)
     assert logout_resp.status_code == 200
-    assert logout_resp.data["detail"] == "Успешно вышли."
+    assert "Neither cookies or blacklist are enabled" in logout_resp.data["detail"]
 
     # Login with new account
     auth_data = {
@@ -40,7 +40,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox):
     auth_url = reverse("apiv1:rest_login")
     auth_resp = client.post(auth_url, data=auth_data)
     assert auth_resp.status_code == 200
-    assert "token" in auth_resp.data
+    assert "access_token" in auth_resp.data
 
     # Verify mail
     mail_verify_link = re.search(r"(https?.*)(?:/)", mailoutbox[0].body).group(0)
@@ -97,6 +97,7 @@ def test_api_auth_user_details(client, authenticated_user):
     url = reverse("apiv1:rest_user_details")
     resp = client.get(url, HTTP_AUTHORIZATION=f"{auth_header}")
     assert resp.status_code == 200
+    assert resp.data["username"] == user["username"]
     assert resp.data["email"] == user["email"]
 
 
@@ -105,14 +106,12 @@ def test_api_auth_user_details_update(client, authenticated_user):
     Test API - Auth - User Details Update
     """
     auth_header = authenticated_user["auth_header"]
-    user = authenticated_user["user"]
     data = {
-        "username": user["username"],
         "first_name": "New First",
         "last_name": "",
     }
     url = reverse("apiv1:rest_user_details")
-    resp = client.put(
+    resp = client.patch(
         url,
         data=data,
         content_type="application/json",
@@ -176,4 +175,4 @@ def test_api_auth_password_reset(client, mailoutbox):
     auth_url = reverse("apiv1:rest_login")
     auth_resp = client.post(auth_url, data=auth_data)
     assert auth_resp.status_code == 200
-    assert "token" in auth_resp.data
+    assert "access_token" in auth_resp.data
