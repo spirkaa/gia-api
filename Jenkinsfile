@@ -89,13 +89,13 @@ pipeline {
     }
 
     stage('Build images') {
-      stages {
-        stage('Build api (cache)') {
+      parallel {
+        stage('Build api image') {
           when {
             not {
               anyOf {
                 triggeredBy 'TimerTrigger'
-                triggeredBy cause: 'UserIdCause'
+                // triggeredBy cause: 'UserIdCause'
               }
             }
           }
@@ -106,34 +106,35 @@ pipeline {
           }
         }
 
-        stage('Build api (no cache)') {
-          when {
-            anyOf {
-              triggeredBy 'TimerTrigger'
-              triggeredBy cause: 'UserIdCause'
-            }
-          }
-          steps {
-            script {
-              buildImageNoCache("${REVISION}", 'latest')
-            }
-          }
-        }
-        stage('Build postres') {
+        // stage('Build api image (no cache)') {
+        //   when {
+        //     anyOf {
+        //       triggeredBy 'TimerTrigger'
+        //       triggeredBy cause: 'UserIdCause'
+        //     }
+        //   }
+        //   steps {
+        //     script {
+        //       buildImageNoCache("${REVISION}", 'latest')
+        //     }
+        //   }
+        // }
+
+        stage('Build postgres image') {
           when {
             not {
               anyOf {
                 triggeredBy 'TimerTrigger'
-                triggeredBy cause: 'UserIdCause'
+                // triggeredBy cause: 'UserIdCause'
               }
             }
           }
           steps {
             script {
+              def IMAGE_BASENAME = 'postgres'
+              def IMAGE_FULLNAME = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_BASENAME}:latest"
+              def DOCKERFILE = ".docker/${IMAGE_BASENAME}/Dockerfile"
               docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDS_ID}") {
-                IMAGE_BASENAME = 'postgres'
-                IMAGE_FULLNAME = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_BASENAME}:latest"
-                DOCKERFILE = ".docker/${IMAGE_BASENAME}/Dockerfile"
                 def myImage = docker.build(
                   "${IMAGE_FULLNAME}",
                   "--progress=plain \
@@ -146,21 +147,22 @@ pipeline {
             }
           }
         }
-        stage('Build redis') {
+
+        stage('Build redis image') {
           when {
             not {
               anyOf {
                 triggeredBy 'TimerTrigger'
-                triggeredBy cause: 'UserIdCause'
+                // triggeredBy cause: 'UserIdCause'
               }
             }
           }
           steps {
             script {
+              def IMAGE_BASENAME = 'redis'
+              def IMAGE_FULLNAME = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_BASENAME}:latest"
+              def DOCKERFILE = ".docker/${IMAGE_BASENAME}/Dockerfile"
               docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDS_ID}") {
-                IMAGE_BASENAME = 'redis'
-                IMAGE_FULLNAME = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_BASENAME}:latest"
-                DOCKERFILE = ".docker/${IMAGE_BASENAME}/Dockerfile"
                 def myImage = docker.build(
                   "${IMAGE_FULLNAME}",
                   "--progress=plain \
