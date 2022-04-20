@@ -9,7 +9,7 @@ IMAGE_FULLNAME=git.devmem.ru/cr/gia/api
 build:
 	@docker build \
 		--tag ${IMAGE_FULLNAME} \
-		-f .docker/django/Dockerfile .
+		-f .docker/django/ci.Dockerfile .
 
 prod:
 	@docker-compose up -d --build

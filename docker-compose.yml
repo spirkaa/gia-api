@@ -27,11 +27,11 @@ services:
   django:
     build:
       context: .
-      dockerfile: .docker/django/Dockerfile
+      dockerfile: .docker/django/ci.Dockerfile
       args:
         - BUILD_ENVIRONMENT=production
-    command: >
-      /start
+    # command: >
+    #   /start
     tmpfs:
       - "/tmp"
     depends_on:

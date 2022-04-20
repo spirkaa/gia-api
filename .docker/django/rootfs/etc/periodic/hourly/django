@@ -1,3 +1,0 @@
-#!/usr/bin/with-contenv sh
-
-cd /app && python /app/manage.py runjobs hourly
