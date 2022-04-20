@@ -1,6 +1,6 @@
 def buildImageCache(String tag, String altTag = null) {
   IMAGE_TAG = "${tag}"
-  DOCKERFILE = ".docker/django/ci.Dockerfile"
+  DOCKERFILE = '.docker/django/ci.Dockerfile'
   docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDS_ID}") {
     def myImage = docker.build(
       "${IMAGE_FULLNAME}:${IMAGE_TAG}",
@@ -61,7 +61,7 @@ pipeline {
   }
 
     triggers {
-      cron('0 7 * * 6')
+      cron('H 8 * * 6')
     }
 
   environment {
@@ -69,7 +69,7 @@ pipeline {
     REGISTRY_URL = "https://${REGISTRY}"
     REGISTRY_CREDS_ID = 'gitea-user'
     IMAGE_OWNER = 'cr'
-    IMAGE_BASENAME = 'gia/api'
+    IMAGE_BASENAME = 'gia-api'
     IMAGE_FULLNAME = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_BASENAME}"
     LABEL_AUTHORS = 'Ilya Pavlov <piv@devmem.ru>'
     LABEL_TITLE = 'GIA API'
@@ -116,6 +116,60 @@ pipeline {
           steps {
             script {
               buildImageNoCache("${REVISION}", 'latest')
+            }
+          }
+        }
+        stage('Build postres') {
+          when {
+            not {
+              anyOf {
+                triggeredBy 'TimerTrigger'
+                triggeredBy cause: 'UserIdCause'
+              }
+            }
+          }
+          steps {
+            script {
+              docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDS_ID}") {
+                IMAGE_BASENAME = 'postgres'
+                IMAGE_FULLNAME = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_BASENAME}:latest"
+                DOCKERFILE = ".docker/${IMAGE_BASENAME}/Dockerfile"
+                def myImage = docker.build(
+                  "${IMAGE_FULLNAME}",
+                  "--progress=plain \
+                  --cache-from ${IMAGE_FULLNAME} \
+                  -f ${DOCKERFILE} .docker/${IMAGE_BASENAME}"
+                )
+                myImage.push()
+                sh "docker rmi -f \$(docker inspect -f '{{ .Id }}' ${myImage.id})"
+              }
+            }
+          }
+        }
+        stage('Build redis') {
+          when {
+            not {
+              anyOf {
+                triggeredBy 'TimerTrigger'
+                triggeredBy cause: 'UserIdCause'
+              }
+            }
+          }
+          steps {
+            script {
+              docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDS_ID}") {
+                IMAGE_BASENAME = 'redis'
+                IMAGE_FULLNAME = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_BASENAME}:latest"
+                DOCKERFILE = ".docker/${IMAGE_BASENAME}/Dockerfile"
+                def myImage = docker.build(
+                  "${IMAGE_FULLNAME}",
+                  "--progress=plain \
+                  --cache-from ${IMAGE_FULLNAME} \
+                  -f ${DOCKERFILE} .docker/${IMAGE_BASENAME}"
+                )
+                myImage.push()
+                sh "docker rmi -f \$(docker inspect -f '{{ .Id }}' ${myImage.id})"
+              }
             }
           }
         }
