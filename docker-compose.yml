@@ -1,12 +1,17 @@
 version: '2'
 
+volumes:
+  postgres_data: {}
+  postgres_backups: {}
+  redis_data: {}
+
 services:
   redis:
     build:
       context: .docker/redis
       dockerfile: Dockerfile
     volumes:
-      - "./redis/data:/data:z"
+      - "redis_data:/data:z"
     restart: always
 
   postgres:
@@ -14,8 +19,8 @@ services:
       context: .docker/postgres
       dockerfile: Dockerfile
     volumes:
-      - "./db/data:/var/lib/postgresql/data:z"
-      - "./db/backups:/backups:z"
+      - "postgres_data:/var/lib/postgresql/data:z"
+      - "postgres_backups:/backups:z"
     env_file: .env
     restart: always
 
@@ -23,6 +28,10 @@ services:
     build:
       context: .
       dockerfile: .docker/django/Dockerfile
+      args:
+        - BUILD_ENVIRONMENT=production
+    command: >
+      /start
     tmpfs:
       - "/tmp"
     depends_on:

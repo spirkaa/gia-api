@@ -2,7 +2,7 @@ version: '2'
 
 volumes:
   postgres_data_local: {}
-  postgres_backup_local: {}
+  postgres_backups_local: {}
 
 services:
   postgres-local:
@@ -13,18 +13,21 @@ services:
       - "5432:5432"
     volumes:
       - "postgres_data_local:/var/lib/postgresql/data"
-      - "postgres_backup_local:/backups"
+      - "postgres_backups_local:/backups"
     env_file: .env.local
 
   django-local:
     build:
       context: .
-      dockerfile: .docker/django/Dockerfile-local
+      dockerfile: .docker/django/Dockerfile
+      args:
+        - BUILD_ENVIRONMENT=local
+    command: >
+      python /app/gia-api/manage.py runserver_plus 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
       - ".:/app:z"
-    command: python /app/gia-api/manage.py runserver_plus 0.0.0.0:8000
     depends_on:
       - postgres-local
     env_file: .env.local
