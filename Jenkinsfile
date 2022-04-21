@@ -88,6 +88,7 @@ pipeline {
 
   parameters {
     booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this revision?')
+    booleanParam(name: 'REBUILD', defaultValue: false, description: 'Reduild this revision image?')
     string(name: 'ANSIBLE_EXTRAS', defaultValue: '', description: 'ansible-playbook extra params')
   }
 
@@ -102,13 +103,28 @@ pipeline {
 
     stage('Build') {
       parallel {
+        stage('Build api image (no cache)') {
+          when {
+            anyOf {
+              expression { params.REBUILD }
+              triggeredBy 'TimerTrigger'
+            }
+          }
+          steps {
+            script {
+              buildImageNoCache("${REVISION}", 'latest')
+            }
+          }
+        }
+
         stage('Build api image') {
           when {
             not {
               anyOf {
-                triggeredBy 'TimerTrigger'
                 expression { params.DEPLOY }
-                // triggeredBy cause: 'UserIdCause'
+                expression { params.REBUILD }
+                triggeredBy 'TimerTrigger'
+                triggeredBy cause: 'UserIdCause'
               }
             }
           }
@@ -119,27 +135,14 @@ pipeline {
           }
         }
 
-        // stage('Build api image (no cache)') {
-        //   when {
-        //     anyOf {
-        //       triggeredBy 'TimerTrigger'
-        //       triggeredBy cause: 'UserIdCause'
-        //     }
-        //   }
-        //   steps {
-        //     script {
-        //       buildImageNoCache("${REVISION}", 'latest')
-        //     }
-        //   }
-        // }
-
         stage('Build postgres image') {
           when {
             not {
               anyOf {
-                triggeredBy 'TimerTrigger'
                 expression { params.DEPLOY }
-                // triggeredBy cause: 'UserIdCause'
+                expression { params.REBUILD }
+                triggeredBy 'TimerTrigger'
+                triggeredBy cause: 'UserIdCause'
               }
             }
           }
@@ -166,9 +169,10 @@ pipeline {
           when {
             not {
               anyOf {
-                triggeredBy 'TimerTrigger'
                 expression { params.DEPLOY }
-                // triggeredBy cause: 'UserIdCause'
+                expression { params.REBUILD }
+                triggeredBy 'TimerTrigger'
+                triggeredBy cause: 'UserIdCause'
               }
             }
           }
@@ -197,9 +201,8 @@ pipeline {
       when {
         not {
           anyOf {
-            triggeredBy 'TimerTrigger'
             expression { params.DEPLOY }
-            // triggeredBy cause: 'UserIdCause'
+            triggeredBy cause: 'UserIdCause'
           }
         }
       }
