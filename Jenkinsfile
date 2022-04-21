@@ -211,26 +211,15 @@ pipeline {
         script {
           docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDS_ID}") {
             docker.image("${DB_IMAGE}").withRun('-e POSTGRES_USER=dbuser -e POSTGRES_PASSWORD=dbpass') { db ->
-              docker.image("${DB_IMAGE}").inside("--link ${db.id}:db") {
-                sh '''#!/bin/bash
-                  psql --version
-                  export PGPASSWORD=dbpass
-                  export RETRIES=10
-                  until psql -h db -U dbuser -c "select 1" -d dbuser > /dev/null 2>&1 || [ $RETRIES -eq 0 ]; do
-                    echo "Waiting for PostgreSQL to come up..."
-                    sleep 1
-                  done
-                '''
-              }
               docker.image("${APP_IMAGE}").inside(
                 "-e DJANGO_DATABASE_URL=postgres://dbuser:dbpass@db:5432/dbuser \
                 -e DJANGO_SETTINGS_MODULE=config.settings.local \
+                -e PYTHONPATH=\${WORKSPACE}/gia-api \
                 --entrypoint='' \
                 --link ${db.id}:db"
                 ) {
-                  sh 'pip install --no-cache-dir -r /app/requirements/testing.txt'
-                  sh 'cd /app; pytest --junitxml=$WORKSPACE/pytest.xml'
-                  junit 'pytest.xml'
+                  sh 'pip install --no-cache-dir -r gia-api/requirements/testing.txt'
+                  sh 'pytest --cov-report xml:reports/coverage.xml --junitxml=reports/pytest.xml'
               }
             }
           }
@@ -239,6 +228,10 @@ pipeline {
       post {
         always {
           sh "docker rmi ${DB_IMAGE} ${APP_IMAGE}"
+        }
+        success {
+          junit 'reports/pytest.xml'
+          cobertura coberturaReportFile: 'reports/coverage.xml', enableNewApi: true
         }
       }
     }
