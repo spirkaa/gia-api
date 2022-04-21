@@ -28,6 +28,10 @@ staging:
 staging-down:
 	@docker-compose -f docker-compose.staging.yml down
 
+staging-test:
+	@docker-compose -f docker-compose.staging.yml up -d
+	@docker exec gia-api_django-staging_1 pytest
+
 local:
 	@docker-compose -f docker-compose.local.yml up -d --build
 	@docker exec gia-api_django-local_1 python /app/gia-api/manage.py migrate
@@ -35,6 +39,15 @@ local:
 
 local-down:
 	@docker-compose -f docker-compose.local.yml down
+
+local-test:
+	@docker-compose -f docker-compose.local.yml up -d
+	@docker exec gia-api_django-local_1 pytest
+
+down:
+	@make prod-down --no-print-directory --ignore-errors
+	@make staging-down --no-print-directory --ignore-errors
+	@make local-down --no-print-directory --ignore-errors
 
 cleanup-images:
 	@docker rmi -f \
