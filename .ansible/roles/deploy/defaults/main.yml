@@ -9,7 +9,7 @@ ct_registry_user: "{{ lookup('env','REGISTRY_USER') }}"
 ct_registry_password: "{{ lookup('env','REGISTRY_PASSWORD') }}"
 
 gia_api_image: "{{ lookup('env','IMAGE_FULLNAME') }}:{{ lookup('env','REVISION') }}"
-gia_front_image: "registry.home.devmem.ru/gia/front:latest"
+gia_front_image: "{{ ct_registry }}/cr/gia-front:latest"
 gia_db_image: "{{ ct_registry }}/cr/postgres:latest"
 gia_redis_image: "{{ ct_registry }}/cr/redis:latest"
 
