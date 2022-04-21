@@ -1,11 +1,17 @@
 ---
 - name: create network
-  docker_network:
+  community.docker.docker_network:
     name: "{{ app_network }}"
-  tags: gia
+
+- name: log into registry
+  community.docker.docker_login:
+    registry_url: "{{ ct_registry }}"
+    username: "{{ ct_registry_user }}"
+    password: "{{ ct_registry_password }}"
+    reauthorize: yes
 
 - name: "{{ gia_db_name }} - start"
-  docker_container:
+  community.docker.docker_container:
     name: "{{ gia_db_name }}"
     image: "{{ gia_db_image }}"
     pull: yes
@@ -23,10 +29,9 @@
     restart_policy: unless-stopped
     state: started
   no_log: true
-  tags: gia
 
 - name: "{{ gia_redis_name }} - start"
-  docker_container:
+  community.docker.docker_container:
     name: "{{ gia_redis_name }}"
     image: "{{ gia_redis_image }}"
     pull: yes
@@ -39,25 +44,22 @@
     networks_cli_compatible: yes
     restart_policy: unless-stopped
     state: started
-  tags: gia
 
 - name: "{{ gia_api_name }} - pull image"
-  docker_image:
+  community.docker.docker_image:
     name: "{{ gia_api_image }}"
     source: pull
     force_source: yes
     state: present
   register: pull_image
-  tags: gia
 
 - name: "{{ gia_api_name }} - backup database"
   command: docker exec {{ gia_db_name }} backup
   when: pull_image.changed  # noqa 503
   ignore_errors: yes
-  tags: gia
 
 - name: "{{ gia_api_name }} - start"
-  docker_container:
+  community.docker.docker_container:
     name: "{{ gia_api_name }}"
     image: "{{ gia_api_image }}"
     pull: no
@@ -87,10 +89,9 @@
     state: started
   notify: "{{ gia_api_name }} - invalidate cache"
   no_log: true
-  tags: gia
 
 - name: "{{ gia_front_name }} - start"
-  docker_container:
+  community.docker.docker_container:
     name: "{{ gia_front_name }}"
     image: "{{ gia_front_image }}"
     pull: yes
@@ -103,4 +104,8 @@
     networks_cli_compatible: yes
     restart_policy: unless-stopped
     state: started
-  tags: gia
+
+- name: log out of registry
+  community.docker.docker_login:
+    registry_url: "{{ ct_registry }}"
+    state: absent

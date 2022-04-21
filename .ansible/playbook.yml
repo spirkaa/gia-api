@@ -2,4 +2,4 @@
   gather_facts: no
 
   roles:
-    - {role: deploy, tags: deploy}
+    - { role: deploy, tags: deploy }

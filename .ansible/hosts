@@ -1,4 +1,1 @@
-projects
-
-[all:vars]
-ansible_user=root
+projects ansible_user=root

@@ -60,9 +60,9 @@ pipeline {
     disableConcurrentBuilds()
   }
 
-    triggers {
-      cron('H 8 * * 6')
-    }
+  triggers {
+    cron('H 8 * * 6')
+  }
 
   environment {
     REGISTRY = 'git.devmem.ru'
@@ -77,6 +77,18 @@ pipeline {
     LABEL_URL = 'https://gia-api.devmem.ru'
     LABEL_CREATED = sh(script: "date '+%Y-%m-%dT%H:%M:%S%:z'", returnStdout: true).toString().trim()
     REVISION = GIT_COMMIT.take(7)
+
+    ANSIBLE_IMAGE = "${REGISTRY}/${IMAGE_OWNER}/ansible:base"
+    ANSIBLE_CONFIG = '.ansible/ansible.cfg'
+    ANSIBLE_PLAYBOOK = '.ansible/playbook.yml'
+    ANSIBLE_INVENTORY = '.ansible/hosts'
+    ANSIBLE_CREDS_ID = 'jenkins-ssh-key'
+    ANSIBLE_VAULT_CREDS_ID = 'ansible-vault-password'
+  }
+
+  parameters {
+    booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this revision?')
+    string(name: 'ANSIBLE_EXTRAS', defaultValue: '', description: 'ansible-playbook extra params')
   }
 
   stages {
@@ -88,13 +100,14 @@ pipeline {
       }
     }
 
-    stage('Build images') {
+    stage('Build') {
       parallel {
         stage('Build api image') {
           when {
             not {
               anyOf {
                 triggeredBy 'TimerTrigger'
+                expression { params.DEPLOY }
                 // triggeredBy cause: 'UserIdCause'
               }
             }
@@ -125,6 +138,7 @@ pipeline {
             not {
               anyOf {
                 triggeredBy 'TimerTrigger'
+                expression { params.DEPLOY }
                 // triggeredBy cause: 'UserIdCause'
               }
             }
@@ -153,6 +167,7 @@ pipeline {
             not {
               anyOf {
                 triggeredBy 'TimerTrigger'
+                expression { params.DEPLOY }
                 // triggeredBy cause: 'UserIdCause'
               }
             }
@@ -177,7 +192,17 @@ pipeline {
         }
       }
     }
+
     stage('Test') {
+      when {
+        not {
+          anyOf {
+            triggeredBy 'TimerTrigger'
+            expression { params.DEPLOY }
+            // triggeredBy cause: 'UserIdCause'
+          }
+        }
+      }
       environment {
         APP_IMAGE = "${IMAGE_FULLNAME}:${REVISION}"
         DB_IMAGE = "${REGISTRY}/${IMAGE_OWNER}/postgres:latest"
@@ -214,6 +239,41 @@ pipeline {
       post {
         always {
           sh "docker rmi ${DB_IMAGE} ${APP_IMAGE}"
+        }
+      }
+    }
+
+    stage('Deploy') {
+      agent {
+        docker {
+          image env.ANSIBLE_IMAGE
+          registryUrl env.REGISTRY_URL
+          registryCredentialsId env.REGISTRY_CREDS_ID
+          alwaysPull true
+          reuseNode true
+        }
+      }
+      when {
+        beforeAgent true
+        expression { params.DEPLOY }
+      }
+      steps {
+        sh 'ansible --version'
+        withCredentials([usernamePassword(credentialsId: "${env.REGISTRY_CREDS_ID}", usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD')]) {
+          ansiblePlaybook(
+            colorized: true,
+            credentialsId: "${ANSIBLE_CREDS_ID}",
+            vaultCredentialsId: "${ANSIBLE_VAULT_CREDS_ID}",
+            playbook: "${ANSIBLE_PLAYBOOK}",
+            extras: "${params.ANSIBLE_EXTRAS} --syntax-check"
+          )
+          ansiblePlaybook(
+            colorized: true,
+            credentialsId: "${ANSIBLE_CREDS_ID}",
+            vaultCredentialsId: "${ANSIBLE_VAULT_CREDS_ID}",
+            playbook: "${ANSIBLE_PLAYBOOK}",
+            extras: "${params.ANSIBLE_EXTRAS}"
+          )
         }
       }
     }
