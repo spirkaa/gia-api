@@ -30,6 +30,7 @@ gia_db_pass: !vault |
           3634393732326631660a353738623638613666633636656535343363373238633835643361383062
           6530
 
+gia_api_prometheus_multiproc_dir: /tmp
 gia_api_django_log_level: DEBUG
 gia_api_django_settings_module: config.settings.production
 gia_api_django_allowed_hosts: .devmem.ru
@@ -47,15 +48,7 @@ gia_api_django_cache_url: redis://{{ gia_redis_name }}:6379/1
 gia_api_django_admin_url: a/
 gia_api_django_admin_mail: piv@devmem.ru
 gia_api_django_email_subject_prefix: "[gia.devmem.ru]"
-gia_api_prometheus_multiproc_dir: /tmp
-
-smtp_host: smtp.devmem.ru
-smtp_port: 587
-smtp_user: noreply@devmem.ru
-smtp_pass: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          30636661316434326334356636636532323438313738316539316332336364363238346237663662
-          3139656237633139356162656363346162613464373233360a616630333538363062316238636230
-          62653638646631363033373634376363643437386330613736386465363265633462333231663137
-          6666613065303030390a336437353461643836373735633031376466656230323831313264393435
-          33386231353661326265373634313365343266313437306637396565366238396139
+gia_api_django_email_host: "{{ lookup('env','SMTP_HOST') }}"
+gia_api_django_email_port: "{{ lookup('env','SMTP_PORT') }}"
+gia_api_django_email_host_user: "{{ lookup('env','SMTP_USER') }}"
+gia_api_django_email_host_password: "{{ lookup('env','SMTP_PASSWORD') }}"

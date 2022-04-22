@@ -76,9 +76,10 @@
       DJANGO_ADMIN_URL: "{{ gia_api_django_admin_url }}"
       DJANGO_ADMIN_MAIL: "{{ gia_api_django_admin_mail }}"
       DJANGO_EMAIL_SUBJECT_PREFIX: "{{ gia_api_django_email_subject_prefix }}"
-      DJANGO_EMAIL_HOST: "{{ smtp_host }}"
-      DJANGO_EMAIL_HOST_USER: "{{ smtp_user }}"
-      DJANGO_EMAIL_HOST_PASSWORD: "{{ smtp_pass }}"
+      DJANGO_EMAIL_HOST: "{{ gia_api_django_email_host }}"
+      DJANGO_EMAIL_PORT: "{{ gia_api_django_email_port }}"
+      DJANGO_EMAIL_HOST_USER: "{{ gia_api_django_email_host_user }}"
+      DJANGO_EMAIL_HOST_PASSWORD: "{{ gia_api_django_email_host_password }}"
       PROMETHEUS_MULTIPROC_DIR: "{{ gia_api_prometheus_multiproc_dir }}"
     tmpfs:
       - "{{ gia_api_prometheus_multiproc_dir }}"

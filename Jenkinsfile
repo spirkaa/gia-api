@@ -253,9 +253,17 @@ pipeline {
         beforeAgent true
         expression { params.DEPLOY }
       }
+      environment {
+        SMTP_CREDS_ID = 'common-smtp-noreply'
+        SMTP_HOST = 'smtp.devmem.ru'
+        SMTP_PORT = '587'
+      }
       steps {
         sh 'ansible --version'
-        withCredentials([usernamePassword(credentialsId: "${env.REGISTRY_CREDS_ID}", usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD')]) {
+        withCredentials([
+          usernamePassword(credentialsId: "${REGISTRY_CREDS_ID}", usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD'),
+          usernamePassword(credentialsId: "${SMTP_CREDS_ID}", usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASSWORD')
+          ]) {
           ansiblePlaybook(
             colorized: true,
             credentialsId: "${ANSIBLE_CREDS_ID}",
