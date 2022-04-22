@@ -23,7 +23,7 @@ staging:
 	@mkdir -p data/staging/{backups,redis,staticfiles}
 	@docker-compose -f docker-compose.staging.yml up -d --build
 	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py migrate
-	@docker-compose -f docker-compose.local.yml logs -f
+	@docker-compose -f docker-compose.staging.yml logs -f
 
 staging-down:
 	@docker-compose -f docker-compose.staging.yml down
