@@ -88,7 +88,7 @@
     networks_cli_compatible: yes
     restart_policy: unless-stopped
     state: started
-  notify: "{{ gia_api_name }} - invalidate cache"
+  notify: app_start
   no_log: true
 
 - name: "{{ gia_front_name }} - start"
@@ -105,6 +105,7 @@
     networks_cli_compatible: yes
     restart_policy: unless-stopped
     state: started
+  notify: app_start
 
 - name: log out of registry
   community.docker.docker_login:
