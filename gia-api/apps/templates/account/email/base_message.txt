@@ -1,0 +1,5 @@
+{% load i18n %}{% autoescape off %}
+{% block content %}{% endblock %}
+
+{{ current_site.name }}
+{% endautoescape %}

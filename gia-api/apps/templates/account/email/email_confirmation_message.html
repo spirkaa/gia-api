@@ -1,0 +1,6 @@
+{% extends "account/email/base_message.html" %}
+{% load account %}
+{% load i18n %}
+{% block title %}Пожалуйста подтвердите ваш e-mail адрес{% endblock %}
+{% block content %}{% autoescape off %}<p>Вы получили это письмо, потому что кто-то указал этот адрес электронной почты при регистрации.</p>
+        <p>Чтобы подтвердить его, перейдите по ссылке <a href="{{ activate_url }}">{{ activate_url }}</a></p>{% endautoescape %}{% endblock %}

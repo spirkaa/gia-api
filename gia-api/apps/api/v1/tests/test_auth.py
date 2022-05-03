@@ -9,7 +9,7 @@ from apps.rcoi import models
 pytestmark = pytest.mark.django_db
 
 
-def test_api_auth_register_and_mail_verify(client, mailoutbox):
+def test_api_auth_register_and_mail_verify(client, mailoutbox, custom_site):
     """
     Test API - Auth - Registration, Authorization, Email Verification
     """
@@ -25,6 +25,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox):
     assert "access_token" in resp.data
     assert len(mailoutbox) == 1
     assert data["email"] in mailoutbox[0].to
+    assert custom_site["name"] in mailoutbox[0].body
 
     # Logout
     logout_url = reverse("apiv1:rest_logout")
@@ -43,7 +44,9 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox):
     assert "access_token" in auth_resp.data
 
     # Verify mail
-    mail_verify_link = re.search(r"(https?.*)(?:/)", mailoutbox[0].body).group(0)
+    mail_verify_link = re.search(
+        rf"(https://{custom_site['domain']}.*)(?:/)", mailoutbox[0].body
+    ).group(0)
     data = {"key": mail_verify_link.split("/")[-2]}
     url = reverse("apiv1:rest_verify_email")
     resp = client.post(url, data=data)
@@ -138,7 +141,7 @@ def test_api_auth_password_change(client, authenticated_user):
     assert resp.data["detail"] == "Новый пароль сохранён."
 
 
-def test_api_auth_password_reset(client, mailoutbox):
+def test_api_auth_password_reset(client, mailoutbox, custom_site):
     """
     Test API - Auth - Password reset
     """
@@ -152,13 +155,16 @@ def test_api_auth_password_reset(client, mailoutbox):
     assert resp.status_code == 200
     assert len(mailoutbox) == 1
     assert data["email"] in mailoutbox[0].to
+    assert custom_site["name"] in mailoutbox[0].body
 
     # Reset password
     new_data = {
         "new_password1": "3HAK-T5eRq5L",
         "new_password2": "3HAK-T5eRq5L",
     }
-    reset_link = re.search(r"(https?.*)(?:/)", mailoutbox[0].body).group(0)
+    reset_link = re.search(
+        rf"(https://{custom_site['domain']}.*)(?:/)", mailoutbox[0].body
+    ).group(0)
     uid, token = reset_link.split("/")[-3:-1]
     new_data["uid"] = uid
     new_data["token"] = token

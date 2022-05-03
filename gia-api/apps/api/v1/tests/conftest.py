@@ -1,6 +1,7 @@
 import pytest
 from ddf import G
 from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.urls import reverse
 from rest_framework_simplejwt.settings import api_settings
 
@@ -22,5 +23,14 @@ def authenticated_user(client):
     url = reverse("apiv1:rest_login")
     resp = client.post(url, data=user_data)
     resp.data["auth_header"] = f"{prefix} {resp.data['access_token']}"
-    print(resp.data)
     return resp.data
+
+
+@pytest.fixture
+def custom_site():
+    site_data = {
+        "domain": "custom-domain.net",
+        "name": "Custom Site Name",
+    }
+    Site.objects.filter(pk=1).update(**site_data)
+    return site_data

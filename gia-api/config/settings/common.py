@@ -314,7 +314,8 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": "JWT",
 }
 
-ACCOUNT_ADAPTER = "apps.api.v1.auth.adapter.AnotherDomainAccountAdapter"
+ACCOUNT_ADAPTER = "apps.api.v1.account.adapter.SitesDomainAccountAdapter"
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_VERIFICATION = "optional"

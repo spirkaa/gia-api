@@ -1,0 +1,6 @@
+{% extends "account/email/base_message.txt" %}
+{% load account %}
+{% load i18n %}
+{% block content %}{% autoescape off %}Вы получили это письмо, потому что кто-то указал этот адрес электронной почты при регистрации.
+
+Чтобы подтвердить его, перейдите по ссылке {{ activate_url }}{% endautoescape %}{% endblock %}
