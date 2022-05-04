@@ -1,4 +1,4 @@
-FROM postgres:12-alpine
+FROM postgres:14-alpine
 
 COPY scripts /usr/local/bin
 

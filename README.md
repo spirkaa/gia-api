@@ -90,3 +90,20 @@
         exit;
 
 1. Вручную отправить письмо подписчикам, чтобы подписались заново
+
+## Обновление версии PostgreSQL
+
+1. Обновить версию в Dockerfile
+1. Сделать снапшот ВМ
+1. Подключиться к ВМ и выполнить
+
+        docker exec gia-db backup
+        docker stop gia-db
+        docker run --rm -v /docker/gia-api/db/data:/var/lib/postgresql/12/data -v /docker/gia-api/db/14/data:/var/lib/postgresql/14/data tianon/postgres-upgrade:12-to-14
+        docker rmi tianon/postgres-upgrade:12-to-14
+        mv /docker/gia-api/db/data /docker/gia-api/db/data_12
+        mv /docker/gia-api/db/14/data /docker/gia-api/db/data
+        rm -rf /docker/gia-api/db/14
+        echo "host all all 0.0.0.0/0 trust" >> /docker/gia-api/db/data/pg_hba.conf
+
+1. Запустить новый контейнер БД
