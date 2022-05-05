@@ -1,7 +1,5 @@
 # GIA API
 
-[![Build Status](https://drone.devmem.ru/api/badges/piv/gia-api/status.svg)](https://drone.devmem.ru/piv/gia-api)
-
 Парсер таблиц Excel с сайта РЦОИ города Москвы со списками сотрудников пунктов проведения экзаменов (ППЭ).
 
 ## Разработка
@@ -34,13 +32,12 @@
 1. Последовательно выполнить команды
 
         docker-compose -f docker-compose.local.yml up -d --build
-        docker exec -it gia-api_django-local_1 python /app/gia-api/manage.py migrate
+        docker exec gia-api_django-local_1 python /app/gia-api/manage.py migrate
+        docker exec gia-api_django-local_1 python /app/gia-api/manage.py loaddata datasource
         docker exec -it gia-api_django-local_1 python /app/gia-api/manage.py createsuperuser
+        docker exec gia-api_django-local_1 python /app/gia-api/manage.py runjobs hourly
 
-1. Открыть админку Django <http://localhost:8000/admin/>
-
-    * Добавить в разделе RCOI -> Data sources ссылки на страницы сайта РЦОИ с расписанием
-    * Нажать кнопку Обновить БД
+1. <http://localhost:8000/>
 
 ### Запуск staging (= prod + local)
 
@@ -49,14 +46,13 @@
 1. Последовательно выполнить команды
 
         docker-compose -f docker-compose.staging.yml up -d --build
-        docker exec -it gia-api_django-staging_1 python /app/gia-api/manage.py migrate
-        docker exec -it gia-api_django-staging_1 python /app/gia-api/manage.py invalidate all
+        docker exec gia-api_django-staging_1 python /app/gia-api/manage.py migrate
+        docker exec gia-api_django-staging_1 python /app/gia-api/manage.py loaddata datasource
+        docker exec gia-api_django-staging_1 python /app/gia-api/manage.py invalidate all
         docker exec -it gia-api_django-staging_1 python /app/gia-api/manage.py createsuperuser
+        docker exec gia-api_django-staging_1 python /app/gia-api/manage.py runjobs hourly
 
-1. Открыть админку Django <http://localhost:8080/admin/>
-
-    * Добавить в разделе RCOI -> Data sources ссылки на страницы сайта РЦОИ с расписанием
-    * Нажать кнопку Обновить БД
+1. <http://localhost:8080/>
 
 ### Запуск prod
 
@@ -65,13 +61,12 @@
 1. Последовательно выполнить команды
 
         docker-compose up -d --build
-        docker exec -it gia-api_django_1 python /app/manage.py migrate
+        docker exec gia-api_django_1 python /app/manage.py migrate
+        docker exec gia-api_django_1 python /app/manage.py loaddata datasource
         docker exec -it gia-api_django_1 python /app/manage.py createsuperuser
+        docker exec gia-api_django_1 python /app/manage.py runjobs hourly
 
-1. Открыть админку Django <http://example.com/admin/>
-
-    * Добавить в разделе RCOI -> Data sources ссылки на страницы сайта РЦОИ с расписанием
-    * Нажать кнопку Обновить БД
+1. <http://example.com/>
 
 ## Ручное обновление БД (не забудь поменять имя контейнера)
 

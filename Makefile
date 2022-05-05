@@ -13,8 +13,11 @@ build:
 
 prod:
 	@docker-compose up -d --build
-	@docker exec gia-api_django_1 python /app/manage.py migrate
 	@docker-compose logs -f
+
+prod-runjobs:
+	@docker exec gia-api_django_1 python /app/manage.py loaddata datasource
+	@docker exec gia-api_django_1 python /app/manage.py runjobs hourly
 
 prod-down:
 	@docker-compose down
@@ -25,24 +28,32 @@ staging:
 	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py migrate
 	@docker-compose -f docker-compose.staging.yml logs -f
 
-staging-down:
-	@docker-compose -f docker-compose.staging.yml down
+staging-runjobs:
+	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py loaddata datasource
+	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py runjobs hourly
 
 staging-test:
 	@docker-compose -f docker-compose.staging.yml up -d
 	@docker exec gia-api_django-staging_1 pytest
+
+staging-down:
+	@docker-compose -f docker-compose.staging.yml down
 
 local:
 	@docker-compose -f docker-compose.local.yml up -d --build
 	@docker exec gia-api_django-local_1 python /app/gia-api/manage.py migrate
 	@docker-compose -f docker-compose.local.yml logs -f
 
-local-down:
-	@docker-compose -f docker-compose.local.yml down
+local-runjobs:
+	@docker exec gia-api_django-local_1 python /app/gia-api/manage.py loaddata datasource
+	@docker exec gia-api_django-local_1 python /app/gia-api/manage.py runjobs hourly
 
 local-test:
 	@docker-compose -f docker-compose.local.yml up -d
 	@docker exec gia-api_django-local_1 pytest
+
+local-down:
+	@docker-compose -f docker-compose.local.yml down
 
 down:
 	@make prod-down --no-print-directory --ignore-errors

@@ -1,0 +1,62 @@
+[
+  {
+    "model": "rcoi.datasource",
+    "pk": 1,
+    "fields": {
+      "created": "2017-05-01T00:00:00.000",
+      "modified": "2017-05-01T00:00:00.000",
+      "name": "РЦОИ > ГИА-11 > Досрочный период",
+      "url": "http://rcoi.mcko.ru/organizers/schedule/ege/?period=1"
+    }
+  },
+  {
+    "model": "rcoi.datasource",
+    "pk": 2,
+    "fields": {
+      "created": "2017-05-01T00:00:00.000",
+      "modified": "2017-05-01T00:00:00.000",
+      "name": "РЦОИ > ГИА-11 > Основной период",
+      "url": "http://rcoi.mcko.ru/organizers/schedule/ege/?period=2"
+    }
+  },
+  {
+    "model": "rcoi.datasource",
+    "pk": 3,
+    "fields": {
+      "created": "2017-05-01T00:00:00.000",
+      "modified": "2017-05-01T00:00:00.000",
+      "name": "РЦОИ > ГИА-11 > Дополнительный период",
+      "url": "http://rcoi.mcko.ru/organizers/schedule/ege/?period=3"
+    }
+  },
+  {
+    "model": "rcoi.datasource",
+    "pk": 4,
+    "fields": {
+      "created": "2017-05-01T00:00:00.000",
+      "modified": "2017-05-01T00:00:00.000",
+      "name": "РЦОИ > ГИА-9 > Досрочный период",
+      "url": "http://rcoi.mcko.ru/organizers/schedule/oge/?period=1"
+    }
+  },
+  {
+    "model": "rcoi.datasource",
+    "pk": 5,
+    "fields": {
+      "created": "2017-05-01T00:00:00.000",
+      "modified": "2017-05-01T00:00:00.000",
+      "name": "РЦОИ > ГИА-9 > Основной период",
+      "url": "http://rcoi.mcko.ru/organizers/schedule/oge/?period=2"
+    }
+  },
+  {
+    "model": "rcoi.datasource",
+    "pk": 6,
+    "fields": {
+      "created": "2017-05-01T00:00:00.000",
+      "modified": "2017-05-01T00:00:00.000",
+      "name": "РЦОИ > ГИА-9 > Дополнительный период",
+      "url": "http://rcoi.mcko.ru/organizers/schedule/oge/?period=3"
+    }
+  }
+]
