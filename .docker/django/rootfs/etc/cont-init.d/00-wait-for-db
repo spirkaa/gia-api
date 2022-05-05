@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 
 set -o errexit
 set -o pipefail
@@ -25,5 +25,3 @@ until postgres_ready; do
 done
 
 >&2 echo 'PostgreSQL is available'
-
-exec "$@"

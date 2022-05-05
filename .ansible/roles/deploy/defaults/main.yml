@@ -43,7 +43,7 @@ gia_api_django_secret_key: !vault |
           36333938353364613233626437326666316562373766376135623764346562336161393861333464
           36646561346231656334646439636365323661366434353638323036393261303839376432363738
           343233346635346339613065623636376234
-gia_api_django_database_url: postgres://{{ gia_db_user }}:{{ gia_db_pass }}@{{ gia_db_name }}:5432/{{ gia_db_user }}
+gia_api_django_database_url: postgresql://{{ gia_db_user }}:{{ gia_db_pass }}@{{ gia_db_name }}:5432/{{ gia_db_user }}
 gia_api_django_cache_url: redis://{{ gia_redis_name }}:6379/1
 gia_api_django_admin_url: a/
 gia_api_django_admin_mail: piv@devmem.ru
