@@ -7,11 +7,13 @@ app_network: gia
 ct_registry: "{{ lookup('env','REGISTRY') }}"
 ct_registry_user: "{{ lookup('env','REGISTRY_USER') }}"
 ct_registry_password: "{{ lookup('env','REGISTRY_PASSWORD') }}"
+ct_registry_owner: "{{ lookup('env','IMAGE_OWNER') }}"
+ct_registry_path: "{{ ct_registry }}/{{ ct_registry_owner }}"
 
 gia_api_image: "{{ lookup('env','IMAGE_FULLNAME') }}:{{ lookup('env','REVISION') }}"
-gia_front_image: "{{ ct_registry }}/cr/gia-front:latest"
-gia_db_image: "{{ ct_registry }}/cr/postgres:latest"
-gia_redis_image: "{{ ct_registry }}/cr/redis:latest"
+gia_front_image: "{{ ct_registry_path }}/gia-front:latest"
+gia_db_image: "{{ ct_registry_path }}/postgres:latest"
+gia_redis_image: "{{ ct_registry_path }}/redis:latest"
 
 gia_db_name: gia-db
 gia_redis_name: gia-redis

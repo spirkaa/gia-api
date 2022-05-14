@@ -5,7 +5,7 @@ export COMPOSE_DOCKER_CLI_BUILD=1
 
 default: build
 
-IMAGE_FULLNAME=git.devmem.ru/cr/gia/api
+IMAGE_FULLNAME=git.devmem.ru/projects/gia-api
 build:
 	@docker build \
 		--tag ${IMAGE_FULLNAME} \

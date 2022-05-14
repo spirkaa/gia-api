@@ -1,5 +1,5 @@
 ARG PYTHON_IMAGE=python:3.10-slim-bullseye
-ARG BUILD_IMAGE=git.devmem.ru/cr/python:3.10-bullseye-venv-builder
+ARG BUILD_IMAGE=git.devmem.ru/projects/python:3.10-bullseye-venv-builder
 
 FROM ${BUILD_IMAGE} AS builder
 
