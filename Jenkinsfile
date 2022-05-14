@@ -18,6 +18,7 @@ pipeline {
     IMAGE_OWNER = 'projects'
     IMAGE_BASENAME = 'gia-api'
     IMAGE_FULLNAME = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_BASENAME}"
+    IMAGE_ALT_TAG = 'latest'
     DOCKERFILE = '.docker/django/ci.Dockerfile'
     LABEL_AUTHORS = 'Ilya Pavlov <piv@devmem.ru>'
     LABEL_TITLE = 'GIA API'
@@ -59,8 +60,9 @@ pipeline {
               buildDockerImage(
                 dockerFile: "${DOCKERFILE}",
                 tag: "${REVISION}",
-                altTag: 'latest',
-                useCache: true
+                altTag: "${IMAGE_ALT_TAG}",
+                useCache: true,
+                cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}"
               )
             }
           }
@@ -78,7 +80,7 @@ pipeline {
               buildDockerImage(
                 dockerFile: "${DOCKERFILE}",
                 tag: "${REVISION}",
-                altTag: 'latest'
+                altTag: "${IMAGE_ALT_TAG}"
               )
             }
           }
