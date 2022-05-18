@@ -50,7 +50,7 @@ local-runjobs:
 
 local-test:
 	@docker-compose -f docker-compose.local.yml up -d
-	@docker exec gia-api_django-local_1 pytest
+	@docker exec -e "DJANGO_DEBUG_TOOLBAR=False" gia-api_django-local_1 pytest
 
 local-down:
 	@docker-compose -f docker-compose.local.yml down
