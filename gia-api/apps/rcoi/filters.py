@@ -108,6 +108,14 @@ class EmployeeFilter(FilterWithHelper):
         fields = ["search"]
 
 
+class OrganisationFilter(FilterWithHelper):
+    search = SearchVectorFilter(search_fields=["search_vector"], label="Поиск")
+
+    class Meta:
+        model = models.Organisation
+        fields = ["search"]
+
+
 class PlaceFilter(FilterWithHelper):
     search = SearchVectorFilter(search_fields=["search_vector"], label="Поиск")
 

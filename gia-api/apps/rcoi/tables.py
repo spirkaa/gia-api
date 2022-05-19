@@ -21,6 +21,19 @@ class EmployeeTable(tables.Table):
         exclude = ("id", "created", "modified", "search_vector")
 
 
+class OrganisationTable(tables.Table):
+    name = tables.TemplateColumn(
+        template_name="rcoi/cols/org_name.html",
+        verbose_name="",
+        attrs={"td": {"data-title": "Место работы"}},
+    )
+
+    class Meta:
+        model = models.Organisation
+        sequence = ("name",)
+        exclude = ("id", "created", "modified", "search_vector")
+
+
 class PlaceTable(tables.Table):
     place = tables.TemplateColumn(
         template_name="rcoi/cols/place.html",

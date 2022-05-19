@@ -21,6 +21,7 @@ def test_view_home(client):
     "model_name",
     [
         "employee",
+        "organisation",
         "place",
         "exam",
     ],
@@ -39,7 +40,6 @@ def test_view_model_list_custom(client, model_name):
     [
         "date",
         "level",
-        "organisation",
         "position",
     ],
 )

@@ -11,7 +11,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic import DetailView, ListView, TemplateView
 from django_tables2 import RequestConfig
 
-from .filters import EmployeeFilter, ExamFilter, PlaceFilter, PlaceWithExamsFilter
+from .filters import (
+    EmployeeFilter,
+    ExamFilter,
+    OrganisationFilter,
+    PlaceFilter,
+    PlaceWithExamsFilter,
+)
 from .models import (
     DataFile,
     DataSource,
@@ -24,7 +30,13 @@ from .models import (
     Position,
     RcoiUpdater,
 )
-from .tables import EmployeeTable, ExamTable, PlaceTable, PlaceWithExamsTable
+from .tables import (
+    EmployeeTable,
+    ExamTable,
+    OrganisationTable,
+    PlaceTable,
+    PlaceWithExamsTable,
+)
 
 
 class TemplateViewWithContext(TemplateView):
@@ -80,6 +92,13 @@ class EmployeeTableView(FilteredSingleTableView):
     table_class = EmployeeTable
     filter_class = EmployeeFilter
     template_name = "rcoi/employee.html"
+
+
+class OrganisationTableView(FilteredSingleTableView):
+    model = Organisation
+    table_class = OrganisationTable
+    filter_class = OrganisationFilter
+    template_name = "rcoi/organisation.html"
 
 
 class PlaceTableView(FilteredSingleTableView):
@@ -170,10 +189,6 @@ class LevelListView(ListView):
 
 class LevelDetailView(DetailView):
     model = Level
-
-
-class OrganisationListView(ListView):
-    model = Organisation
 
 
 class PositionListView(ListView):
