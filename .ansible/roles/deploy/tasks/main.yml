@@ -54,7 +54,8 @@
   register: pull_image
 
 - name: "{{ gia_api_name }} - backup database"
-  command: docker exec {{ gia_db_name }} backup
+  ansible.builtin.command: >
+    docker exec {{ gia_db_name }} backup
   when: pull_image.changed  # noqa 503
   ignore_errors: yes
 

@@ -1,10 +1,11 @@
 ---
 - name: "{{ gia_api_name }} - invalidate cache"
-  command: docker exec {{ gia_api_name }} python manage.py invalidate all
+  ansible.builtin.command: >
+    docker exec {{ gia_api_name }} python manage.py invalidate all
   listen: app_start
 
 - name: check http status
-  uri:
+  ansible.builtin.uri:
     url: https://{{ item }}.devmem.ru
     status_code: 200
   register: result
