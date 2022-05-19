@@ -14,6 +14,7 @@ APPS_DIR = ROOT_DIR.path("apps")
 env = environ.Env()
 
 DEBUG = env.bool("DJANGO_DEBUG", default=False)
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["*"])
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------

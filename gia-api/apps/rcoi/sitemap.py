@@ -22,7 +22,7 @@ class StaticSitemap(Sitemap):
             "rcoi:home",
             "rcoi:exam",
             "rcoi:employee",
-            "rcoi:organisation_list",
+            "rcoi:organisation",
             "rcoi:place",
         ]
 

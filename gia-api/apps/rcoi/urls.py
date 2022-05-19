@@ -45,8 +45,8 @@ urlpatterns = [
     # urls for Organisation
     path(
         "organisation/",
-        views.OrganisationListView.as_view(),
-        name="organisation_list",
+        views.OrganisationTableView.as_view(),
+        name="organisation",
     ),
     path(
         "organisation/detail/<int:pk>/",

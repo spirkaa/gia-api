@@ -3,30 +3,49 @@
 {% block title %}{{ object.name }} | Работники ППЭ от организации{% endblock %}
 {% block page_header %}
     <h1>{{ object.name }}<br/>
-        <small>Работники ППЭ от организации</small>
+        <small>Распределение сотрудников на ППЭ</small>
     </h1>
 {% endblock %}
 {% block content %}
     <div class="row" id="row-main">
-        <div class="col-lg-1"></div>
-        <div class="col-lg-10">
-            <table class="table table-condensed table-hover">
-                <thead>
-                <tr>
-                    <th>Всего: {{ employees.count }}</th>
-                    <th>Количество экзаменов</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for employee in employees %}
+        <div class="col-lg-12">
+            <div class="no-more-tables">
+                <table class="table table-condensed table-hover table-sticky-header">
+                    <thead>
                     <tr>
-                        <td><a href="{{ employee.get_absolute_url }}">{{ employee.name }}</a></td>
-                        <td>{{ employee.num_exams }}</td>
+                        <th>Всего: {{ employees.count }}</th>
+                        <th>Кол-во экзаменов</th>
+                        {% for date in dates %}
+                        <th>{{ date.date | date:'SHORT_DATE_FORMAT' }}</th>
+                        {% endfor %}
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for employee in employees %}
+                        <tr>
+                            <td data-title="ФИО"><a href="{{ employee.get_absolute_url }}">{{ employee.name }}</a></td>
+                            <td data-title="Кол-во экз.">{{ employee.num_exams }}</td>
+                            {% for date in dates %}
+                            <td data-title="{{ date.date | date:'SHORT_DATE_FORMAT' }}">
+                                {% for exam in employee.exams.all %}
+                                    {% if exam.date.id == date.id %}
+                                        <a href="{{ exam.place.get_absolute_url }}?date={{ exam.date.id }}">
+                                            <strong>{{ exam.place.code }}</strong>
+                                        </a>
+                                        <span class="text-muted glyphicon glyphicon-info-sign"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="{{ exam.place.name }}, {{ exam.position.name }} ({{ exam.level.level }})">
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            &nbsp;</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="col-lg-1"></div>
     </div>
 {% endblock %}
