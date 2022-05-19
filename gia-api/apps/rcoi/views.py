@@ -136,9 +136,27 @@ class OrganisationDetailView(DetailViewWithContext):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["employees"] = self.object.employees.annotate(
-            num_exams=Count("exams")
-        ).order_by("name")
+        context["employees"] = (
+            self.object.employees.annotate(num_exams=Count("exams"))
+            .prefetch_related(
+                "exams__date",
+                "exams__level",
+                "exams__place",
+                "exams__position",
+            )
+            .order_by("name")
+        )
+        context["dates"] = (
+            Date.objects.filter(
+                id__in=[
+                    exam.date_id
+                    for employee in context["employees"]
+                    for exam in employee.exams.all()
+                ]
+            )
+            .distinct()
+            .order_by("date")
+        )
         return context
 
 

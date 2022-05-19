@@ -1,32 +1,37 @@
 .bottom-buffer {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .page-header {
-    margin: 0 0 26px;
+  margin: 0 0 26px;
 }
 
-
 /* Django-tables2 bootstrap */
-
 .table th.asc:after {
-    content: '\0000a0\0025b2';
+  content: "\0000a0\0025b2";
 }
 
 .table th.desc:after {
-    content: '\0000a0\0025bc';
+  content: "\0000a0\0025bc";
 }
 
 .pagination {
-    text-align: center;
+  text-align: center;
 }
 
 .tdbold {
-    font-weight: bold;
+  font-weight: bold;
 }
 
-.table tbody>tr>td {
-    vertical-align: middle;
+.table tbody > tr > td {
+  vertical-align: middle;
+}
+
+.table-sticky-header th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: white;
 }
 
 @media only screen and (max-width: 767px),
@@ -41,7 +46,7 @@
     display: block;
   }
 
-  /* Hide table headers (but not display: none;, for accessibility) */
+  /* Hide table headers (but not display: none; for accessibility) */
   .no-more-tables thead tr {
     position: absolute;
     top: -9999px;
@@ -53,7 +58,7 @@
   }
 
   .no-more-tables td {
-    /* Behave  like a "row" */
+    /* Behave like a "row" */
     border: none !important;
     border-bottom: 1px solid #eee !important;
     position: relative !important;
@@ -75,9 +80,7 @@
     font-weight: bold;
   }
 
-  /*
-    Label the data
-    */
+  /* Label the data */
   .no-more-tables td:before {
     content: attr(data-title);
   }
