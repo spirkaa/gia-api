@@ -44,14 +44,43 @@ pipeline {
   stages {
     stage('Build') {
       parallel {
-        stage('Build api image (cache)') {
+        stage('Build api image') {
           when {
+            not {
+              branch 'main'
+            }
+            not {
+              anyOf {
+                expression { params.DEPLOY }
+                expression { params.REBUILD }
+                triggeredBy 'TimerTrigger'
+              }
+            }
+          }
+          steps {
+            script {
+              buildDockerImage(
+                dockerFile: "${DOCKERFILE}",
+                tag: "${REVISION}",
+                altTag: "${IMAGE_ALT_TAG}",
+                useCache: true,
+                cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}",
+                pushToRegistry: 'no'
+              )
+            }
+          }
+        }
+
+        stage('Build and push api image') {
+          when {
+            branch 'main'
             not {
               anyOf {
                 expression { params.DEPLOY }
                 expression { params.REBUILD }
                 triggeredBy 'TimerTrigger'
                 triggeredBy cause: 'UserIdCause'
+                changeRequest()
               }
             }
           }
@@ -68,8 +97,9 @@ pipeline {
           }
         }
 
-        stage('Build api image (no cache)') {
+        stage('Build and push api image (no cache)') {
           when {
+            branch 'main'
             anyOf {
               expression { params.REBUILD }
               triggeredBy 'TimerTrigger'
@@ -86,14 +116,16 @@ pipeline {
           }
         }
 
-        stage('Build postgres image') {
+        stage('Build and push postgres image') {
           when {
+            branch 'main'
             not {
               anyOf {
                 expression { params.DEPLOY }
                 expression { params.REBUILD }
                 triggeredBy 'TimerTrigger'
                 triggeredBy cause: 'UserIdCause'
+                changeRequest()
               }
             }
           }
@@ -116,14 +148,16 @@ pipeline {
           }
         }
 
-        stage('Build redis image') {
+        stage('Build and push redis image') {
           when {
+            branch 'main'
             not {
               anyOf {
                 expression { params.DEPLOY }
                 expression { params.REBUILD }
                 triggeredBy 'TimerTrigger'
                 triggeredBy cause: 'UserIdCause'
+                changeRequest()
               }
             }
           }
@@ -151,10 +185,7 @@ pipeline {
     stage('Test') {
       when {
         not {
-          anyOf {
-            expression { params.DEPLOY }
-            triggeredBy cause: 'UserIdCause'
-          }
+          expression { params.DEPLOY }
         }
       }
       environment {
@@ -201,6 +232,7 @@ pipeline {
         }
       }
       when {
+        branch 'main'
         beforeAgent true
         expression { params.DEPLOY }
       }
