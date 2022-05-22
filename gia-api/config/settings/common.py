@@ -50,7 +50,7 @@ THIRD_PARTY_APPS = [
 ]
 LOCAL_APPS = ["apps.rcoi", "apps.api.v1"]
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
+# https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 # MIDDLEWARE CONFIGURATION
@@ -72,7 +72,7 @@ SITE_ID = 1
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
+# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
 FIXTURE_DIRS = [
     str(APPS_DIR.path("fixtures")),
 ]
@@ -97,7 +97,7 @@ EMAIL_SUBJECT_PREFIX = env.str("DJANGO_EMAIL_SUBJECT_PREFIX", default="[Django]"
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
+# https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = env.list(
     "DJANGO_ADMINS_LIST",
     default=[
@@ -108,12 +108,12 @@ ADMINS = env.list(
     ],
 )
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
+# https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
+# https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     "default": env.db_url(
         "DJANGO_DATABASE_URL", engine="django_prometheus.db.backends.postgresql"
@@ -123,22 +123,22 @@ DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TIME_ZONE
+# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TIME_ZONE
 TIME_ZONE = env.str("TZ", default="UTC")
 USE_TZ = False
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
+# https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "ru-ru"
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
+# https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
 USE_I18N = True
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
+# https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
 USE_L10N = True
 
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#templates
+# https://docs.djangoproject.com/en/dev/ref/settings/#templates
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -187,18 +187,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 STATIC_ROOT = str(ROOT_DIR("staticfiles"))
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = "/static/"
 
-# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
     str(APPS_DIR.path("static")),
 ]
 
-# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -206,17 +206,17 @@ STATICFILES_FINDERS = [
 
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
+# https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = str(APPS_DIR("media"))
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
+# https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
 
 # URL Configuration
 # ------------------------------------------------------------------------------
 ROOT_URLCONF = "config.urls"
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
+# https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
@@ -308,7 +308,7 @@ REST_AUTH_TOKEN_MODEL = None
 REST_AUTH_PW_RESET_USE_SITES_DOMAIN = True
 OLD_PASSWORD_FIELD_ENABLED = True
 REST_AUTH_SERIALIZERS = {
-    "JWT_TOKEN_CLAIMS_SERIALIZER": "apps.api.v1.simplejwt.serializers.CustomTokenObtainPairSerializer",
+    "JWT_TOKEN_CLAIMS_SERIALIZER": "apps.api.v1.simplejwt.serializers.CustomTokenObtainPairSerializer",  # noqa
 }
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=7),

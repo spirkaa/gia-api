@@ -207,7 +207,7 @@ def test_view_admin_update_db_post(admin_client, mocker, return_value, message):
     mocker.patch("apps.rcoi.models.RcoiUpdater.run", return_value=return_value)
     url = reverse("rcoi:update_db")
     resp = admin_client.post(url)
-    all_messages = [msg for msg in get_messages(resp.wsgi_request)]
+    all_messages = list(get_messages(resp.wsgi_request))
     assert all_messages[0].message == message
     assert resp.status_code == 302
     assert resp.url == reverse("admin:index")

@@ -9,8 +9,8 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # SECURITY CONFIGURATION
 # ------------------------------------------------------------------------------
-# See https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security
-# and https://docs.djangoproject.com/en/dev/howto/deployment/checklist/#run-manage-py-check-deploy
+# https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security
+# https://docs.djangoproject.com/en/dev/howto/deployment/checklist/#run-manage-py-check-deploy
 USE_X_FORWARDED_HOST = env.bool("DJANGO_USE_X_FORWARDED_HOST", default=False)
 SECURE_PROXY_SSL_HEADER = env.tuple(
     "DJNAGO_SECURE_PROXY_SSL_HEADER", default=("HTTP_X_FORWARDED_PROTO", "https")

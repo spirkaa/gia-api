@@ -41,9 +41,7 @@ class SearchVectorFilter(django_filters.CharFilter):
         )
 
         # sum of ranks of all vector fields
-        sum_of_ranks = sum(
-            [SearchRank(F(field), query) for field in self.search_fields]
-        )
+        sum_of_ranks = sum(SearchRank(F(field), query) for field in self.search_fields)
 
         # Generate F encapsulated filters and combine them using logical OR
         # Input:  [{"search_vector": query}, {"org__search_vector": query}]

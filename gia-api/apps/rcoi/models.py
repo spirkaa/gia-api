@@ -198,7 +198,7 @@ def send_subscriptions():
         new_exams = []
         context = {
             "exams": new_exams,
-            "sub_page": "{}{}".format(url, sub.employee.id),
+            "sub_page": f"{url}{sub.employee.id}",
             "employee": sub.employee.name,
         }
         for exam in sub.employee.exams.all():
@@ -361,9 +361,10 @@ class RcoiUpdater:
         if isinstance(uniq, (list, tuple, set)):
             uniq_names = ", ".join(uniq).rstrip(", ")
         placeholder = ("%s, " * len(columns)).rstrip(", ")
-        rows = ", ".join(["({})".format(placeholder)] * (len(data) // len(columns)))
-        sql = "INSERT INTO {} ({}) VALUES {} ON CONFLICT ({}) DO UPDATE SET modified=excluded.modified;".format(
-            table_name, col_names, rows, uniq_names
+        rows = ", ".join([f"({placeholder})"] * (len(data) // len(columns)))
+        sql = (
+            f"INSERT INTO {table_name} ({col_names}) VALUES {rows} "
+            f"ON CONFLICT ({uniq_names}) DO UPDATE SET modified=excluded.modified;"
         )
         with connection.cursor() as cursor:
             cursor.execute(sql, data)
@@ -384,7 +385,7 @@ class RcoiUpdater:
 
         """
         for key in ("date", "level", "position", "organisation"):
-            values = sorted(list(set(self.data[key])))
+            values = sorted(set(self.data[key]))
             stream = timestamp_list(values)
             table = key
             col = "name"
@@ -402,7 +403,7 @@ class RcoiUpdater:
         organisation = Organisation.objects.all()
         organisation_db = {org.name: org.id for org in organisation}
 
-        values = sorted(list(set(zip(self.data["name"], self.data["organisation"]))))
+        values = sorted(set(zip(self.data["name"], self.data["organisation"])))
         values_with_id = [[val[0], organisation_db.get(val[1])] for val in values]
         stream = timestamp_list(values_with_id)
         table = "employee"
@@ -416,11 +417,11 @@ class RcoiUpdater:
 
         """
         ppe_code = self.data["ppe_code"][:]
-        for i, v in enumerate(ppe_code):
+        for i, _v in enumerate(ppe_code):
             ppe_code[i] = int(ppe_code[i])
 
         values = sorted(
-            list(set(zip(ppe_code, self.data["ppe_name"], self.data["ppe_addr"])))
+            set(zip(ppe_code, self.data["ppe_name"], self.data["ppe_addr"]))
         )
         stream = timestamp_list(values)
         table = "place"

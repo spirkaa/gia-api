@@ -200,7 +200,7 @@ class ExamAdmin(admin.ModelAdmin):
             "form": form,
             "adminform": admin.helpers.AdminForm(
                 form,
-                list([(None, {"fields": form.base_fields})]),
+                [(None, {"fields": form.base_fields})],
                 self.get_prepopulated_fields(request),
             ),
         }

@@ -147,7 +147,7 @@ def limit_subscriptions(fields):
     limit = 100
     if fields["user"].subscriptions.count() == limit:
         raise serializers.ValidationError(
-            "У вас не может быть больше {} подписок".format(limit)
+            f"У вас не может быть больше {limit} подписок"
         )
 
 

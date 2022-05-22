@@ -17,7 +17,7 @@ REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
 ]
 
 if DEBUG:  # pragma: no cover
-    INTERNAL_IPS = type(str("c"), (), {"__contains__": lambda *a: True})()
+    INTERNAL_IPS = type("c", (), {"__contains__": lambda *a: True})()
 
 if DEBUG and DEBUG_TOOLBAR:  # pragma: no cover
     # django-debug-toolbar

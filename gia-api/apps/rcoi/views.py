@@ -244,7 +244,7 @@ def clear_caches_view(request):
             from django.core.cache import cache
 
             res = cache.clear()
-            messages.info(request, "Кэш очищен! Удалено ключей: {}".format(res))
+            messages.info(request, f"Кэш очищен! Удалено ключей: {res}")
         except:  # noqa  # pragma: no cover
             messages.error(request, sys.exc_info())
     return redirect(reverse("admin:index"))

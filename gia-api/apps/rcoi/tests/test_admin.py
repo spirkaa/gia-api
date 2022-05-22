@@ -42,7 +42,7 @@ def test_exam_import_post(admin_client, mocker_exam_importer):
         "datafile_url": "http://rcoi.mcko.ru/file_test.xlsx",
     }
     resp = admin_client.post(url, data=data)
-    all_messages = [msg for msg in get_messages(resp.wsgi_request)]
+    all_messages = list(get_messages(resp.wsgi_request))
 
     assert resp.status_code == 302
     assert all_messages[0].message == "Файл file_test.xlsx обработан"
