@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "enabledManagers": ["dockerfile", "pip_requirements", "pre-commit"],
+  "pip_requirements": {
+    "fileMatch": ["requirements/.+\\.txt$"],
+    "packageRules": [
+      {
+        "paths": ["requirements.txt", "local.txt", "testing.txt"],
+        "groupName": "non-prod-deps"
+      },
+      {
+        "packageNames": ["django"],
+        "allowedVersions": "<3.2"
+      }
+    ]
+  }
+}
