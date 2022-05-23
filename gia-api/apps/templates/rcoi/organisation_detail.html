@@ -8,13 +8,14 @@
 {% endblock %}
 {% block content %}
     <div class="row" id="row-main">
-        <div class="col-lg-12">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
             <div class="no-more-tables">
                 <table class="table table-condensed table-hover table-sticky-header">
                     <thead>
                     <tr>
-                        <th>Всего: {{ employees.count }}</th>
-                        <th>Кол-во экзаменов</th>
+                        <th>ФИО</th>
+                        <th>Кол-во</th>
                         {% for date in dates %}
                         <th>{{ date.date | date:'SHORT_DATE_FORMAT' }}</th>
                         {% endfor %}
@@ -23,8 +24,8 @@
                     <tbody>
                     {% for employee in employees %}
                         <tr>
-                            <td data-title="ФИО"><a href="{{ employee.get_absolute_url }}">{{ employee.name }}</a></td>
-                            <td data-title="Кол-во экз.">{{ employee.num_exams }}</td>
+                            <th scope="row" data-title="ФИО"><a href="{{ employee.get_absolute_url }}">{{ employee.name }}</a></th>
+                            <td data-title="Кол-во">{{ employee.num_exams }}</td>
                             {% for date in dates %}
                             <td data-title="{{ date.date | date:'SHORT_DATE_FORMAT' }}">
                                 {% for exam in employee.exams.all %}
@@ -47,5 +48,6 @@
                 </table>
             </div>
         </div>
+        <div class="col-lg-1"></div>
     </div>
 {% endblock %}
