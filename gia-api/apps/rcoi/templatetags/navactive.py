@@ -6,6 +6,19 @@ register = template.Library()
 
 @register.simple_tag
 def navactive(request, urls):
-    if request.path in (reverse(url) for url in urls.split()):
-        return "active"
+    """
+    Check if url presents in request path.
+
+    :type request: request
+    :param request: request
+    :type urls: str
+    :param urls: urls
+    :return: css class name
+    :rtype: str
+
+    {% navactive request 'rcoi:employee' %}
+    """
+    for path in [reverse(url) for url in urls.split()]:
+        if path in request.path:
+            return "active"
     return ""
