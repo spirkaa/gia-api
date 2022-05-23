@@ -35,7 +35,7 @@ class SearchVectorFilter(django_filters.CharFilter):
             return qs
 
         query = SearchQuery(
-            " | ".join(re.sub(r"[\\()&!|<>]", " ", value).split()),
+            " | ".join(re.sub(r"[\\()&!|<>:]", " ", value).split()),
             search_type="raw",
             config="russian",
         )
