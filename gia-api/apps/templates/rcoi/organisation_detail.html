@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load rupluralize %}
 {% block description %}Сотрудники и учителя {{ object.name }}, заявлянные на ЕГЭ и ОГЭ как работники пунктов проведения экзаменов: организаторы аудитории, технические специалисты, руководители ППЭ, члены ГЭК{% endblock %}
-{% block title %}{{ object.name }} | Работники ППЭ от организации{% endblock %}
+{% block title %}{{ object.name }} | Распределение сотрудников на ППЭ{% endblock %}
 {% block page_header %}
     <h1>{{ object.name }}<br/>
-        <small>Распределение сотрудников на ППЭ</small>
+        <small>{{ employees.count }} {{ employees.count|rupluralize:"работник,работника,работников" }} ППЭ от организации</small>
     </h1>
 {% endblock %}
 {% block content %}

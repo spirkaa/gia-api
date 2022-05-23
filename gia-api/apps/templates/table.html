@@ -1,8 +1,9 @@
 {% load bootstrap3 %}
 {% load django_tables2 %}
 {% load i18n %}
+{% load rupluralize %}
 {% block table-wrapper %}
-    <p class="text-center">Найдено результатов: <strong>{{ table.page.paginator.count }}</strong></p>
+    <p class="text-center">{{ table.page.paginator.count }} {{ table.page.paginator.count|rupluralize:"результат,результата,результатов" }}</p>
     <div class="table-container table-responsive no-more-tables">
         {% block table %}
             <table {% render_attrs table.attrs class="table table-condensed table-hover" %}>
