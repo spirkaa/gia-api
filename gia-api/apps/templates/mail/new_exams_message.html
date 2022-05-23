@@ -109,7 +109,7 @@
                 {% now "Y-m-d" as todays_date %}
                 <tr{% if todays_date > exam.date.date|date:"Y-m-d" %} class="body-text" style="font-size: 13px;color: #afafaf;"{% endif %}>
                     <td>{% if todays_date > exam.date.date|date:"Y-m-d" %}&#10004;{% endif %}</td>
-                    <td>{{ exam.date.date|date:"SHORT_DATE_FORMAT" }}</td>
+                    <td>{{ exam.date }}</td>
                     <td>{{ exam.place.code }}</td>
                     <td>{{ exam.place.name }}</td>
                     <td>

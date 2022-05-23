@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import connection, models
+from django.template import defaultfilters
 from django.urls import reverse
 from django_extensions.db.models import TimeStampedModel
 
@@ -46,7 +47,7 @@ class Date(TimeStampedModel):
         ordering = ["-date"]
 
     def __str__(self):
-        return str(self.date)
+        return defaultfilters.date(self.date, "SHORT_DATE_FORMAT")
 
     def get_absolute_url(self):
         return reverse("rcoi:date_detail", args=(self.id,))

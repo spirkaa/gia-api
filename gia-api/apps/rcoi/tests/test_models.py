@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 from ddf import G
+from django.template import defaultfilters
 from django.urls import reverse
 
 from apps.rcoi import models
@@ -33,7 +34,7 @@ def test_date_str():
     """
     test = datetime.datetime(2017, 5, 1)
     obj = G(models.Date, date=test)
-    assert obj.__str__() == str(test)
+    assert obj.__str__() == defaultfilters.date(test, "SHORT_DATE_FORMAT")
 
 
 def test_level_str():
@@ -89,7 +90,9 @@ def test_exam_str():
     date = datetime.datetime(2017, 5, 1)
     place = "school"
     employee = "test"
-    test_str = str(date) + ", " + place + ", " + employee
+    test_str = (
+        defaultfilters.date(date, "SHORT_DATE_FORMAT") + ", " + place + ", " + employee
+    )
     obj = G(
         models.Exam,
         date__date=date,

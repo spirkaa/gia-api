@@ -18,7 +18,7 @@
                         <th>ФИО</th>
                         <th>Кол-во</th>
                         {% for date in dates %}
-                        <th>{{ date.date | date:'SHORT_DATE_FORMAT' }}</th>
+                        <th>{{ date }}</th>
                         {% endfor %}
                     </tr>
                     </thead>
@@ -28,7 +28,7 @@
                             <th scope="row" data-title="ФИО"><a href="{{ employee.get_absolute_url }}">{{ employee.name }}</a></th>
                             <td data-title="Кол-во">{{ employee.num_exams }}</td>
                             {% for date in dates %}
-                            <td data-title="{{ date.date | date:'SHORT_DATE_FORMAT' }}">
+                            <td data-title="{{ date }}">
                                 {% for exam in employee.exams.all %}
                                     {% if exam.date.id == date.id %}
                                         <a href="{{ exam.place.get_absolute_url }}?date={{ exam.date.id }}">

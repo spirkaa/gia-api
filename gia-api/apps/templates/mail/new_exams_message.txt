@@ -3,7 +3,7 @@
 {% for sub in context %}
 Для работника ППЭ {{ sub.employee }} ({{ sub.sub_page }}) добавлены экзамены:
 {% for exam in sub.exams %}
-{{ exam.date.date|date:"SHORT_DATE_FORMAT" }} | {{ exam.place.code }} | {{ exam.place.name }} | {{ exam.place.addr }} | {{ exam.position }}
+{{ exam.date }} | {{ exam.place.code }} | {{ exam.place.name }} | {{ exam.place.addr }} | {{ exam.position }}
 {% endfor %}-----------------------------
 {% endfor %}
 
