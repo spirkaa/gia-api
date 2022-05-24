@@ -71,7 +71,9 @@ class FilteredSingleTableView(TemplateViewWithContext):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         filter = self.filter_class(
-            self.request.GET, queryset=self.get_queryset(**kwargs)
+            data=self.request.GET,
+            request=self.request,
+            queryset=self.get_queryset(**kwargs),
         )
         filter.form.helper = self.filter_class().helper
         table = self.table_class(filter.qs)

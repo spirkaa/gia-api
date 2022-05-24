@@ -12,6 +12,21 @@ from django.db.models import F, Q
 from . import models
 
 
+def dates_filtered_by_exams_in_place(request):
+    """
+    Dates filtered by exams in place
+    :type request: object
+    :param request: django request object
+    :return: queryset
+    :rtype: object
+    """
+    if request is None:
+        return models.Date.objects.all()
+    return models.Date.objects.filter(
+        exams__place=request.resolver_match.kwargs["pk"]
+    ).distinct()
+
+
 class SearchVectorFilter(django_filters.CharFilter):
     """
     django-filter filter_overrides for django.contrib.postgres.search.SearchVectorField
@@ -166,6 +181,10 @@ class PlaceWithExamsFilter(FilterWithHelper):
             Submit("", "Найти"),
         )
 
+    date = django_filters.ModelChoiceFilter(
+        queryset=dates_filtered_by_exams_in_place,
+        empty_label="Дата экзамена",
+    )
     search = SearchVectorFilter(
         search_fields=[
             "employee__search_vector",
