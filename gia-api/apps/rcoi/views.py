@@ -157,7 +157,7 @@ class OrganisationDetailView(DetailViewWithContext):
                 ]
             )
             .distinct()
-            .order_by("date")
+            .order_by("-date")
         )
         return context
 
