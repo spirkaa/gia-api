@@ -38,6 +38,7 @@ THIRD_PARTY_APPS = [
     "crispy_forms",
     "django_extensions",
     "django_filters",
+    "django_minify_html",
     "django_tables2",
     "django_prometheus",
     "djmail",
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_minify_html.middleware.MinifyHtmlMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 

@@ -31,6 +31,7 @@ staging:
 staging-runjobs:
 	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py loaddata datasource
 	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py runjobs hourly
+	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py invalidate all
 
 staging-test:
 	@docker-compose -f docker-compose.staging.yml up -d
