@@ -1,7 +1,5 @@
 from .local import *  # noqa
 
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["*"])
-
 STATIC_ROOT = str(ROOT_DIR("data/staging/staticfiles"))
 
 INSTALLED_APPS += ["gunicorn", "cacheops"]

@@ -2,6 +2,10 @@ from .common import *  # noqa
 
 DEBUG = False
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
+POD_IP = env.str("POD_IP", default=None)
+if POD_IP:
+    ALLOWED_HOSTS.append(POD_IP)
+
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 INSTALLED_APPS += ["gunicorn", "cacheops"]
@@ -15,7 +19,7 @@ USE_X_FORWARDED_HOST = env.bool("DJANGO_USE_X_FORWARDED_HOST", default=False)
 SECURE_PROXY_SSL_HEADER = env.tuple(
     "DJNAGO_SECURE_PROXY_SSL_HEADER", default=("HTTP_X_FORWARDED_PROTO", "https")
 )
-SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=True)
+SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=False)
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
     "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True
 )

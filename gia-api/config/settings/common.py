@@ -15,6 +15,9 @@ env = environ.Env()
 
 DEBUG = env.bool("DJANGO_DEBUG", default=False)
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["*"])
+POD_IP = env.str("POD_IP", default=None)
+if POD_IP:
+    ALLOWED_HOSTS.append(POD_IP)
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
