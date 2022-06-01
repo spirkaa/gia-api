@@ -121,7 +121,10 @@ MANAGERS = ADMINS
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     "default": env.db_url(
-        "DJANGO_DATABASE_URL", engine="django_prometheus.db.backends.postgresql"
+        "DJANGO_DATABASE_URL",
+        engine=env.str(
+            "DJANGO_DATABASE_ENGINE", default="django_prometheus.db.backends.postgresql"
+        ),
     ),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True

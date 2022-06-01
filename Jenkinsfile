@@ -120,6 +120,51 @@ pipeline {
           }
         }
 
+        stage('Build and push api image (k8s)') {
+          when {
+            branch 'main'
+            not {
+              anyOf {
+                expression { params.DEPLOY }
+                expression { params.REBUILD }
+                triggeredBy 'TimerTrigger'
+                triggeredBy cause: 'UserIdCause'
+                changeRequest()
+              }
+            }
+          }
+          steps {
+            script {
+              buildDockerImage(
+                dockerFile: '.docker/django/k8s.Dockerfile',
+                tag: "${REVISION}-k8s",
+                altTag: "${IMAGE_ALT_TAG}-k8s",
+                useCache: true,
+                cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}-k8s"
+              )
+            }
+          }
+        }
+
+        stage('Build and push api image (k8s) (no cache)') {
+          when {
+            branch 'main'
+            anyOf {
+              expression { params.REBUILD }
+              triggeredBy 'TimerTrigger'
+            }
+          }
+          steps {
+            script {
+              buildDockerImage(
+                dockerFile: '.docker/django/k8s.Dockerfile',
+                tag: "${REVISION}-k8s",
+                altTag: "${IMAGE_ALT_TAG}-k8s"
+              )
+            }
+          }
+        }
+
         stage('Build and push postgres image') {
           when {
             branch 'main'
@@ -237,7 +282,8 @@ pipeline {
         script {
           bumpHelmChartVersion(
             chartName: 'gia',
-            imgName: 'gia-api'
+            imgName: 'gia-api',
+            imgRevision: "${REVISION}-k8s"
           )
         }
       }
