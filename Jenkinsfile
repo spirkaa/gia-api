@@ -27,6 +27,9 @@ pipeline {
     LABEL_CREATED = sh(script: "date '+%Y-%m-%dT%H:%M:%S%:z'", returnStdout: true).toString().trim()
     REVISION = GIT_COMMIT.take(7)
 
+    GPG_KEY_CREDS_ID = 'jenkins-gpg-key'
+    HELM_CHART_GIT_URL = 'https://git.devmem.ru/projects/helm-charts.git'
+
     ANSIBLE_IMAGE = "${REGISTRY}/${IMAGE_OWNER}/ansible:base"
     ANSIBLE_CONFIG = '.ansible/ansible.cfg'
     ANSIBLE_PLAYBOOK = '.ansible/playbook.yml'
@@ -37,6 +40,7 @@ pipeline {
 
   parameters {
     booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this revision?')
+    booleanParam(name: 'BUMP_HELM', defaultValue: false, description: 'Bump Helm chart version?')
     booleanParam(name: 'REBUILD', defaultValue: false, description: 'Reduild this revision image?')
     string(name: 'ANSIBLE_EXTRAS', defaultValue: '', description: 'ansible-playbook extra params')
   }
@@ -185,7 +189,10 @@ pipeline {
     stage('Test') {
       when {
         not {
-          expression { params.DEPLOY }
+          anyOf {
+            expression { params.DEPLOY }
+            expression { params.BUMP_HELM }
+          }
         }
       }
       environment {
@@ -217,6 +224,21 @@ pipeline {
         success {
           junit 'reports/pytest.xml'
           cobertura coberturaReportFile: 'reports/coverage.xml', enableNewApi: true
+        }
+      }
+    }
+
+    stage('Bump Helm chart version') {
+      when {
+        branch 'main'
+        expression { params.BUMP_HELM }
+      }
+      steps {
+        script {
+          bumpHelmChartVersion(
+            chartName: 'gia',
+            imgName: 'gia-api'
+          )
         }
       }
     }
