@@ -4,6 +4,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+
 postgres_ready() {
 python << END
 import psycopg2
@@ -21,7 +22,7 @@ until postgres_ready; do
     >&2 echo "$0: Waiting for PostgreSQL to become available..."
     sleep 1
 done
->&2 echo "$0: PostgreSQL is available"
+
 
 redis_ready() {
 python << END
@@ -41,7 +42,6 @@ until redis_ready; do
     >&2 echo "$0: Waiting for Redis to become available..."
     sleep 1
 done
->&2 echo "$0: Redis is available"
 
 
 exec "$@"

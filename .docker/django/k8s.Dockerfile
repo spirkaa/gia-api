@@ -19,7 +19,13 @@ ARG APP_HOME=/app
 
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR ${APP_HOME}
+RUN set -eux \
+    && addgroup --system --gid 1000 django \
+    && adduser --system --uid 1000 --ingroup django django
+
+RUN set -eux \
+    && mkdir -p ${APP_HOME} \
+    && chown django:django ${APP_HOME}
 
 RUN set -eux \
     && apt-get update \
@@ -28,10 +34,6 @@ RUN set -eux \
         libpq-dev \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/*
-
-RUN set -eux \
-    && addgroup --system --gid 1000 django \
-    && adduser --system --uid 1000 --ingroup django django
 
 COPY --from=builder --chown=django:django /opt/venv /opt/venv
 
@@ -43,8 +45,7 @@ RUN set -eux \
 
 COPY --chown=django:django ${APP_NAME} ${APP_HOME}
 
-RUN set -eux \
-    && chown django:django ${APP_HOME}
+WORKDIR ${APP_HOME}
 
 USER django
 
@@ -56,7 +57,7 @@ RUN DJANGO_SETTINGS_MODULE=config.settings.production \
     DJANGO_DATABASE_ENGINE=django.db.backends.sqlite3 \
     DJANGO_SECRET_KEY=collectstatic \
     DJANGO_ALLOWED_HOSTS=* \
-    python /app/manage.py collectstatic --noinput
+    python manage.py collectstatic --noinput
 
 EXPOSE 5000
 

@@ -30,7 +30,13 @@ ARG APP_HOME=/app
 
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR ${APP_HOME}
+RUN set -eux \
+    && addgroup --system --gid 1000 django \
+    && adduser --system --uid 1000 --ingroup django django
+
+RUN set -eux \
+    && mkdir -p ${APP_HOME} \
+    && chown django:django ${APP_HOME}
 
 RUN set -eux \
     && apt-get update \
@@ -42,10 +48,6 @@ RUN set -eux \
 
 COPY --from=builder /opt/venv /opt/venv
 
-RUN set -eux \
-    && addgroup --system --gid 1000 django \
-    && adduser --system --uid 1000 --ingroup django django
-
 COPY --chown=django:django .docker/django/scripts /
 
 RUN set -eux \
@@ -56,8 +58,7 @@ RUN set -eux \
 
 COPY --chown=django:django ${APP_NAME} ${APP_HOME}
 
-RUN set -eux \
-    && chown django:django ${APP_HOME}
+WORKDIR ${APP_HOME}
 
 USER django
 
