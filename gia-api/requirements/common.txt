@@ -32,5 +32,5 @@ psycopg2==2.9.3
 # Libs for parser
 requests==2.27.1
 beautifulsoup4==4.11.1
-lxml==4.8.0
+lxml==4.9.0
 openpyxl==3.0.10
