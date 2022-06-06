@@ -1,6 +1,6 @@
 -r common.txt
 gunicorn==20.1.0
-whitenoise==6.1.0
+whitenoise==6.2.0
 redis==4.3.3
 brotlipy==0.7.0
 django-brotli==0.2.0
