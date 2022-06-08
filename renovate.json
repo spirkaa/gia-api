@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "enabledManagers": ["dockerfile", "pip_requirements", "pre-commit"],
+  "enabledManagers": ["pip_requirements", "pre-commit"],
   "pip_requirements": {
     "fileMatch": ["requirements/.+\\.txt$"],
     "packageRules": [
@@ -13,5 +13,11 @@
         "allowedVersions": "<3.2"
       }
     ]
-  }
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["pre-commit"],
+      "groupName": "pre-commit"
+    }
+  ]
 }
