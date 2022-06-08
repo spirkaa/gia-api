@@ -183,7 +183,7 @@ class PlaceWithExamsFilter(FilterWithHelper):
 
     date = django_filters.ModelChoiceFilter(
         queryset=dates_filtered_by_exams_in_place,
-        empty_label="Дата экзамена",
+        empty_label="Все даты",
     )
     search = SearchVectorFilter(
         search_fields=[
