@@ -22,7 +22,7 @@ def test_search_vector_filter(name, query):
     f = SearchVectorFilter(search_fields=["search_vector"])
 
     # special characters
-    res = f.filter(qs, "\\()&!|<>:")
+    res = f.filter(qs, "\\()&!|<>:'")
     assert res.count() == 0
 
     # no filter
