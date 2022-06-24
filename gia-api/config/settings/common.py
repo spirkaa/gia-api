@@ -69,7 +69,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "django_minify_html.middleware.MinifyHtmlMiddleware",
+    "django_minify_html.middleware.MinifyHtmlMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
