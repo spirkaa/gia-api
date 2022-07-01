@@ -58,6 +58,7 @@ pipeline {
                 expression { params.DEPLOY }
                 expression { params.REBUILD }
                 triggeredBy 'TimerTrigger'
+                tag ''
               }
             }
           }
@@ -85,6 +86,7 @@ pipeline {
                 triggeredBy 'TimerTrigger'
                 triggeredBy cause: 'UserIdCause'
                 changeRequest()
+                tag ''
               }
             }
           }
@@ -130,6 +132,7 @@ pipeline {
                 triggeredBy 'TimerTrigger'
                 triggeredBy cause: 'UserIdCause'
                 changeRequest()
+                tag ''
               }
             }
           }
@@ -175,6 +178,7 @@ pipeline {
                 triggeredBy 'TimerTrigger'
                 triggeredBy cause: 'UserIdCause'
                 changeRequest()
+                tag ''
               }
             }
           }
@@ -207,6 +211,7 @@ pipeline {
                 triggeredBy 'TimerTrigger'
                 triggeredBy cause: 'UserIdCause'
                 changeRequest()
+                tag ''
               }
             }
           }
@@ -237,6 +242,7 @@ pipeline {
           anyOf {
             expression { params.DEPLOY }
             expression { params.BUMP_HELM }
+            tag ''
           }
         }
       }
@@ -275,8 +281,13 @@ pipeline {
 
     stage('Bump Helm chart version') {
       when {
-        branch 'main'
-        expression { params.BUMP_HELM }
+        anyOf {
+          tag 'v*'
+          allOf {
+            branch 'main'
+            expression { params.BUMP_HELM }
+          }
+        }
       }
       steps {
         script {
