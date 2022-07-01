@@ -70,7 +70,8 @@ pipeline {
                 altTag: "${IMAGE_ALT_TAG}",
                 useCache: true,
                 cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}",
-                pushToRegistry: 'no'
+                pushToRegistry: 'no',
+                deleteBuild: 'no'
               )
             }
           }
