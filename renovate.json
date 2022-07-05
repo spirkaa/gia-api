@@ -9,8 +9,8 @@
         "groupName": "non-prod-deps"
       },
       {
-        "packageNames": ["django"],
-        "allowedVersions": "<3.2"
+        "matchPackageNames": ["django"],
+        "allowedVersions": "< 4"
       }
     ]
   },
