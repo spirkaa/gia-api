@@ -1,4 +1,4 @@
-ARG PYTHON_IMAGE=python:3.10.4-slim-bullseye
+ARG PYTHON_IMAGE=python:3.10.5-slim-bullseye
 
 FROM ${PYTHON_IMAGE} AS python
 
@@ -48,7 +48,8 @@ RUN set -eux \
 
 COPY --from=builder /opt/venv /opt/venv
 
-COPY --chown=django:django .docker/django/scripts /
+COPY --chown=django:django .docker/django/scripts/entrypoint-local /entrypoint
+COPY --chown=django:django .docker/django/scripts/start /start
 
 RUN set -eux \
     && sed -i 's/\r$//g' /entrypoint \
