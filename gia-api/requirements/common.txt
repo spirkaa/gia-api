@@ -20,7 +20,7 @@ djangorestframework-filters==1.0.0.dev2
 djangorestframework-simplejwt==5.2.0
 dj-rest-auth==2.2.5
 drf-extensions==0.7.1
-drf-yasg==1.20.0
+drf-yasg==1.21.3
 
 # Configuration
 django-dotenv==1.4.2
