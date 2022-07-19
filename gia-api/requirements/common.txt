@@ -18,7 +18,7 @@ django-cors-headers==3.13.0
 djangorestframework==3.13.1
 djangorestframework-filters==1.0.0.dev2
 djangorestframework-simplejwt==5.2.0
-dj-rest-auth==2.2.4
+dj-rest-auth==2.2.5
 drf-extensions==0.7.1
 drf-yasg==1.20.0
 
