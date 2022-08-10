@@ -1,5 +1,5 @@
 -r common.txt
-coverage==6.4.2
+coverage==6.4.3
 # django-coverage-plugin==2.0.2
 django-dynamic-fixture==3.1.2
 pytest==7.1.2
