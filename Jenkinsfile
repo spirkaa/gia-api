@@ -71,7 +71,8 @@ pipeline {
                 useCache: true,
                 cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}-k8s",
                 pushToRegistry: 'no',
-                deleteBuild: 'no'
+                deleteBuild: 'no',
+                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.10-bullseye-venv-builder"]
               )
             }
           }
@@ -144,7 +145,8 @@ pipeline {
                 tag: "${REVISION}-k8s",
                 altTag: "${IMAGE_ALT_TAG}-k8s",
                 useCache: true,
-                cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}-k8s"
+                cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}-k8s",
+                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.10-bullseye-venv-builder"]
               )
             }
           }
@@ -163,7 +165,8 @@ pipeline {
               buildDockerImage(
                 dockerFile: '.docker/django/k8s.Dockerfile',
                 tag: "${REVISION}-k8s",
-                altTag: "${IMAGE_ALT_TAG}-k8s"
+                altTag: "${IMAGE_ALT_TAG}-k8s",
+                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.10-bullseye-venv-builder"]
               )
             }
           }

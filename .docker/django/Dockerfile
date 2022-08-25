@@ -1,4 +1,4 @@
-ARG PYTHON_IMAGE=python:3.10.5-slim-bullseye
+ARG PYTHON_IMAGE=python:3.10-slim-bullseye
 
 FROM ${PYTHON_IMAGE} AS python
 
