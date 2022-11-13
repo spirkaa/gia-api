@@ -170,7 +170,11 @@ class ExamAdmin(admin.ModelAdmin):
             form = ExamImportForm(request.POST, request.FILES)
 
             if form.is_valid():
-                data = form.cleaned_data
+                data = {
+                    "date": form.cleaned_data["date"].date,
+                    "level": form.cleaned_data["level"].level,
+                    "datafile_url": form.cleaned_data["datafile_url"],
+                }
                 datafile_name = urlparse(data["datafile_url"]).path.split("/")[-1]
 
                 # noinspection PyBroadException
