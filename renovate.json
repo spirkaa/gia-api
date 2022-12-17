@@ -5,7 +5,8 @@
     "fileMatch": ["requirements/.+\\.txt$"],
     "packageRules": [
       {
-        "paths": ["requirements.txt", "local.txt", "testing.txt"],
+        "description": "Group non-production dependencies",
+        "matchPaths": ["**/requirements.txt", "**/local.txt", "**/testing.txt"],
         "groupName": "non-prod-deps"
       },
       {
