@@ -9,7 +9,6 @@ class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
 
 
 class DateFilter(filters.FilterSet):
-
     date = filters.CharFilter(lookup_expr="icontains", label="Дата экзамена")
 
     class Meta:
@@ -18,7 +17,6 @@ class DateFilter(filters.FilterSet):
 
 
 class LevelFilter(filters.FilterSet):
-
     level = filters.CharFilter(lookup_expr="icontains", label="Уровень")
 
     class Meta:
@@ -27,7 +25,6 @@ class LevelFilter(filters.FilterSet):
 
 
 class OrganisationFilter(filters.FilterSet):
-
     name = filters.CharFilter(lookup_expr="icontains", label="Место работы")
     search = SearchVectorFilter(
         search_fields=["search_vector"], label="Поиск", help_text="Full Text Search"
@@ -39,7 +36,6 @@ class OrganisationFilter(filters.FilterSet):
 
 
 class PositionFilter(filters.FilterSet):
-
     name = filters.CharFilter(lookup_expr="icontains", label="Должность в ППЭ")
     search = SearchVectorFilter(
         search_fields=["search_vector"], label="Поиск", help_text="Full Text Search"
@@ -51,7 +47,6 @@ class PositionFilter(filters.FilterSet):
 
 
 class EmployeeFilter(filters.FilterSet):
-
     id = NumberInFilter(field_name="id", lookup_expr="in")
 
     name = filters.CharFilter(lookup_expr="icontains", label="ФИО сотрудника")
@@ -71,7 +66,6 @@ class EmployeeFilter(filters.FilterSet):
 
 
 class PlaceFilter(filters.FilterSet):
-
     id = NumberInFilter(field_name="id", lookup_expr="in")
 
     name = filters.CharFilter(lookup_expr="icontains", label="Наименование ППЭ")
@@ -86,7 +80,6 @@ class PlaceFilter(filters.FilterSet):
 
 
 class ExamFilter(filters.FilterSet):
-
     id = NumberInFilter(field_name="id", lookup_expr="in")
 
     date = filters.DateFilter(

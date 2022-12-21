@@ -1,24 +1,6 @@
-[tool.black]
-line-length = 88
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
-
 [tool.isort]
-profile = 'black'
-multi_line_output = 3
-known_first_party = 'apps'
+profile = "black"
+known_first_party = "apps"
 
 [tool.pytest.ini_options]
-addopts = '--cov=gia-api --cov-report term-missing:skip-covered'
+addopts = "--cov=gia-api --cov-report term-missing:skip-covered"

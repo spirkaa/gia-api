@@ -305,7 +305,7 @@ class RcoiUpdater:
 
             reader = csv.DictReader(csv_stream, delimiter="\t")
             for row in reader:
-                for (k, v) in row.items():
+                for k, v in row.items():
                     data[k].append(v)
             logger.debug("cleanup downloaded files")
             shutil.rmtree(tmp_path)
@@ -563,7 +563,7 @@ class ExamImporter(RcoiUpdater):
 
             reader = csv.DictReader(csv_stream, delimiter="\t")
             for row in reader:
-                for (k, v) in row.items():
+                for k, v in row.items():
                     data[k].append(v)
             logger.debug("cleanup downloaded files")
             shutil.rmtree(tmp_path)

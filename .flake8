@@ -1,15 +1,8 @@
 [flake8]
 max-line-length = 88
-select =
-    C,
-    E,
-    F,
-    W,
-    B,
-    B950
-ignore =
+extend-select = B950
+extend-ignore =
     E203,
-    E231,
-    E501,
-    F405,
-    W503
+    E501
+per-file-ignores =
+    gia-api/config/settings/*:F405
