@@ -3,6 +3,6 @@ gunicorn==20.1.0
 whitenoise==6.3.0
 redis==4.4.0
 brotlipy==0.7.0
-django-brotli==0.2.0
+django-brotli==0.2.1
 django-cacheops==6.1
 django-redis==5.2.0
