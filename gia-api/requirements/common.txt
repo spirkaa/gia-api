@@ -5,7 +5,7 @@ django-crispy-forms==1.14.0
 django-decorator-include==3.0
 django-extensions==3.2.1
 django-filter==22.1
-django-tables2==2.4.1
+django-tables2==2.5.1
 django-allauth==0.52.0
 django-minify-html==1.4.0
 djmail==2.0.0
