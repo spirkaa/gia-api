@@ -174,7 +174,7 @@ def test_rcoi_updater_if_data_is_bad(mocker):
     mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
     mocker.patch("apps.rcoi.models.RcoiUpdater.data", "unexpected_data", create=True)
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa
         models.RcoiUpdater().run()
     mocker.resetall()
 
