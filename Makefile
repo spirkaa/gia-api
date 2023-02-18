@@ -56,6 +56,28 @@ local-test:
 local-down:
 	@docker-compose -f docker-compose.local.yml down
 
+local-migrations:
+	@docker exec -it gia-api_django-local_1 python /app/gia-api/manage.py makemigrations
+
+local-migrate:
+	@docker exec -it gia-api_django-local_1 python /app/gia-api/manage.py migrate
+
+local-admin:
+	@docker exec -it gia-api_django-local_1 sh -c '\
+	DJANGO_SUPERUSER_USERNAME=admin \
+	DJANGO_SUPERUSER_PASSWORD=admin \
+	DJANGO_SUPERUSER_EMAIL="admin@admin.com" \
+	python /app/gia-api/manage.py createsuperuser --noinput'
+
+local-exec:
+	@docker exec -it gia-api_django-local_1 bash
+
+local-shell:
+	@docker exec -it gia-api_django-local_1 python /app/gia-api/manage.py shell_plus
+
+local-dropdb: local-down
+	@docker volume rm $$(docker volume ls | grep -E "gia-api_postgres_data_local$$" | awk '{print $$2}')
+
 down:
 	@make prod-down --no-print-directory --ignore-errors
 	@make staging-down --no-print-directory --ignore-errors

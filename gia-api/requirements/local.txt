@@ -1,5 +1,5 @@
 -r common.txt
 -r testing.txt
 django-debug-toolbar==3.8.1
-Werkzeug==2.2.2
-ipython==8.9.0
+Werkzeug[watchdog]==2.2.3
+ipdb==0.13.11
