@@ -310,14 +310,15 @@ REST_FRAMEWORK = {
     ),
 }
 
-REST_USE_JWT = True
-REST_SESSION_LOGIN = False
-REST_AUTH_TOKEN_MODEL = None
-REST_AUTH_PW_RESET_USE_SITES_DOMAIN = True
-OLD_PASSWORD_FIELD_ENABLED = True
-REST_AUTH_SERIALIZERS = {
+REST_AUTH = {
+    "USE_JWT": True,
+    "SESSION_LOGIN": False,
+    "TOKEN_MODEL": None,
+    "PASSWORD_RESET_USE_SITES_DOMAIN": True,
+    "OLD_PASSWORD_FIELD_ENABLED": True,
     "JWT_TOKEN_CLAIMS_SERIALIZER": "apps.api.v1.simplejwt.serializers.CustomTokenObtainPairSerializer",  # noqa
 }
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=7),
     "AUTH_HEADER_TYPES": "JWT",
