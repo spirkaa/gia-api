@@ -39,6 +39,7 @@ THIRD_PARTY_APPS = [
     "bootstrap3",
     "corsheaders",
     "crispy_forms",
+    "crispy_bootstrap3",
     "django_extensions",
     "django_filters",
     "django_minify_html",
@@ -346,6 +347,7 @@ SWAGGER_SETTINGS = {
     },
 }
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 FILTERS_HELP_TEXT_FILTER = False
