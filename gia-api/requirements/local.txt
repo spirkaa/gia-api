@@ -2,4 +2,4 @@
 -r testing.txt
 django-debug-toolbar==3.8.1
 Werkzeug[watchdog]==2.2.3
-ipdb==0.13.11
+ipdb==0.13.13
