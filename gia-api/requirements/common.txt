@@ -5,7 +5,7 @@ django-crispy-forms==2.0
 crispy-bootstrap3==2022.1
 django-decorator-include==3.0
 django-extensions==3.2.1
-django-filter==22.1
+django-filter==23.1
 django-tables2==2.5.3
 django-allauth==0.54.0
 django-minify-html==1.5.0
