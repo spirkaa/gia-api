@@ -1,5 +1,5 @@
 -r common.txt
 -r testing.txt
-django-debug-toolbar==3.8.1
+django-debug-toolbar==4.0.0
 Werkzeug[watchdog]==2.2.3
 ipdb==0.13.13
