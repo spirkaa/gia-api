@@ -27,7 +27,7 @@ drf-yasg==1.21.5
 django-environ==0.10.0
 
 # PostgreSQL
-psycopg2==2.9.5
+psycopg2==2.9.6
 
 # Libs for parser
 requests==2.28.2
