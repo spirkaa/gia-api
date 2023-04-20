@@ -7,7 +7,7 @@ from datetime import datetime
 from urllib.parse import urljoin
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from openpyxl import load_workbook
 
 logger = logging.getLogger(__name__)
@@ -76,13 +76,17 @@ def get_files_info(url):
     file_links = []
     for block in content_blocks:
         payload = "id={}&data={}&val=1".format(*block)
-        block_req = requests.request("POST", url, data=payload, headers=headers)
-        block_soup = BeautifulSoup(block_req.text, "lxml").select("p a")
-        file_links += [
-            (block[1], urljoin(url, a.attrs.get("href")))
-            for a in block_soup
-            if "rab" in a.attrs.get("href")
-        ]
+        block_req = requests.post(url, data=payload, headers=headers)
+        block_soup = BeautifulSoup(block_req.text, "lxml")
+        # remove comments
+        for element in block_soup(text=lambda text: isinstance(text, Comment)):
+            element.extract()
+        for a in block_soup.select("p a"):
+            # skip bad tags
+            if not a.attrs:
+                continue
+            if "rab" in a.attrs.get("href"):
+                file_links.append((block[1], urljoin(url, a.attrs.get("href"))))
 
     result = []
     for block_ident, file_link in file_links:

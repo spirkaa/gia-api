@@ -55,7 +55,13 @@ def test_get_files_info(level):
     responses.add(
         responses.POST,
         fmt_url,
-        body=bytes(f'<p><a href="/{level}/{filename}">file</a></p>', "utf-8"),
+        body=bytes(
+            f'<p><a href="/{level}/{filename}">file</a></p>'
+            '<p><a href="/index">wrong url</a></p>'
+            "<p><a>bad url</a></p>"
+            '<p><!--<a href="#">commented</a>--></p>',
+            "utf-8",
+        ),
     )
     responses.add(
         responses.HEAD,
