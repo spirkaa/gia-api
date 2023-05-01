@@ -1,5 +1,5 @@
-ARG PYTHON_IMAGE=python:3.10-slim-bullseye
-ARG BUILD_IMAGE=ghcr.io/spirkaa/python:3.10-bullseye-venv-builder
+ARG PYTHON_IMAGE=python:3.11-slim-bullseye
+ARG BUILD_IMAGE=ghcr.io/spirkaa/python:3.11-bullseye-venv-builder
 
 FROM ${BUILD_IMAGE} AS builder
 
