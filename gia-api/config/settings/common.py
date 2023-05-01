@@ -46,7 +46,7 @@ THIRD_PARTY_APPS = [
     "django_tables2",
     "django_prometheus",
     "djmail",
-    "drf_yasg",
+    "drf_spectacular",
     "dj_rest_auth",
     "dj_rest_auth.registration",
     "rest_framework",
@@ -141,9 +141,6 @@ LANGUAGE_CODE = "ru-ru"
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
 USE_I18N = True
-
-# https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = True
 
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -284,10 +281,6 @@ LOGGING = {
             "level": env.str("DJANGO_LOG_LEVEL", default="INFO"),
             "propagate": False,
         },
-        "drf_yasg": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-        },
         "": {
             "handlers": ["console", "file"],
             "level": env.str("DJANGO_LOG_LEVEL", default="INFO"),
@@ -309,6 +302,14 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "GIA API",
+    "DESCRIPTION": "GIA API",
+    "VERSION": "v1",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 REST_AUTH = {
@@ -322,8 +323,13 @@ REST_AUTH = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=7),
-    "AUTH_HEADER_TYPES": "JWT",
+    "AUTH_HEADER_TYPES": (
+        "JWT",
+        "Bearer",
+    ),
 }
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ACCOUNT_ADAPTER = "apps.api.v1.account.adapter.SitesDomainAccountAdapter"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
@@ -334,24 +340,9 @@ ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = False
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_USERNAME_REQUIRED = False
 
-SWAGGER_SETTINGS = {
-    "USE_SESSION_AUTH": False,
-    "LOGIN_URL": "/api/v1/auth/login",
-    "LOGOUT_URL": "/api/v1/auth/logout",
-    "SECURITY_DEFINITIONS": {
-        "Bearer": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header",
-        }
-    },
-}
-
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 FILTERS_HELP_TEXT_FILTER = False
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 DEBUG_TOOLBAR = env.bool("DJANGO_DEBUG_TOOLBAR", default=False)

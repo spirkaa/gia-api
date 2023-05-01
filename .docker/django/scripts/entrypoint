@@ -4,14 +4,14 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-
 postgres_ready() {
-python << END
-import psycopg2
+  python <<END
+import psycopg
 
 try:
-    psycopg2.connect("${DJANGO_DATABASE_URL}")
-except psycopg2.OperationalError:
+    c = psycopg.connect("${DJANGO_DATABASE_URL}")
+    c.close()
+except psycopg.OperationalError:
     raise SystemExit(1)
 raise SystemExit()
 
@@ -19,13 +19,12 @@ END
 }
 
 until postgres_ready; do
-    >&2 echo "$0: Waiting for PostgreSQL to become available..."
-    sleep 1
+  echo >&2 "$0: Waiting for PostgreSQL to become available..."
+  sleep 1
 done
 
-
 redis_ready() {
-python << END
+  python <<END
 import redis
 
 try:
@@ -39,9 +38,8 @@ END
 }
 
 until redis_ready; do
-    >&2 echo "$0: Waiting for Redis to become available..."
-    sleep 1
+  echo >&2 "$0: Waiting for Redis to become available..."
+  sleep 1
 done
-
 
 exec "$@"

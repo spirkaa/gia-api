@@ -22,7 +22,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox, custom_site):
     url = reverse("apiv1:rest_register")
     resp = client.post(url, data=data)
     assert resp.status_code == 201
-    assert "access_token" in resp.data
+    assert "access" in resp.data
     assert len(mailoutbox) == 1
     assert data["email"] in mailoutbox[0].to
     assert custom_site["name"] in mailoutbox[0].body
@@ -41,7 +41,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox, custom_site):
     auth_url = reverse("apiv1:rest_login")
     auth_resp = client.post(auth_url, data=auth_data)
     assert auth_resp.status_code == 200
-    assert "access_token" in auth_resp.data
+    assert "access" in auth_resp.data
 
     # Verify mail
     mail_verify_link = re.search(
@@ -181,4 +181,4 @@ def test_api_auth_password_reset(client, mailoutbox, custom_site):
     auth_url = reverse("apiv1:rest_login")
     auth_resp = client.post(auth_url, data=auth_data)
     assert auth_resp.status_code == 200
-    assert "access_token" in auth_resp.data
+    assert "access" in auth_resp.data

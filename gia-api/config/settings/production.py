@@ -9,7 +9,11 @@ if POD_IP:
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 INSTALLED_APPS += ["gunicorn", "cacheops"]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # SECURITY CONFIGURATION
 # ------------------------------------------------------------------------------

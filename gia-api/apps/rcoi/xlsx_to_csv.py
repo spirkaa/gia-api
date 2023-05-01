@@ -79,7 +79,7 @@ def get_files_info(url):
         block_req = requests.post(url, data=payload, headers=headers)
         block_soup = BeautifulSoup(block_req.text, "lxml")
         # remove comments
-        for element in block_soup(text=lambda text: isinstance(text, Comment)):
+        for element in block_soup(string=lambda string: isinstance(string, Comment)):
             element.extract()
         for a in block_soup.select("p a"):
             # skip bad tags

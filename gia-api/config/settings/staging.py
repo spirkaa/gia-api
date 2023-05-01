@@ -3,7 +3,11 @@ from .local import *  # noqa
 STATIC_ROOT = str(ROOT_DIR("data/staging/staticfiles"))
 
 INSTALLED_APPS += ["gunicorn", "cacheops"]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 
 # EMAIL CONFIGURATION
