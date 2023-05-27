@@ -1,5 +1,16 @@
 -r common.txt
 -r testing.txt
-django-debug-toolbar==4.0.0
-Werkzeug[watchdog]==2.2.3
+
+Werkzeug[watchdog]==2.3.4
 ipdb==0.13.13
+
+# Django
+django-debug-toolbar==4.1.0
+django-browser-reload==1.8.0
+
+# Code quality
+black==23.3.0
+flake8==6.0.0
+flake8-isort==6.0.0
+pylint-django==2.5.3
+pre-commit==3.3.2

@@ -105,11 +105,10 @@ class DataFileViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.DataFileSerializer
 
 
+# TODO: exclude from schema view
 @method_decorator(never_cache, name="dispatch")
 class SubscriptionViewSet(viewsets.GenericViewSet):
     """ViewSet for managing User to Employee subscriptions"""
-
-    swagger_schema = None
 
     serializer_class = serializers.SubscriptionSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]

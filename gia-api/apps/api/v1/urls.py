@@ -1,20 +1,14 @@
 from decorator_include import decorator_include
-from django.urls import include, path, re_path
+from django.urls import include, path
 from django.views.decorators.cache import never_cache
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
-from rest_framework import permissions, routers
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
+from rest_framework import routers
 
 from . import views
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="GIA API",
-        default_version="v1",
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
 
 router = routers.DefaultRouter()
 router.register(r"date", views.DateViewSet)
@@ -34,16 +28,16 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("auth/", decorator_include(never_cache, "dj_rest_auth.urls")),
     path("auth/registration/", include("dj_rest_auth.registration.urls")),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "swagger/",
-        schema_view.with_ui("swagger", cache_timeout=0),
+        SpectacularSwaggerView.as_view(url_name="apiv1:schema"),
         name="schema-swagger-ui",
     ),
-    re_path(
-        r"^swagger(?P<format>\.json|\.yaml)$",
-        schema_view.without_ui(cache_timeout=0),
-        name="schema-json",
+    path(
+        "redoc/",
+        SpectacularRedocView.as_view(url_name="apiv1:schema"),
+        name="schema-redoc",
     ),
 ]
 
