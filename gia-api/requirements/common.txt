@@ -12,7 +12,7 @@ django-minify-html==1.5.0
 djmail==2.0.0
 
 # REST
-django-cors-headers==4.0.0
+django-cors-headers==4.1.0
 djangorestframework==3.14.0
 djangorestframework-filters==1.0.0.dev2
 djangorestframework-simplejwt==5.2.2
