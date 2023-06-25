@@ -6,11 +6,11 @@ ipdb==0.13.13
 
 # Django
 django-debug-toolbar==4.1.0
-django-browser-reload==1.9.0
+django-browser-reload==1.10.0
 
 # Code quality
 black==23.3.0
 flake8==6.0.0
 flake8-isort==6.0.0
 pylint-django==2.5.3
-pre-commit==3.3.2
+pre-commit==3.3.3
