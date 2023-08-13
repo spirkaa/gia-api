@@ -63,13 +63,12 @@ class SearchVectorFilter(django_filters.CharFilter):
         # Output: Q(search_vector=query) | Q(org__search_vector=query)
         filters = [{field: query} for field in self.search_fields]
         combined_filters = functools.reduce(operator.or_, [Q(**kw) for kw in filters])
-        qs = (
+        return (
             qs.annotate(rank=sum_of_ranks)
             .filter(rank__gt=0.0)
             .filter(combined_filters)
             .order_by("-rank")
         )
-        return qs
 
 
 class FilterWithHelper(django_filters.FilterSet):

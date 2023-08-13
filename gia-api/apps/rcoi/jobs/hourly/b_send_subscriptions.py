@@ -8,4 +8,3 @@ class Job(HourlyJob):
         from apps.rcoi.models import send_subscriptions
 
         send_subscriptions()
-        return

@@ -115,13 +115,12 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
 
     def get_queryset(self):
         queryset = self.request.user.subscriptions.all().select_related()
-        queryset = queryset.prefetch_related(
+        return queryset.prefetch_related(
             "employee__exams__date",
             "employee__exams__level",
             "employee__exams__place",
             "employee__exams__position",
         ).all()
-        return queryset
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -148,9 +147,8 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
         if page is not None:
             serializer = serializers.SubscriptionDetailSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        else:  # pragma: no cover
-            serializer = serializers.SubscriptionDetailSerializer(queryset, many=True)
-            return Response(serializer.data)
+        serializer = serializers.SubscriptionDetailSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

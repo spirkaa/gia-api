@@ -1,9 +1,8 @@
 import csv
-import glob
 import logging
-import os
 import re
 from datetime import datetime
+from pathlib import Path
 from urllib.parse import urljoin
 
 import requests
@@ -28,21 +27,20 @@ def get_file_info(url, date, level):
     :rtype: dict
     """
     logger.debug("get file info: %s", url)
-    ext = os.path.splitext(url)[1]
+    ext = Path(url).suffix
     local_filename = f"{date}__{level}__{ext}"
 
-    file_req = requests.head(url)
+    file_req = requests.head(url, timeout=5)
     file_req.raise_for_status()
     last_modified = datetime.strptime(
         file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
     )
-    file_info = {
+    return {
         "name": local_filename,
         "url": url,
         "size": file_req.headers["Content-Length"],
         "last_modified": last_modified,
     }
-    return file_info
 
 
 def get_files_info(url):
@@ -62,7 +60,7 @@ def get_files_info(url):
     else:
         level = "0"
 
-    req = requests.get(url)
+    req = requests.get(url, timeout=5)
     soup = BeautifulSoup(req.text, "lxml").select('span[data-class="info"]')
     content_blocks = [
         (block.attrs.get("data-id"), block.attrs.get("data-ident")) for block in soup
@@ -76,7 +74,7 @@ def get_files_info(url):
     file_links = []
     for block in content_blocks:
         payload = "id={}&data={}&val=1".format(*block)
-        block_req = requests.post(url, data=payload, headers=headers)
+        block_req = requests.post(url, data=payload, headers=headers, timeout=5)
         block_soup = BeautifulSoup(block_req.text, "lxml")
         # remove comments
         for element in block_soup(string=lambda string: isinstance(string, Comment)):
@@ -96,9 +94,9 @@ def get_files_info(url):
             block_ident[4:6],
             block_ident[6:8],
             level,
-            os.path.splitext(file_link)[1],
+            Path(file_link).suffix,
         )
-        file_req = requests.head(file_link)
+        file_req = requests.head(file_link, timeout=5)
         if file_req:
             last_modified = datetime.strptime(
                 file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
@@ -125,14 +123,14 @@ def download_file(url, local_filename, path):
     :param path: local path
     """
     logger.debug("download file: %s", local_filename)
-    f = os.path.join(path, local_filename)
-    if os.path.exists(f):
+    f = Path(path).joinpath(local_filename)
+    if f.exists():
         raise NotImplementedError(
             "Dumb protection if there are more than 1 file for exam date"
         )
-    with requests.get(url, stream=True) as r:
+    with requests.get(url, stream=True, timeout=5) as r:
         r.raise_for_status()
-        with open(f, "wb") as f:
+        with Path(f).open("wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
 
@@ -154,10 +152,9 @@ def apply_regexp(value):
     :return: formatted string
     :rtype: str
     """
-    s = re_spaces.sub(
+    return re_spaces.sub(
         " ", re_punctuation.sub("", re_quotes.sub(" ", str(value)))
     ).strip()
-    return s
 
 
 def format_org_name(value):
@@ -179,8 +176,8 @@ def format_org_name(value):
         "Государственное бюджетное общеобразовательное учреждение": "ГБОУ",
         "Государственное казенное общеобразовательное учреждение города Москвы": "ГКОУ",
         "Государственное автономное общеобразовательное учреждение города Москвы": "ГАОУ",
-        "Государственное автономное профессиональное общеобразовательное учреждение города Москвы": "ГАПОУ",  # noqa
-        "Государственное бюджетное профессиональное общеобразовательное учреждение города Москвы": "ГБПОУ",  # noqa
+        "Государственное автономное профессиональное общеобразовательное учреждение города Москвы": "ГАПОУ",
+        "Государственное бюджетное профессиональное общеобразовательное учреждение города Москвы": "ГБПОУ",
         "Муниципальное автономное общеобразовательное учреждение": "МАОУ",
     }
     for name, abbreviation in org_names.items():
@@ -216,28 +213,23 @@ def format_addr(value):
     if district in districts:
         del addr[1]
         return " ".join(addr)
-    else:
-        return value
+    return value
 
 
-def parse_xlsx(filepath):
+def parse_xlsx(file_path):
     """
     Parse Excel file and output result as list of lists (rows)
 
-    :type filepath: str
-    :param filepath: local path to excel file
+    :type file_path: str
+    :param file_path: local path to excel file
     :return: list of lists
     :rtype: list
     """
-    workbook = load_workbook(filepath)
+    workbook = load_workbook(file_path)
     sheet = workbook[workbook.sheetnames[0]]
 
-    filename = filepath.split("/")[-1]  # linux
-    if filename == filepath:  # pragma: no cover
-        filename = filepath.split("\\")[-1]  # windows
-    filename_parts = filename.split("__")
-    exam_date = filename_parts[0]
-    exam_level = filename_parts[1]
+    filename = file_path.name
+    exam_date, exam_level, *_ = filename.split("__")
 
     if len(tuple(sheet.columns)) < 7:  # pragma: no cover
         logger.debug("skip file %s: wrong number of columns", filename)
@@ -282,7 +274,7 @@ def save_to_csv(csv_file):
     :type csv_file: str
     :param csv_file: local CSV file name
     """
-    with open(csv_file, "w+", newline="", encoding="utf-8") as fp:
+    with Path(csv_file).open("w+", newline="", encoding="utf-8") as fp:
         a = csv.writer(fp, delimiter=";")
         a.writerow(
             [
@@ -298,12 +290,12 @@ def save_to_csv(csv_file):
             ]
         )
 
-    xlsx = os.path.join(os.path.split(csv_file)[0], "*.xlsx")
-    for name in glob.glob(xlsx):
-        data = parse_xlsx(name)
+    parent_dir = Path(csv_file).parent
+    for file_name in parent_dir.glob("*.xlsx"):
+        data = parse_xlsx(file_name)
         if not data:  # pragma: no cover
             continue
-        with open(csv_file, "a+", newline="", encoding="utf-8") as fp:
+        with Path(csv_file).open("a+", newline="", encoding="utf-8") as fp:
             a = csv.writer(fp, delimiter=";")
             for line in data:
                 a.writerow(line)
@@ -335,8 +327,7 @@ def save_to_stream(path):
         ]
     )
 
-    xlsx = os.path.join(path, "*.xlsx")
-    for name in glob.glob(xlsx):
+    for name in Path(path).glob("*.xlsx"):
         data = parse_xlsx(name)
         for line in data:
             writer.writerow(line)
@@ -350,9 +341,9 @@ def main():
 
     """
     path = "data"
-    if not os.path.exists(path):
-        os.makedirs(path)
-    csv_file = os.path.join(path, path + ".csv")
+    if not Path(path).exists():
+        Path(path).mkdir(parents=True)
+    csv_file = Path(path).joinpath(f"{path}.csv")
     urls = [
         "http://rcoi.mcko.ru/organizers/schedule/oge/?period=1",
         "http://rcoi.mcko.ru/organizers/schedule/ege/?period=1",

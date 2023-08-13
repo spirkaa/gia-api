@@ -12,5 +12,4 @@ class SitesDomainAccountAdapter(DefaultAccountAdapter):
         can be `None` here.
         """
         url = reverse("account_confirm_email", args=[emailconfirmation.key])
-        ret = build_absolute_uri(None, url)
-        return ret
+        return build_absolute_uri(None, url)

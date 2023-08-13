@@ -31,7 +31,6 @@ def test_api_filter_employee_list(client):
         },
     )
     content = json.loads(resp.content)
-    print(content)
     assert resp.status_code == 200
     assert content["count"] == 3
 

@@ -177,14 +177,13 @@ class ExamAdmin(admin.ModelAdmin):
                 }
                 datafile_name = urlparse(data["datafile_url"]).path.split("/")[-1]
 
-                # noinspection PyBroadException
                 try:
                     models.ExamImporter(**data).run()
                     self.message_user(
                         request,
                         f"Файл {datafile_name} обработан",
                     )
-                except:  # noqa  # pragma: no cover
+                except Exception:
                     self.message_user(request, sys.exc_info(), level=40)
 
                 return redirect(reverse(f"admin:{app_label}_{model_name}_changelist"))

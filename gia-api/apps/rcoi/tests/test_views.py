@@ -196,14 +196,14 @@ def test_view_admin_clear_caches_get(admin_client):
 
 
 @pytest.mark.parametrize(
-    "return_value, message",
-    [[True, "База данных обновлена!"], [False, "Изменений нет!"]],
+    ("return_value", "message"),
+    [(True, "База данных обновлена!"), (False, "Изменений нет!")],
 )
 def test_view_admin_update_db_post(admin_client, mocker, return_value, message):
     """
     Test View - Admin Update DB (post)
     """
-    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
+    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", return_value=None)
     mocker.patch("apps.rcoi.models.RcoiUpdater.run", return_value=return_value)
     url = reverse("rcoi:update_db")
     resp = admin_client.post(url)

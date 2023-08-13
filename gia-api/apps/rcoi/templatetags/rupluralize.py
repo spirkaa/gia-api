@@ -25,7 +25,7 @@ def rupluralize(value, arg):
 
     if (a == 1) and (b != 11):
         return forms[0]
-    elif (a >= 2) and (a <= 4) and ((b < 10) or (b >= 20)):
+    elif (a >= 2) and (a <= 4) and ((b < 10) or (b >= 20)):  # noqa: RET505
         return forms[1]
     else:
         return forms[2]

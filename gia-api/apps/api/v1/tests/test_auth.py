@@ -60,7 +60,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox, custom_site):
 
 
 @pytest.mark.parametrize(
-    "pass1,pass2", [("password", "password"), ("n0tMatchPass", "pAss#0tMatch")]
+    ("pass1", "pass2"), [("password", "password"), ("n0tMatchPass", "pAss#0tMatch")]
 )
 def test_api_auth_register_fail(client, pass1, pass2):
     """

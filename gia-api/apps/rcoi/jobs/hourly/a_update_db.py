@@ -8,4 +8,3 @@ class Job(HourlyJob):
         from apps.rcoi.models import RcoiUpdater
 
         RcoiUpdater().run()
-        return

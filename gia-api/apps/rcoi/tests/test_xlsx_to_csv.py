@@ -1,6 +1,6 @@
 import csv
-import os
 from datetime import date, datetime
+from pathlib import Path
 
 import pytest
 import responses
@@ -14,7 +14,7 @@ def test_get_file_info():
     """
     url = "http://rcoi.mcko.ru/"
     filename = "rab_ppe_test.xlsx"
-    exam_url = url + filename
+    exam_url = f"{url}/{filename}"
     exam_date = date(2020, 6, 1)
     exam_level = "11"
     size = "1024000"
@@ -28,7 +28,7 @@ def test_get_file_info():
     )
 
     r = xlsx_to_csv.get_file_info(exam_url, exam_date, exam_level)
-    assert r["name"] == f"{exam_date}__{exam_level}__{os.path.splitext(exam_url)[1]}"
+    assert r["name"] == f"{exam_date}__{exam_level}__{Path(exam_url).suffix}"
     assert r["size"] == size
     assert r["last_modified"] == lm_dt
     assert r["url"] == exam_url
@@ -84,16 +84,24 @@ def test_download_file(mocker):
     path = "path"
     body = b"body"
     responses.add(responses.GET, url, body=body)
-    mocker.patch("builtins.open", mocker.mock_open())
+    opener = mocker.mock_open()
+    mocker.patch.object(Path, "open", opener)
 
     xlsx_to_csv.download_file(url, name, path)
-    open().write.assert_any_call(body)
+    opener().write.assert_any_call(body)
+    mocker.resetall()
 
-    # If file exists
-    mocker.patch("os.path.exists", return_value=True)
+
+def test_download_file_if_exists(mocker):
+    """
+    Test Parser - Download File if exists
+    """
+    url = "http://url"
+    name = "name"
+    path = "path"
+    mocker.patch.object(Path, "exists", return_value=True)
     with pytest.raises(NotImplementedError):
         assert xlsx_to_csv.download_file(url, name, path)
-
     mocker.resetall()
 
 
@@ -102,7 +110,7 @@ def test_parse_xlsx(settings):
     Test Parser - Parse real xlsx file
     """
     filename = "2020-06-13__11__.xlsx"
-    filepath = os.path.join(settings.APPS_DIR, "rcoi", "tests", "xlsx", filename)
+    filepath = Path(settings.APPS_DIR) / "rcoi" / "tests" / "xlsx" / filename
     res = xlsx_to_csv.parse_xlsx(filepath)
     assert len(res) == 10
     assert res[0][0] == filename
@@ -115,12 +123,13 @@ def test_save_to_csv(mocker_parse_xlsx, csv_headers, csv_data_row, mocker):
     """
     Test Parser - save to csv
     """
-    path = "/tmp/data.csv"
-    mocker.patch("builtins.open", mocker.mock_open())
-    mocker.patch("glob.glob", return_value=["file.xlsx"])
+    path = "/test/data.csv"
+    opener = mocker.mock_open()
+    mocker.patch.object(Path, "open", opener)
+    mocker.patch("pathlib.Path.glob", return_value=["file.xlsx"])
     xlsx_to_csv.save_to_csv(path)
-    open().write.assert_any_call(";".join(csv_headers) + "\r\n")
-    open().write.assert_any_call(";".join(csv_data_row) + "\r\n")
+    opener().write.assert_any_call(";".join(csv_headers) + "\r\n")
+    opener().write.assert_any_call(";".join(csv_data_row) + "\r\n")
     mocker.resetall()
 
 
@@ -128,8 +137,8 @@ def test_save_to_stream(mocker_parse_xlsx, csv_headers, csv_data_row, mocker):
     """
     Test Parser - save to StringIO
     """
-    path = "/tmp"
-    mocker.patch("glob.glob", return_value=["file.xlsx"])
+    path = "/test"
+    mocker.patch("pathlib.Path.glob", return_value=["file.xlsx"])
     res = xlsx_to_csv.save_to_stream(path)
     reader = csv.DictReader(res, delimiter="\t")
     for row in reader:
@@ -138,9 +147,9 @@ def test_save_to_stream(mocker_parse_xlsx, csv_headers, csv_data_row, mocker):
     mocker.resetall()
 
 
-def test_main(mocker_xlsx_to_csv_simple, mocker_os):
+def test_main(mocker_xlsx_to_csv_simple, mocker_path):
     """
     Test Parser - main (stand-alone parser)
     """
     xlsx_to_csv.main()
-    assert True
+    assert True  # for coverage

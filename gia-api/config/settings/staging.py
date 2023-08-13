@@ -1,4 +1,4 @@
-from .local import *  # noqa
+from .local import *
 
 STATIC_ROOT = str(ROOT_DIR("data/staging/staticfiles"))
 

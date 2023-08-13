@@ -318,7 +318,7 @@ REST_AUTH = {
     "TOKEN_MODEL": None,
     "PASSWORD_RESET_USE_SITES_DOMAIN": True,
     "OLD_PASSWORD_FIELD_ENABLED": True,
-    "JWT_TOKEN_CLAIMS_SERIALIZER": "apps.api.v1.simplejwt.serializers.CustomTokenObtainPairSerializer",  # noqa
+    "JWT_TOKEN_CLAIMS_SERIALIZER": "apps.api.v1.simplejwt.serializers.CustomTokenObtainPairSerializer",
 }
 
 SIMPLE_JWT = {

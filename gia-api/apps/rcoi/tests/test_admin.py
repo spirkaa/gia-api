@@ -50,7 +50,7 @@ def test_exam_import_post(admin_client, mocker_exam_importer):
 
 
 @pytest.mark.parametrize(
-    "datafile_url, assertion",
+    ("datafile_url", "assertion"),
     [
         ("http://rcoi.mcko.ru/wrong_ext.zip", "Ссылка должна заканчиваться"),
         ("http://test.com/file_test.xlsx", "Ссылка должна вести на сайт"),

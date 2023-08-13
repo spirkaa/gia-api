@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(
-    "name, query", [("первая", "первый"), ("проверка", "успешные проверки функций")]
+    ("name", "query"), [("первая", "первый"), ("проверка", "успешные проверки функций")]
 )
 def test_search_vector_filter(name, query):
     """
@@ -39,7 +39,7 @@ def test_search_vector_filter(name, query):
     assert res.count() == 2
 
 
-@pytest.mark.parametrize("req, count", [(True, 1), (None, 3)])
+@pytest.mark.parametrize(("req", "count"), [(True, 1), (None, 3)])
 def test_dates_filtered_by_exams_in_place(client, req, count):
     """
     Test dates filtered by exams in place

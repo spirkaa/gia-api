@@ -8,7 +8,7 @@ from rest_framework_simplejwt.settings import api_settings
 User = get_user_model()
 
 
-@pytest.fixture
+@pytest.fixture()
 def authenticated_user(client):
     """Authenticated user fixture."""
     prefix = api_settings.AUTH_HEADER_TYPES[0]
@@ -27,7 +27,7 @@ def authenticated_user(client):
     return resp.data
 
 
-@pytest.fixture
+@pytest.fixture()
 def custom_site():
     """Site fixture."""
     site_data = {

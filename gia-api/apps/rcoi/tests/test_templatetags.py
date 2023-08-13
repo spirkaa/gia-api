@@ -6,7 +6,7 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(
-    "value, assertion",
+    ("value", "assertion"),
     [
         ("rcoi:exam", "active"),
         ("rcoi:place", ""),
@@ -23,7 +23,7 @@ def test_navactive(rf, value, assertion):
 
 
 @pytest.mark.parametrize(
-    "value, assertion",
+    ("value", "assertion"),
     [
         ("1", "проверка"),
         ("2", "проверки"),

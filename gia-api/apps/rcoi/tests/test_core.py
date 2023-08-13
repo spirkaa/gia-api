@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 
 import pytest
 from ddf import G
@@ -148,7 +149,7 @@ def test_rcoi_updater_if_tmp_path_exists(mocker_xlsx_to_csv_simple, mocker):
     """
     Test - DB Updater - tmp_path exists ('if' branch coverage)
     """
-    mocker.patch("os.path.exists", return_value=True)
+    mocker.patch.object(Path, "exists", return_value=True)
     mocker.patch("shutil.rmtree")
 
     G(models.DataSource)
@@ -171,10 +172,10 @@ def test_rcoi_updater_if_data_is_bad(mocker):
     """
     Test - DB Updater - data is bad ('except' branch coverage)
     """
-    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
+    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", return_value=None)
     mocker.patch("apps.rcoi.models.RcoiUpdater.data", "unexpected_data", create=True)
 
-    with pytest.raises(Exception):  # noqa
+    with pytest.raises(Exception):  # noqa: B017 PT011
         models.RcoiUpdater().run()
     mocker.resetall()
 
@@ -200,7 +201,6 @@ def test_exam_importer(mocker_xlsx_to_csv_simple, exam_file_diff_date):
         "apps.rcoi.xlsx_to_csv.get_file_info", return_value=exam_file_diff_date
     )
     r3 = models.ExamImporter(exam_url, exam_date, exam_level)
-    # print(r3)
     assert (
         len(r3.data) == 0
     )  # because of mocker, stream stays at the end after first read

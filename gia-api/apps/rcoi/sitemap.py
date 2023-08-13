@@ -136,9 +136,9 @@ def sitemap(
                 else:
                     all_sites_lastmod = False
         except EmptyPage:
-            raise Http404("Page %s empty" % page)
+            raise Http404("Page %s empty" % page) from None
         except PageNotAnInteger:
-            raise Http404("No page '%s'" % page)
+            raise Http404("No page '%s'" % page) from None
     # If lastmod is defined for all sites, set header so as
     # ConditionalGetMiddleware is able to send 304 NOT MODIFIED
     if all_sites_lastmod:

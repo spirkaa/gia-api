@@ -1,4 +1,4 @@
-from .common import *  # noqa
+from .common import *
 
 TIME_ZONE = env.str("TZ", default="Europe/Moscow")
 

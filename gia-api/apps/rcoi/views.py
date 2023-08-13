@@ -1,3 +1,4 @@
+import contextlib
 import sys
 
 from django.contrib import messages
@@ -82,10 +83,9 @@ class FilteredSingleTableView(TemplateViewWithContext):
         )
         context["filter"] = filter
         context["table"] = table
-        try:
+        with contextlib.suppress(MultiValueDictKeyError):
             context["table_sort"] = self.request.GET["sort"]
-        except MultiValueDictKeyError:
-            pass
+
         return context
 
 
@@ -192,7 +192,7 @@ class PlaceDetailView(FilteredSingleTableView):
         try:
             return super().get(request, *args, **kwargs)
         except Place.DoesNotExist:
-            raise Http404
+            raise Http404 from None
 
 
 class DateListView(ListView):
@@ -233,7 +233,7 @@ def update_db_view(request):
                 messages.info(request, "База данных обновлена!")
             else:
                 messages.info(request, "Изменений нет!")
-        except:  # noqa  # pragma: no cover
+        except Exception:
             messages.error(request, sys.exc_info())
     return redirect(reverse("admin:index"))
 
@@ -247,6 +247,6 @@ def clear_caches_view(request):
 
             res = cache.clear()
             messages.info(request, f"Кэш очищен! Удалено ключей: {res}")
-        except:  # noqa  # pragma: no cover
+        except Exception:
             messages.error(request, sys.exc_info())
     return redirect(reverse("admin:index"))

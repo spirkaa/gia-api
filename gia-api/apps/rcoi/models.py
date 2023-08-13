@@ -1,5 +1,6 @@
 import datetime
 import logging
+from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.indexes import GinIndex
@@ -8,6 +9,7 @@ from django.db import connection, models
 from django.template import defaultfilters
 from django.urls import reverse
 from django_extensions.db.models import TimeStampedModel
+from psycopg import sql
 
 from apps.rcoi import xlsx_to_csv
 
@@ -226,7 +228,7 @@ class RcoiUpdater:
     def __init__(self):
         try:
             self.data, self.updated_files = self.__prepare_data()
-        except:  # noqa
+        except Exception:
             logger.exception("Prepare data for update failed!")
             raise
 
@@ -244,9 +246,10 @@ class RcoiUpdater:
                 self.__update_datafile()
                 self.__cleanup()
                 return True
-            except:  # noqa
+            except Exception:
                 logger.exception("Update failed!")
                 raise
+        return None
 
     @staticmethod
     def __prepare_data():
@@ -256,7 +259,6 @@ class RcoiUpdater:
         :return: data, updated files
         """
         import csv
-        import os
         import shutil
         from collections import defaultdict
 
@@ -267,8 +269,8 @@ class RcoiUpdater:
             raise
         tmp_path = "tmp"
 
-        if not os.path.exists(tmp_path):
-            os.makedirs(tmp_path)
+        if not Path(tmp_path).exists():
+            Path(tmp_path).mkdir(parents=True)
 
         files_info = [xlsx_to_csv.get_files_info(url.url) for url in urls]
         files_info = [url for url_list in files_info for url in url_list]
@@ -356,19 +358,26 @@ class RcoiUpdater:
 
         cache.clear()
 
-        table_name = "rcoi_" + table
-        col_names = ", ".join(columns).rstrip(", ")
-        uniq_names = uniq
-        if isinstance(uniq, (list, tuple, set)):
-            uniq_names = ", ".join(uniq).rstrip(", ")
-        placeholder = ("%s, " * len(columns)).rstrip(", ")
-        rows = ", ".join([f"({placeholder})"] * (len(data) // len(columns)))
-        sql = (
-            f"INSERT INTO {table_name} ({col_names}) VALUES {rows} "
-            f"ON CONFLICT ({uniq_names}) DO UPDATE SET modified=excluded.modified;"
+        table_name = sql.Identifier(f"rcoi_{table}")
+        col_names = sql.SQL(", ").join(map(sql.Identifier, columns))
+        if isinstance(uniq, list | tuple | set):
+            uniq_names = sql.SQL(", ").join(map(sql.Identifier, uniq))
+        else:
+            uniq_names = sql.Identifier(uniq)
+        placeholder = (
+            sql.SQL("(")
+            + sql.SQL(", ").join(sql.Placeholder() * len(columns))
+            + sql.SQL(")")
+        )
+        rows = sql.SQL(", ").join(placeholder * (len(data) // len(columns)))
+        query = sql.SQL(
+            "INSERT INTO {table_name} ({col_names}) VALUES {rows} "
+            "ON CONFLICT ({uniq_names}) DO UPDATE SET modified=excluded.modified;"
+        ).format(
+            table_name=table_name, col_names=col_names, rows=rows, uniq_names=uniq_names
         )
         with connection.cursor() as cursor:
-            cursor.execute(sql, data)
+            cursor.execute(query, data)
 
     def __update_datafile(self):
         """
@@ -404,7 +413,9 @@ class RcoiUpdater:
         organisation = Organisation.objects.all()
         organisation_db = {org.name: org.id for org in organisation}
 
-        values = sorted(set(zip(self.data["name"], self.data["organisation"])))
+        values = sorted(
+            set(zip(self.data["name"], self.data["organisation"], strict=True))
+        )
         values_with_id = [[val[0], organisation_db.get(val[1])] for val in values]
         stream = timestamp_list(values_with_id)
         table = "employee"
@@ -422,7 +433,9 @@ class RcoiUpdater:
             ppe_code[i] = int(ppe_code[i])
 
         values = sorted(
-            set(zip(ppe_code, self.data["ppe_name"], self.data["ppe_addr"]))
+            set(
+                zip(ppe_code, self.data["ppe_name"], self.data["ppe_addr"], strict=True)
+            )
         )
         stream = timestamp_list(values)
         table = "place"
@@ -457,6 +470,7 @@ class RcoiUpdater:
                 self.data["ppe_code"],
                 self.data["ppe_name"],
                 self.data["ppe_addr"],
+                strict=True,
             )
         )
         replace_items(place_id, place_db)
@@ -464,10 +478,7 @@ class RcoiUpdater:
         employee = Employee.objects.all().select_related()
         employee_db = {(emp.name, emp.org.name): emp.id for emp in employee}
         employee_id = list(
-            zip(
-                self.data["name"],
-                self.data["organisation"],
-            )
+            zip(self.data["name"], self.data["organisation"], strict=True)
         )
         replace_items(employee_id, employee_db)
 
@@ -477,7 +488,17 @@ class RcoiUpdater:
         replace_items(datafile_id, datafile_db)
 
         exams = list(
-            set(zip(date_id, level_id, place_id, employee_id, position_id, datafile_id))
+            set(
+                zip(
+                    date_id,
+                    level_id,
+                    place_id,
+                    employee_id,
+                    position_id,
+                    datafile_id,
+                    strict=True,
+                )
+            )
         )
 
         table = "exam"
@@ -520,7 +541,7 @@ class ExamImporter(RcoiUpdater):
         self.level = level
         try:
             self.data, self.updated_files = self.__prepare_data()
-        except:  # noqa  # pragma: no cover
+        except Exception:
             logger.exception("Prepare data for update failed!")
             raise
 
@@ -531,14 +552,13 @@ class ExamImporter(RcoiUpdater):
         :return: data, updated files
         """
         import csv
-        import os
         import shutil
         from collections import defaultdict
 
         tmp_path = "tmp"
 
-        if not os.path.exists(tmp_path):
-            os.makedirs(tmp_path)
+        if not Path(tmp_path).exists():
+            Path(tmp_path).mkdir(parents=True)
 
         datafile = xlsx_to_csv.get_file_info(self.datafile_url, self.date, self.level)
 
@@ -602,10 +622,7 @@ def timestamp_list(data):
     created = [datetime_now, datetime_now]
     data_list = []
     for row in data:
-        if isinstance(row, (list, tuple, set)):
-            row = list(row)
-        else:
-            row = [row]
+        row = list(row) if isinstance(row, list | tuple | set) else [row]
         row.extend(created)
         data_list.extend(row)
     return data_list

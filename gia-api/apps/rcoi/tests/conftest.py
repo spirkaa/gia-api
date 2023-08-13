@@ -1,6 +1,7 @@
 import csv
 import datetime
 from io import StringIO
+from pathlib import Path
 
 import pytest
 from django.http import HttpResponse
@@ -27,7 +28,7 @@ DIFF_FILES = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def csv_headers():
     return [
         "datafile",
@@ -42,7 +43,7 @@ def csv_headers():
     ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def csv_data_row():
     return [
         "2020-06-13__11__.xlsx",
@@ -57,17 +58,17 @@ def csv_data_row():
     ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def exam_file():
     return EXAM_FILE
 
 
-@pytest.fixture
+@pytest.fixture()
 def exam_file_diff_date():
     return EXAM_FILE_DIFF_DATE
 
 
-@pytest.fixture
+@pytest.fixture()
 def exams_csv(csv_headers, csv_data_row):
     """
     csv file
@@ -80,7 +81,7 @@ def exams_csv(csv_headers, csv_data_row):
     return stream
 
 
-@pytest.fixture
+@pytest.fixture()
 def mocker_xlsx_to_csv(mocker, exams_csv):
     """
     mock of 'apps.rcoi.xlsx_to_csv'
@@ -92,7 +93,7 @@ def mocker_xlsx_to_csv(mocker, exams_csv):
     mocker.resetall()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mocker_xlsx_to_csv_single_file(mocker, exams_csv):
     """
     mock of 'apps.rcoi.xlsx_to_csv'
@@ -104,7 +105,7 @@ def mocker_xlsx_to_csv_single_file(mocker, exams_csv):
     mocker.resetall()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mocker_xlsx_to_csv_simple(mocker, exams_csv):
     """
     mock of 'apps.rcoi.xlsx_to_csv'
@@ -118,45 +119,42 @@ def mocker_xlsx_to_csv_simple(mocker, exams_csv):
     mocker.resetall()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mocker_parse_xlsx(mocker, csv_data_row):
     mocker.patch("apps.rcoi.xlsx_to_csv.parse_xlsx", return_value=[csv_data_row])
     yield mocker
     mocker.resetall()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mocker_rcoi_updater(mocker):
     """
     mock of 'apps.rcoi.models.RcoiUpdater'
     """
-    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", lambda x: None)
+    mocker.patch("apps.rcoi.models.RcoiUpdater.__init__", return_value=None)
     mocker.patch("apps.rcoi.models.RcoiUpdater.data", None, create=True)
     yield mocker
     mocker.resetall()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mocker_exam_importer(mocker):
     """
     mock of 'apps.rcoi.models.RcoiUpdater'
     """
-    mocker.patch(
-        "apps.rcoi.models.ExamImporter.__init__",
-        lambda x, datafile_url, date, level: None,
-    )
+    mocker.patch("apps.rcoi.models.ExamImporter.__init__", return_value=None)
     mocker.patch("apps.rcoi.models.ExamImporter.data", None, create=True)
     yield mocker
     mocker.resetall()
 
 
 @pytest.fixture(params=[True, False])
-def mocker_os(request, mocker):
+def mocker_path(request, mocker):
     """
-    mock of 'os' parts
+    mock of 'Path' parts
     """
-    mocker.patch("os.path.exists", return_value=request.param)
-    mocker.patch("os.makedirs")
+    mocker.patch.object(Path, "exists", return_value=request.param)
+    mocker.patch.object(Path, "mkdir")
     yield mocker
     mocker.resetall()
 
