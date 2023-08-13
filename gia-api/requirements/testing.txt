@@ -1,6 +1,6 @@
 -r common.txt
 
-coverage==7.2.7
+coverage==7.3.0
 pytest==7.4.0
 pytest-cov==4.1.0
 pytest-mock==3.11.1
