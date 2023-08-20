@@ -1,58 +1,58 @@
-ARG PYTHON_IMAGE=python:3.11-slim-bullseye
+# hadolint global ignore=DL3006,DL3008,DL3013
 
-FROM ${PYTHON_IMAGE} AS python
+ARG RUNTIME_IMAGE=python:3.11-slim-bookworm
 
-FROM python AS builder
+FROM ${RUNTIME_IMAGE} AS python
+
+FROM python AS build
 
 ARG BUILD_ENVIRONMENT=production
 ARG APP_NAME=gia-api
 
-RUN set -eux \
-    && apt-get update \
+SHELL [ "/bin/bash", "-euxo", "pipefail", "-c" ]
+
+RUN apt-get update \
     && apt-get install -y --no-install-suggests --no-install-recommends \
         build-essential \
         libpq-dev
 
-RUN set -eux \
-    && python -m venv /opt/venv
+RUN python -m venv /opt/venv \
+    && pip install --no-cache-dir --upgrade pip wheel
+
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY ${APP_NAME}/requirements .
+COPY ${APP_NAME}/requirements /
 
-RUN set -eux \
-    && pip install --no-cache-dir -r ${BUILD_ENVIRONMENT}.txt
+RUN pip install --no-cache-dir -r ${BUILD_ENVIRONMENT}.txt
 
 
-FROM python AS runner
+FROM python AS runtime
 
 ARG APP_NAME=gia-api
 ARG APP_HOME=/app
 
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
-RUN set -eux \
-    && addgroup --system --gid 1000 django \
+SHELL [ "/bin/bash", "-euxo", "pipefail", "-c" ]
+
+RUN addgroup --system --gid 1000 django \
     && adduser --system --uid 1000 --ingroup django django
 
-RUN set -eux \
-    && mkdir -p ${APP_HOME} \
-    && chown django:django ${APP_HOME}
-
-RUN set -eux \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y --no-install-suggests --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
         libpq-dev \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /opt/venv /opt/venv
+COPY --from=build /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 COPY --chown=django:django .docker/django/scripts/entrypoint-local /entrypoint
 COPY --chown=django:django .docker/django/scripts/start /start
 
-RUN set -eux \
-    && sed -i 's/\r$//g' /entrypoint \
+RUN sed -i 's/\r$//g' /entrypoint \
     && chmod +x /entrypoint \
     && sed -i 's/\r$//g' /start \
     && chmod +x /start
@@ -62,7 +62,5 @@ COPY --chown=django:django ${APP_NAME} ${APP_HOME}
 WORKDIR ${APP_HOME}
 
 USER django
-
-ENV PATH="/opt/venv/bin:$PATH"
 
 ENTRYPOINT [ "/entrypoint" ]

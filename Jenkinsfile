@@ -72,7 +72,7 @@ pipeline {
                 cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}-k8s",
                 pushToRegistry: 'no',
                 deleteBuild: 'no',
-                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.11-bullseye-venv-builder"]
+                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.11-bookworm-venv-builder"]
               )
             }
           }
@@ -146,7 +146,7 @@ pipeline {
                 altTag: "${IMAGE_ALT_TAG}-k8s",
                 useCache: true,
                 cacheFrom: "${IMAGE_FULLNAME}:${IMAGE_ALT_TAG}-k8s",
-                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.11-bullseye-venv-builder"]
+                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.11-bookworm-venv-builder"]
               )
             }
           }
@@ -166,7 +166,7 @@ pipeline {
                 dockerFile: '.docker/django/k8s.Dockerfile',
                 tag: "${REVISION}-k8s",
                 altTag: "${IMAGE_ALT_TAG}-k8s",
-                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.11-bullseye-venv-builder"]
+                buildArgs: ["BUILD_IMAGE=${REGISTRY}/${IMAGE_OWNER}/python:3.11-bookworm-venv-builder"]
               )
             }
           }
