@@ -18,20 +18,20 @@ ignore = [
   "E501", # line length violations
 ]
 select = [
-  "E", # pycodestyle errors
-  "W", # pycodestyle warnings
-  "F", # pyflakes
-  "B", # flake8-bugbear
-  "C4", # flake8-comprehensions
-  "I", # isort
-  "UP", # pyupgrade
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "I",   # isort
+  "UP",  # pyupgrade
   "FBT", # flake8-boolean-trap
   "PIE", # flake8-pie
   "SIM", # flake8-simplify
-  "PT", # flake8-pytest-style
+  "PT",  # flake8-pytest-style
   "RET", # flake8-return
   "PTH", # flake8-use-pathlib
-  "S", # flake8-bandit
+  "S",   # flake8-bandit
 ]
 target-version = "py311"
 
