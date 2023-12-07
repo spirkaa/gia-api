@@ -15,7 +15,7 @@ djmail==2.0.0
 django-cors-headers==4.3.1
 djangorestframework==3.14.0
 djangorestframework-filters==1.0.0.dev2
-djangorestframework-simplejwt==5.3.0
+djangorestframework-simplejwt==5.3.1
 dj-rest-auth==4.0.1
 drf-extensions==0.7.1
 drf-spectacular==0.26.5
