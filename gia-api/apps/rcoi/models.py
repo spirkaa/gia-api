@@ -377,7 +377,7 @@ class RcoiUpdater:
             table_name=table_name, col_names=col_names, rows=rows, uniq_names=uniq_names
         )
         with connection.cursor() as cursor:
-            cursor.execute(query, data)
+            cursor.execute(query.as_string(cursor), data)
 
     def __update_datafile(self):
         """
