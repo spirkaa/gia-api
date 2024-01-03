@@ -3,7 +3,7 @@
 gunicorn==21.2.0
 whitenoise==6.6.0
 redis==5.0.1
-hiredis==2.2.3
+hiredis==2.3.2
 brotlipy==0.7.0
 django-brotli==0.2.1
 django-cacheops==7.0.2
