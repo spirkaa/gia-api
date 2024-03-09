@@ -51,8 +51,8 @@ class TemplateViewWithContext(TemplateView):
             context["updated"] = DataFile.objects.latest("modified").modified
         except DataFile.DoesNotExist:
             context["updated"] = ""
-        context["link_rel"] = "{}://{}{}".format(
-            self.request.scheme, RequestSite(self.request).domain, self.request.path
+        context["link_rel"] = (
+            f"{self.request.scheme}://{RequestSite(self.request).domain}{self.request.path}"
         )
         return context
 
@@ -127,8 +127,8 @@ class DetailViewWithContext(DetailView):
             context["updated"] = DataFile.objects.latest("modified").modified
         except DataFile.DoesNotExist:
             context["updated"] = ""
-        context["link_rel"] = "{}://{}{}".format(
-            self.request.scheme, RequestSite(self.request).domain, self.request.path
+        context["link_rel"] = (
+            f"{self.request.scheme}://{RequestSite(self.request).domain}{self.request.path}"
         )
         return context
 

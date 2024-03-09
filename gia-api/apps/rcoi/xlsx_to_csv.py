@@ -89,13 +89,7 @@ def get_files_info(url):
     result = []
     for block_ident, file_link in file_links:
         # extract date YYYY-MM-DD from block_ident, then combine date, level, filename
-        local_filename = "{}-{}-{}__{}__{}".format(
-            block_ident[0:4],
-            block_ident[4:6],
-            block_ident[6:8],
-            level,
-            Path(file_link).suffix,
-        )
+        local_filename = f"{block_ident[0:4]}-{block_ident[4:6]}-{block_ident[6:8]}__{level}__{Path(file_link).suffix}"
         file_req = requests.head(file_link, timeout=5)
         if file_req:
             last_modified = datetime.strptime(

@@ -1,3 +1,6 @@
+[project]
+requires-python = ">=3.11"
+
 [tool.pytest.ini_options]
 addopts = "--cov=gia-api --cov-report term-missing:skip-covered"
 
@@ -12,7 +15,7 @@ omit = [
   "*apps.py",
 ]
 
-[tool.ruff]
+[tool.ruff.lint]
 ignore = [
   "E203", # whitespace before ':'
   "E501", # line length violations
@@ -33,15 +36,14 @@ select = [
   "PTH", # flake8-use-pathlib
   "S",   # flake8-bandit
 ]
-target-version = "py311"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "*test*" = ["S101"] # allow assert statements in test cases
 "gia-api/config/settings/*" = [
   "F403", # star imports
   "F405", # star imports
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 known-first-party = ["apps"]
