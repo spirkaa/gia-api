@@ -101,7 +101,7 @@ def test_download_file_if_exists(mocker):
     path = "path"
     mocker.patch.object(Path, "exists", return_value=True)
     with pytest.raises(NotImplementedError):
-        assert xlsx_to_csv.download_file(url, name, path)
+        xlsx_to_csv.download_file(url, name, path)
     mocker.resetall()
 
 

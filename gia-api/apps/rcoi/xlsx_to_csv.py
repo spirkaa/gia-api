@@ -14,8 +14,7 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 def get_file_info(url, date, level):
-    """
-    Compose info about single exam file from direct url
+    """Compose info about single exam file from direct url.
 
     :type url: str
     :param url: file url
@@ -44,8 +43,7 @@ def get_file_info(url, date, level):
 
 
 def get_files_info(url):
-    """
-    Compose custom info about remote files
+    """Compose custom info about remote files.
 
     :type url: str
     :param url: file url
@@ -83,7 +81,7 @@ def get_files_info(url):
             # skip bad tags
             if not a.attrs:
                 continue
-            if "rab" in a.attrs.get("href"):
+            if "rab" in a.attrs.get("href", ""):
                 file_links.append((block[1], urljoin(url, a.attrs.get("href"))))
 
     result = []
@@ -106,8 +104,7 @@ def get_files_info(url):
 
 
 def download_file(url, local_filename, path):
-    """
-    Download file from URL
+    """Download file from URL.
 
     :type url: str
     :param url: file url
@@ -138,8 +135,7 @@ re_spaces = re.compile(r"(?<=[.,:;!№?])(?![.,:;!№?\s])|(?<=\w)(?=№)|\s+")
 
 
 def apply_regexp(value):
-    """
-    Apply precompiled regexp rules
+    """Apply precompiled regexp rules.
 
     :type value: str
     :param value: string
@@ -152,8 +148,7 @@ def apply_regexp(value):
 
 
 def format_org_name(value):
-    """
-    Replace full organization name with abbreviation
+    """Replace full organization name with abbreviation.
 
     :type value: str
     :param value: original name
@@ -179,40 +174,8 @@ def format_org_name(value):
     return value
 
 
-def format_addr(value):
-    """
-    Remove district name from street address
-
-    :type value: str
-    :param value: original street address
-    :return: modified street address
-    :rtype: str
-    """
-    districts = [
-        "Восточный",
-        "Западный",
-        "Зеленоградский",
-        "Новомосковский",
-        "Северный",
-        "Северо-Восточный",
-        "Северо-Западный",
-        "Троицкий",
-        "Центральный",
-        "Юго-Восточный",
-        "Юго-Западный",
-        "Южный",
-    ]
-    addr = value.split(" ")
-    district = addr[1].rstrip(",")
-    if district in districts:
-        del addr[1]
-        return " ".join(addr)
-    return value
-
-
 def parse_xlsx(file_path):
-    """
-    Parse Excel file and output result as list of lists (rows)
+    """Parse Excel file and output result as list of lists (rows).
 
     :type file_path: str
     :param file_path: local path to excel file
@@ -251,8 +214,6 @@ def parse_xlsx(file_path):
                     cell = apply_regexp(cell)
                     if cell_num == 2 or cell_num == 6:  # org name
                         cell = format_org_name(cell)
-                    if cell_num == 3:  # org address
-                        cell = format_addr(cell)
                     if cell_num == 5:  # employee name
                         cell = " ".join([part.capitalize() for part in cell.split()])
                 formatted_row.append(cell)  # append all cells, even blank
@@ -262,8 +223,7 @@ def parse_xlsx(file_path):
 
 
 def save_to_csv(csv_file):
-    """
-    Save list of rows to CSV in local file
+    """Save list of rows to CSV in local file.
 
     :type csv_file: str
     :param csv_file: local CSV file name
@@ -296,8 +256,7 @@ def save_to_csv(csv_file):
 
 
 def save_to_stream(path):
-    """
-    Save list of rows to CSV in string buffer (memory file)
+    """Save list of rows to CSV in string buffer (memory file).
 
     :type path: str
     :param path: local directory with xlsx files
@@ -330,10 +289,7 @@ def save_to_stream(path):
 
 
 def main():
-    """
-    Download and process files, then output result to local CSV file
-
-    """
+    """Download and process files, then output result to local CSV file."""
     path = "data"
     if not Path(path).exists():
         Path(path).mkdir(parents=True)
