@@ -10,4 +10,4 @@ django-browser-reload==1.12.1
 
 # Code quality
 pylint-django==2.5.5
-pre-commit==3.6.2
+pre-commit==3.7.0
