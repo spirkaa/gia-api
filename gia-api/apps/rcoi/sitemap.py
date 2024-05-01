@@ -115,7 +115,9 @@ def sitemap(
 
     if section is not None:
         if section not in sitemaps:
-            raise Http404("No sitemap available for section: %r" % section)
+            raise Http404(
+                "No sitemap available for section: %r" % section  # noqa: UP031
+            )
         maps = [sitemaps[section]]
     else:
         maps = sitemaps.values()
@@ -136,9 +138,9 @@ def sitemap(
                 else:
                     all_sites_lastmod = False
         except EmptyPage:
-            raise Http404("Page %s empty" % page) from None
+            raise Http404("Page %s empty" % page) from None  # noqa: UP031
         except PageNotAnInteger:
-            raise Http404("No page '%s'" % page) from None
+            raise Http404("No page '%s'" % page) from None  # noqa: UP031
     # If lastmod is defined for all sites, set header so as
     # ConditionalGetMiddleware is able to send 304 NOT MODIFIED
     if all_sites_lastmod:
