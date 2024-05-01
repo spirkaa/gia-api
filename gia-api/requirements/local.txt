@@ -1,7 +1,7 @@
 -r common.txt
 -r testing.txt
 
-Werkzeug[watchdog]==3.0.1
+Werkzeug[watchdog]==3.0.2
 ipdb==0.13.13
 
 # Django
@@ -10,4 +10,4 @@ django-browser-reload==1.12.1
 
 # Code quality
 pylint-django==2.5.5
-pre-commit==3.6.2
+pre-commit==3.7.0
