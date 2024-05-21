@@ -30,7 +30,7 @@ django-prometheus==2.3.1
 psycopg[binary]==3.1.18
 
 # Libs for parser
-requests==2.31.0
+requests==2.32.0
 urllib3<2
 beautifulsoup4==4.12.3
 lxml==5.2.1
