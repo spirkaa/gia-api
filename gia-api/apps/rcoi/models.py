@@ -260,18 +260,10 @@ class RcoiUpdater:
         """
         import csv
         import shutil
+        import tempfile
         from collections import defaultdict
 
         urls = DataSource.objects.all()
-        try:
-            urls.latest("modified")
-        except DataSource.DoesNotExist:
-            raise
-        tmp_path = "tmp"
-
-        if not Path(tmp_path).exists():
-            Path(tmp_path).mkdir(parents=True)
-
         files_info = [xlsx_to_csv.get_files_info(url.url) for url in urls]
         files_info = [url for url_list in files_info for url in url_list]
 
@@ -284,9 +276,10 @@ class RcoiUpdater:
                     if f.modified >= datetime.datetime.now() - datetime.timedelta(
                         minutes=5
                     ):
-                        raise NotImplementedError(
-                            "Dumb protection if there are more than 1 file for exam date"
+                        logger.error(
+                            "There are more than 1 file for exam date: %s", name
                         )
+                        continue
                     updated_files.append(file)
                     logger.debug("%s: dates differ, DOWNLOAD", name)
                 else:
@@ -297,16 +290,15 @@ class RcoiUpdater:
                 updated_files.append(file)
 
         if updated_files:
-            data = defaultdict(list)
-
+            tmp_path = Path(tempfile.mkdtemp())
             [
                 xlsx_to_csv.download_file(file["url"], file["name"], tmp_path)
                 for file in updated_files
             ]
             csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
 
-            reader = csv.DictReader(csv_stream, delimiter="\t")
-            for row in reader:
+            data = defaultdict(list)
+            for row in csv.DictReader(csv_stream, delimiter="\t"):
                 for k, v in row.items():
                     data[k].append(v)
             logger.debug("cleanup downloaded files")
@@ -553,15 +545,10 @@ class ExamImporter(RcoiUpdater):
         """
         import csv
         import shutil
+        import tempfile
         from collections import defaultdict
 
-        tmp_path = "tmp"
-
-        if not Path(tmp_path).exists():
-            Path(tmp_path).mkdir(parents=True)
-
         datafile = xlsx_to_csv.get_file_info(self.datafile_url, self.date, self.level)
-
         datafile_updated = False
         name = datafile["name"]
         try:
@@ -577,12 +564,12 @@ class ExamImporter(RcoiUpdater):
             datafile_updated = True
 
         if datafile_updated:
-            data = defaultdict(list)
+            tmp_path = tempfile.mkdtemp()
             xlsx_to_csv.download_file(datafile["url"], datafile["name"], tmp_path)
             csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
 
-            reader = csv.DictReader(csv_stream, delimiter="\t")
-            for row in reader:
+            data = defaultdict(list)
+            for row in csv.DictReader(csv_stream, delimiter="\t"):
                 for k, v in row.items():
                     data[k].append(v)
             logger.debug("cleanup downloaded files")

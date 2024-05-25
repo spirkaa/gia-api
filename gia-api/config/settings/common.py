@@ -346,3 +346,9 @@ CRISPY_TEMPLATE_PACK = "bootstrap3"
 FILTERS_HELP_TEXT_FILTER = False
 
 DEBUG_TOOLBAR = env.bool("DJANGO_DEBUG_TOOLBAR", default=False)
+
+# opentelemetry
+# ------------------------------------------------------------------------------
+OTEL_TRACING_ENABLED = env.bool("OTEL_TRACING_ENABLED", default=False)
+OTEL_EXPORTER_OTLP_ENDPOINT = env.str("OTEL_EXPORTER_OTLP_ENDPOINT", default="")
+OTEL_SERVICE_NAME = env.str("OTEL_SERVICE_NAME", default="gia-api")

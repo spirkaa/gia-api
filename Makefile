@@ -12,68 +12,68 @@ build:
 		-f .docker/django/ci.Dockerfile .
 
 prod:
-	@docker-compose up -d --build
-	@docker-compose logs -f
+	@docker compose up -d --build
+	@docker compose logs -f
 
 prod-runjobs:
 	@docker exec gia-api_django_1 python /app/manage.py loaddata datasource
 	@docker exec gia-api_django_1 python /app/manage.py runjobs hourly
 
 prod-down:
-	@docker-compose down
+	@docker compose down
 
 staging:
-	@mkdir -p data/staging/{backups,redis,staticfiles}
-	@docker-compose -f docker-compose.staging.yml up -d --build
-	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py migrate
-	@docker-compose -f docker-compose.staging.yml logs -f
+	@mkdir -p data/staging/staticfiles
+	@docker compose -f docker-compose.staging.yml up --build
+	@docker exec gia-api-django-staging-1 python /app/gia-api/manage.py migrate
+	@docker compose -f docker-compose.staging.yml logs -f
 
 staging-runjobs:
-	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py loaddata datasource
-	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py runjobs hourly
-	@docker exec gia-api_django-staging_1 python /app/gia-api/manage.py invalidate all
+	@docker exec gia-api-django-staging-1 python /app/gia-api/manage.py loaddata datasource
+	@docker exec gia-api-django-staging-1 python /app/gia-api/manage.py runjobs hourly
+	@docker exec gia-api-django-staging-1 python /app/gia-api/manage.py invalidate all
 
 staging-test:
-	@docker-compose -f docker-compose.staging.yml up -d
-	@docker exec gia-api_django-staging_1 pytest
+	@docker compose -f docker-compose.staging.yml up -d
+	@docker exec gia-api-django-staging-1 pytest
 
 staging-down:
-	@docker-compose -f docker-compose.staging.yml down
+	@docker compose -f docker-compose.staging.yml down
 
 local:
-	@docker-compose -f docker-compose.local.yml up -d --build
-	@docker exec gia-api_django-local_1 python /app/gia-api/manage.py migrate
-	@docker-compose -f docker-compose.local.yml logs -f
+	@docker compose -f docker-compose.local.yml up -d --build
+	@docker exec gia-api-django-local-1 python /app/gia-api/manage.py migrate
+	@docker compose -f docker-compose.local.yml logs -f
 
 local-runjobs:
-	@docker exec gia-api_django-local_1 python /app/gia-api/manage.py loaddata datasource
-	@docker exec gia-api_django-local_1 python /app/gia-api/manage.py runjobs hourly
+	@docker exec gia-api-django-local-1 python /app/gia-api/manage.py loaddata datasource
+	@docker exec gia-api-django-local-1 python /app/gia-api/manage.py runjobs hourly
 
 local-test:
-	@docker-compose -f docker-compose.local.yml up -d
-	@docker exec -e "DJANGO_DEBUG_TOOLBAR=False" gia-api_django-local_1 pytest --cov-report html --color yes
+	@docker compose -f docker-compose.local.yml up -d
+	@docker exec -e "DJANGO_DEBUG_TOOLBAR=False" gia-api-django-local-1 pytest --cov-report html --color yes
 
 local-down:
-	@docker-compose -f docker-compose.local.yml down
+	@docker compose -f docker-compose.local.yml down
 
 local-migrations:
-	@docker exec -it gia-api_django-local_1 python /app/gia-api/manage.py makemigrations
+	@docker exec -it gia-api-django-local-1 python /app/gia-api/manage.py makemigrations
 
 local-migrate:
-	@docker exec -it gia-api_django-local_1 python /app/gia-api/manage.py migrate
+	@docker exec -it gia-api-django-local-1 python /app/gia-api/manage.py migrate
 
 local-admin:
-	@docker exec -it gia-api_django-local_1 sh -c '\
+	@docker exec -it gia-api-django-local-1 sh -c '\
 	DJANGO_SUPERUSER_USERNAME=admin \
 	DJANGO_SUPERUSER_PASSWORD=admin \
 	DJANGO_SUPERUSER_EMAIL="admin@admin.com" \
 	python /app/gia-api/manage.py createsuperuser --noinput'
 
 local-exec:
-	@docker exec -it gia-api_django-local_1 bash
+	@docker exec -it gia-api-django-local-1 bash
 
 local-shell:
-	@docker exec -it gia-api_django-local_1 python /app/gia-api/manage.py shell_plus
+	@docker exec -it gia-api-django-local-1 python /app/gia-api/manage.py shell_plus
 
 local-dropdb: local-down
 	@docker volume rm $$(docker volume ls | grep -E "gia-api_postgres_data_local$$" | awk '{print $$2}')
@@ -85,13 +85,13 @@ down:
 
 cleanup-images:
 	@docker rmi -f \
-		gia-api_django-local \
-		gia-api_postgres-local \
-		gia-api_django-staging \
-		gia-api_postgres-staging \
-		gia-api_redis-staging \
-		gia-api_nginx-staging \
-		gia-api_django \
-		gia-api_postgres \
-		gia-api_redis \
-		gia-api_nginx
+		gia-api-django-local \
+		gia-api-postgres-local \
+		gia-api-django-staging \
+		gia-api-postgres-staging \
+		gia-api-redis-staging \
+		gia-api-nginx-staging \
+		gia-api-django \
+		gia-api-postgres \
+		gia-api-redis \
+		gia-api-nginx

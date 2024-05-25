@@ -88,3 +88,7 @@ CACHEOPS_LRU = True
 CACHE_MIDDLEWARE_SECONDS = 60 * 60 * 24
 # TTL of cache on client (cache-control: max-age)
 RESPONSE_CACHE_SECONDS = 60 * 10
+
+OTEL_DEPLOYMENT_ENVIRONMENT = env.str(
+    "OTEL_DEPLOYMENT_ENVIRONMENT", default="production"
+)

@@ -62,4 +62,4 @@ EXPOSE 5000
 
 ENTRYPOINT [ "/entrypoint" ]
 
-CMD [ "gunicorn", "config.wsgi", "-b", "0.0.0.0:5000", "-w", "4", "-t", "60", "--chdir", "/app" ]
+CMD [ "gunicorn", "config.wsgi", "-c", "config/gunicorn.py", "-b", "0.0.0.0:5000", "-w", "4", "-t", "60", "--chdir", "/app" ]

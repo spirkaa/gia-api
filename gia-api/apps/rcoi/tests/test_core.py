@@ -120,31 +120,6 @@ def test_rcoi_updater_same_file(mocker_xlsx_to_csv_single_file, exam_file):
     assert exam_count == 1
 
 
-def test_rcoi_updater_same_file_fail(mocker_xlsx_to_csv_single_file, exam_file):
-    """
-    Test - DB Updater - must fail when trying to process the same file within 5 minutes range
-    """
-
-    exam_file_diff_date = exam_file.copy()
-    exam_file_diff_date.update(
-        {"last_modified": datetime.datetime(2020, 6, 1, 1, 1, 1)}
-    )
-
-    G(models.DataSource)
-    G(models.DataFile, **exam_file_diff_date)
-
-    with pytest.raises(NotImplementedError):
-        assert models.RcoiUpdater().run()
-
-
-def test_rcoi_updater_exception_no_datasource(mocker_xlsx_to_csv_simple):
-    """
-    Test - DB Updater fail
-    """
-    with pytest.raises(models.DataSource.DoesNotExist):
-        assert models.RcoiUpdater().run()
-
-
 def test_rcoi_updater_if_tmp_path_exists(mocker_xlsx_to_csv_simple, mocker):
     """
     Test - DB Updater - tmp_path exists ('if' branch coverage)

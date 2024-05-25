@@ -38,3 +38,5 @@ if DEBUG and DEBUG_TOOLBAR:  # pragma: no cover
         "SHOW_TEMPLATE_CONTEXT": True,
         "SHOW_TOOLBAR_CALLBACK": show_toolbar,
     }
+
+OTEL_DEPLOYMENT_ENVIRONMENT = env.str("OTEL_DEPLOYMENT_ENVIRONMENT", default="local")

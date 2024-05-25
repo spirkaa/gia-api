@@ -1,5 +1,3 @@
-version: '2'
-
 volumes:
   postgres_data_staging: {}
   postgres_backups_staging: {}
@@ -13,7 +11,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - "./data/staging/redis:/data:z"
+      - redis_data_staging:/data
     restart: unless-stopped
 
   postgres-staging:
@@ -21,8 +19,8 @@ services:
       context: .docker/postgres
       dockerfile: Dockerfile
     volumes:
-      - "postgres_data_staging:/var/lib/postgresql/data"
-      - "./data/staging/backups:/backups:z"
+      - postgres_data_staging:/var/lib/postgresql/data
+      - postgres_backups_staging:/backups
     env_file: .env.staging
     restart: unless-stopped
 
@@ -34,12 +32,12 @@ services:
         - BUILD_ENVIRONMENT=staging
     command: >
       sh -c "python /app/gia-api/manage.py collectstatic --noinput
-      && gunicorn config.wsgi -w 4 -t 60 -b 0.0.0.0:5000 --chdir=/app"
+      && gunicorn config.wsgi -c /app/gia-api/config/gunicorn.py -b 0.0.0.0:5000 -w 4 -t 60 --chdir=/app"
     volumes:
-      - ".:/app:z"
-      - "./data/staging/staticfiles:/app/gia-api/data/staging/staticfiles:z"
+      - .:/app
+      - ./data/staging/staticfiles:/app/gia-api/data/staging/staticfiles
     tmpfs:
-      - "/tmp"
+      - /tmp
     depends_on:
       - postgres-staging
       - redis-staging

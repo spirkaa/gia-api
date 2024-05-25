@@ -1,5 +1,3 @@
-version: '2'
-
 volumes:
   postgres_data_local: {}
   postgres_backups_local: {}
