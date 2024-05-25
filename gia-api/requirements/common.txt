@@ -1,5 +1,5 @@
 # Django
-django==4.2.11
+django==4.2.13
 django-bootstrap3==24.2
 django-crispy-forms==2.1
 crispy-bootstrap3==2024.1
@@ -30,7 +30,7 @@ django-environ==0.11.2
 django-prometheus==2.3.1
 
 # PostgreSQL
-psycopg[binary]==3.1.18
+psycopg[binary]==3.1.19
 
 # opentelemetry
 opentelemetry-api==1.24.0
@@ -41,8 +41,8 @@ opentelemetry-instrumentation-psycopg==0.45b0
 opentelemetry-instrumentation-redis==0.45b0
 
 # Libs for parser
-requests==2.31.0
+requests==2.32.2
 urllib3<2
 beautifulsoup4==4.12.3
-lxml==5.2.1
+lxml==5.2.2
 openpyxl==3.1.2
