@@ -10,6 +10,12 @@
         "groupName": "non-prod-deps"
       },
       {
+        "description": "OpenTelemetry: include pre-release versions of instrumentation packages as these packages are tightly coupled with otel api and sdk.",
+        "matchPackagePrefixes": ["opentelemetry-"],
+        "ignoreUnstable": false,
+        "groupName": "opentelemetry"
+      },
+      {
         "matchPackageNames": ["django"],
         "allowedVersions": "< 5"
       }
