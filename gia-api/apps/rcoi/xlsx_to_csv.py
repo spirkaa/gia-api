@@ -64,16 +64,19 @@ def get_files_info(url):
         (block.attrs.get("data-id"), block.attrs.get("data-ident")) for block in soup
     ]
 
-    headers = {
-        "content-type": "application/x-www-form-urlencoded",
-        "cache-control": "no-cache",
-    }
-
     file_links = []
     for block in content_blocks:
         payload = "id={}&data={}&val=1".format(*block)
-        block_req = requests.post(url, data=payload, headers=headers, timeout=5)
-        block_soup = BeautifulSoup(block_req.text, "lxml")
+        block_resp = requests.post(
+            url,
+            data=payload,
+            headers={
+                "content-type": "application/x-www-form-urlencoded",
+                "cache-control": "no-cache",
+            },
+            timeout=5,
+        )
+        block_soup = BeautifulSoup(block_resp.text, "lxml")
         # remove comments
         for element in block_soup(string=lambda string: isinstance(string, Comment)):
             element.extract()
@@ -82,24 +85,22 @@ def get_files_info(url):
             if not a.attrs:
                 continue
             href = a.attrs.get("href", "")
-            if not href:
-                continue
-            if "rab" in href.lower() or "работники" in href.lower():
+            if "rab" in href.lower() or "работник" in href.lower():
                 file_links.append((block[1], urljoin(url, href)))
 
     result = []
     for block_ident, file_link in file_links:
         # extract date YYYY-MM-DD from block_ident, then combine date, level, filename
         local_filename = f"{block_ident[0:4]}-{block_ident[4:6]}-{block_ident[6:8]}__{level}__{Path(file_link).suffix}"
-        file_req = requests.head(file_link, timeout=5)
-        if file_req:
+        file_resp = requests.head(file_link, timeout=5)
+        if file_resp:
             last_modified = datetime.strptime(
-                file_req.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
+                file_resp.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
             )
             file_info = {
                 "name": local_filename,
                 "url": file_link,
-                "size": file_req.headers["Content-Length"],
+                "size": file_resp.headers["Content-Length"],
                 "last_modified": last_modified,
             }
             result.append(file_info)
