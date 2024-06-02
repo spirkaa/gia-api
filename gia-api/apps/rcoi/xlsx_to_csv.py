@@ -81,8 +81,11 @@ def get_files_info(url):
             # skip bad tags
             if not a.attrs:
                 continue
-            if "rab" in a.attrs.get("href", ""):
-                file_links.append((block[1], urljoin(url, a.attrs.get("href"))))
+            href = a.attrs.get("href", "")
+            if not href:
+                continue
+            if "rab" in href.lower() or "работники" in href.lower():
+                file_links.append((block[1], urljoin(url, href)))
 
     result = []
     for block_ident, file_link in file_links:
@@ -116,9 +119,8 @@ def download_file(url, local_filename, path):
     logger.debug("download file: %s", local_filename)
     f = Path(path).joinpath(local_filename)
     if f.exists():
-        raise NotImplementedError(
-            "Dumb protection if there are more than 1 file for exam date"
-        )
+        logger.error("There are more than 1 file for exam date: %s", local_filename)
+        return
     with requests.get(url, stream=True, timeout=5) as r:
         r.raise_for_status()
         with Path(f).open("wb") as f:
