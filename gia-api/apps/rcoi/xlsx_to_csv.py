@@ -87,6 +87,8 @@ def get_files_info(url):
             href = a.attrs.get("href", "")
             if "rab" in href.lower() or "работник" in href.lower():
                 file_links.append((block[1], urljoin(url, href)))
+                # stop after first link found
+                break
 
     result = []
     for block_ident, file_link in file_links:
