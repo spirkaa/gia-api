@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    // https://github.com/microsoft/vscode-python/issues/693
+    {
+      "name": "Python: Debug Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "purpose": ["debug-test"],
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTEST_ADDOPTS": "--no-cov"
+      }
+  }
+  ]
+}

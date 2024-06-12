@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 from django.http import HttpResponse
 
+from apps.rcoi import xlsx_to_csv
+
 EXAM_FILE = {
     "name": "2020-06-13__11__.xlsx",
     "url": "http://rcoi.mcko.ru/2020-06-13__11__rab_ppe_test.xlsx",
@@ -26,6 +28,28 @@ DIFF_FILES = [
         "last_modified": datetime.datetime(2020, 5, 16, 0, 0, 0),
     },
 ]
+
+
+@pytest.fixture()
+def xlsx_file(settings):
+    filename = "2020-06-13__11__.xlsx"
+    return Path(settings.APPS_DIR) / "rcoi" / "tests" / "xlsx" / filename
+
+
+@pytest.fixture(
+    params=[
+        "2020-06-13__11__bad_many_data_sheets.xlsx",
+        "2020-06-13__11__bad_missing_column.xlsx",
+    ]
+)
+def xlsx_file_bad(settings, request):
+    return Path(settings.APPS_DIR) / "rcoi" / "tests" / "xlsx" / request.param
+
+
+@pytest.fixture()
+def xlsx_data(xlsx_file):
+    # TODO: replace loading from xlsx file to generated data
+    return xlsx_to_csv.load_sheet_data(xlsx_file)
 
 
 @pytest.fixture()
@@ -111,7 +135,7 @@ def mocker_xlsx_to_csv_simple(mocker, exams_csv):
     mock of 'apps.rcoi.xlsx_to_csv'
     """
     mocker.patch("apps.rcoi.xlsx_to_csv.get_files_info", return_value=[EXAM_FILE])
-    mocker.patch("apps.rcoi.xlsx_to_csv.get_file_info", return_value=EXAM_FILE)
+    mocker.patch("apps.rcoi.xlsx_to_csv.prepare_file_info", return_value=EXAM_FILE)
     mocker.patch("apps.rcoi.xlsx_to_csv.download_file")
     mocker.patch("apps.rcoi.xlsx_to_csv.save_to_csv")
     mocker.patch("apps.rcoi.xlsx_to_csv.save_to_stream", return_value=exams_csv)
@@ -120,8 +144,9 @@ def mocker_xlsx_to_csv_simple(mocker, exams_csv):
 
 
 @pytest.fixture()
-def mocker_parse_xlsx(mocker, csv_data_row):
-    mocker.patch("apps.rcoi.xlsx_to_csv.parse_xlsx", return_value=[csv_data_row])
+def mocker_parse_sheet_data(mocker, csv_data_row):
+    mocker.patch("apps.rcoi.xlsx_to_csv.load_sheet_data", return_value=["OK"])
+    mocker.patch("apps.rcoi.xlsx_to_csv.parse_sheet_data", return_value=[csv_data_row])
     yield mocker
     mocker.resetall()
 

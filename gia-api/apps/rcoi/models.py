@@ -253,11 +253,7 @@ class RcoiUpdater:
 
     @staticmethod
     def __prepare_data():
-        """
-        Check if new data available and prepare it for processing
-
-        :return: data, updated files
-        """
+        """Check if new data available and prepare it for processing."""
         import csv
         import shutil
         import tempfile
@@ -265,10 +261,10 @@ class RcoiUpdater:
 
         urls = DataSource.objects.all()
         files_info = [xlsx_to_csv.get_files_info(url.url) for url in urls]
-        files_info = [url for url_list in files_info for url in url_list]
+        files_info_flat = [file for files in files_info for file in files]
 
         updated_files = []
-        for file in files_info:
+        for file in files_info_flat:
             name = file["name"]
             try:
                 f = DataFile.objects.get(name=name)
@@ -289,22 +285,23 @@ class RcoiUpdater:
                 DataFile.objects.create(**file)
                 updated_files.append(file)
 
-        if updated_files:
-            tmp_path = Path(tempfile.mkdtemp())
-            [
-                xlsx_to_csv.download_file(file["url"], file["name"], tmp_path)
-                for file in updated_files
-            ]
-            csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
+        if not updated_files:
+            return None, None
 
-            data = defaultdict(list)
-            for row in csv.DictReader(csv_stream, delimiter="\t"):
-                for k, v in row.items():
-                    data[k].append(v)
-            logger.debug("cleanup downloaded files")
-            shutil.rmtree(tmp_path)
-            return data, updated_files
-        return None, None
+        tmp_path = Path(tempfile.mkdtemp())
+        [
+            xlsx_to_csv.download_file(file["url"], file["name"], tmp_path)
+            for file in updated_files
+        ]
+        csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
+
+        data = defaultdict(list)
+        for row in csv.DictReader(csv_stream, delimiter="\t"):
+            for k, v in row.items():
+                data[k].append(v)
+        logger.debug("cleanup downloaded files")
+        shutil.rmtree(tmp_path)
+        return data, updated_files
 
     @staticmethod
     def __cleanup():
@@ -330,7 +327,7 @@ class RcoiUpdater:
                 to_delete.append(filtered)
         for qs in to_delete:
             count = qs.delete()
-            logger.debug("rows deleted: %s", count[0])
+            logger.debug("rows deleted: %s: %s", file, count[0])
         cache.clear()
 
     @staticmethod
@@ -548,7 +545,9 @@ class ExamImporter(RcoiUpdater):
         import tempfile
         from collections import defaultdict
 
-        datafile = xlsx_to_csv.get_file_info(self.datafile_url, self.date, self.level)
+        datafile = xlsx_to_csv.prepare_file_info(
+            self.datafile_url, self.date, self.level
+        )
         datafile_updated = False
         name = datafile["name"]
         try:

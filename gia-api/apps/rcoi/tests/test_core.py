@@ -173,9 +173,8 @@ def test_exam_importer(mocker_xlsx_to_csv_simple, exam_file_diff_date):
 
     # updated file
     mocker_xlsx_to_csv_simple.patch(
-        "apps.rcoi.xlsx_to_csv.get_file_info", return_value=exam_file_diff_date
+        "apps.rcoi.xlsx_to_csv.prepare_file_info", return_value=exam_file_diff_date
     )
     r3 = models.ExamImporter(exam_url, exam_date, exam_level)
-    assert (
-        len(r3.data) == 0
-    )  # because of mocker, stream stays at the end after first read
+    # because of mocker, after first read stream stays at the end
+    assert len(r3.data) == 0

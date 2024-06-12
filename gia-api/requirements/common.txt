@@ -45,3 +45,4 @@ urllib3<2
 beautifulsoup4==4.12.3
 lxml==5.2.2
 openpyxl==3.1.2
+stamina==24.2.0
