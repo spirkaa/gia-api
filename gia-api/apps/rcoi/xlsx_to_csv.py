@@ -191,7 +191,7 @@ def parse_sheet_data(data: tuple, filename: str) -> list:
         filename,
         exam_date,
         exam_level,
-        len(data) - 2,
+        len(data),
     )
 
     result = []
