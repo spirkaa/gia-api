@@ -41,7 +41,6 @@ opentelemetry-instrumentation-redis==0.45b0
 
 # Libs for parser
 requests==2.32.2
-urllib3<2
 beautifulsoup4==4.12.3
 lxml==5.2.2
 openpyxl==3.1.2

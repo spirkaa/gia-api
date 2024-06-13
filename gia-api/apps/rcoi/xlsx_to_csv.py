@@ -63,7 +63,7 @@ def prepare_file_info(url: str, date: str, level: str) -> dict:
     ext = Path(url).suffix
     local_filename = f"{date}__{level}__{ext}"
 
-    res = client.head(url, timeout=5)
+    res = client.head(url, stream=True, timeout=5)
     res.raise_for_status()
     last_modified = datetime.strptime(
         res.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"

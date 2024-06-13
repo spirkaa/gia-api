@@ -3,7 +3,7 @@ requires-python = ">=3.11"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.test"
-addopts = "--cov=gia-api --cov-report term-missing:skip-covered"
+addopts = "-ra --cov=gia-api --cov-report term-missing:skip-covered"
 
 [tool.coverage.run]
 branch = true

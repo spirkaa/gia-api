@@ -51,7 +51,7 @@ local-runjobs:
 
 local-test:
 	@docker compose -f docker-compose.local.yml up -d
-	@docker exec -e "DJANGO_DEBUG_TOOLBAR=False" gia-api-django-local-1 pytest --cov-report html --color yes
+	@docker exec -it -e "DJANGO_DEBUG_TOOLBAR=False" gia-api-django-local-1 pytest -vv --cov-report html $(args)
 
 local-down:
 	@docker compose -f docker-compose.local.yml down
