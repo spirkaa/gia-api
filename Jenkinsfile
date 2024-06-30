@@ -262,11 +262,14 @@ pipeline {
                 "-e DJANGO_DATABASE_URL=postgres://dbuser:dbpass@db:5432/dbuser \
                 -e DJANGO_SETTINGS_MODULE=config.settings.local \
                 -e PYTHONPATH=\${WORKSPACE}/gia-api \
+                -e PYTHONWARNINGS=always \
+                -e PYTHONUNBUFFERED=1 \
+                -u root \
                 --entrypoint='' \
                 --link ${db.id}:db"
                 ) {
                   sh 'pip install --no-cache-dir -r gia-api/requirements/testing.txt'
-                  sh 'pytest --cov-report xml:reports/coverage.xml --junitxml=reports/pytest.xml'
+                  sh 'pytest --cov-report xml:reports/cobertura-coverage.xml --junitxml=reports/junit.xml'
               }
             }
           }
@@ -277,8 +280,8 @@ pipeline {
           sh "docker rmi ${APP_IMAGE}"
         }
         success {
-          junit 'reports/pytest.xml'
-          cobertura coberturaReportFile: 'reports/coverage.xml', enableNewApi: true
+          junit 'reports/junit.xml'
+          recordCoverage tools: [[parser: 'COBERTURA', pattern: 'reports/cobertura-coverage.xml']]
         }
       }
     }
