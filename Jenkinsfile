@@ -30,7 +30,7 @@ pipeline {
     GPG_KEY_CREDS_ID = 'jenkins-gpg-key'
     HELM_CHART_GIT_URL = 'https://git.devmem.ru/projects/helm-charts.git'
 
-    // ANSIBLE_IMAGE = "${REGISTRY}/${IMAGE_OWNER}/ansible:base"
+    ANSIBLE_IMAGE = "${REGISTRY}/${IMAGE_OWNER}/ansible:base"
     // ANSIBLE_CONFIG = '.ansible/ansible.cfg'
     // ANSIBLE_PLAYBOOK = '.ansible/playbook.yml'
     // ANSIBLE_INVENTORY = '.ansible/hosts'
@@ -46,6 +46,40 @@ pipeline {
   }
 
   stages {
+    stage('Run pre-commit') {
+      agent {
+        docker {
+          image env.ANSIBLE_IMAGE
+          registryUrl env.REGISTRY_URL
+          registryCredentialsId env.REGISTRY_CREDS_ID
+          alwaysPull true
+          reuseNode true
+          args '-v /tmp/.cache:/tmp/.cache'
+        }
+      }
+      when {
+        beforeAgent true
+        not {
+          anyOf {
+            expression { params.DEPLOY }
+            expression { params.BUMP_HELM }
+            tag ''
+          }
+        }
+      }
+      steps {
+        cache(path: "/tmp/.cache/pre-commit", key: "pre-commit-${hashFiles('**/.pre-commit-config.yaml')}") {
+          sh '''#!/bin/bash
+            export PRE_COMMIT_HOME=/tmp/.cache/pre-commit
+            pre-commit run --all-files --show-diff-on-failure --verbose --color always || {
+              cat ${PRE_COMMIT_HOME}/pre-commit.log 2>/dev/null || true
+              exit 1
+            }
+          '''
+        }
+      }
+    }
+
     stage('Build') {
       parallel {
         stage('Build api image (k8s)') {
