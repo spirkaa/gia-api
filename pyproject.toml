@@ -7,7 +7,7 @@ addopts = "-ra --cov=gia-api --cov-report term-missing:skip-covered"
 
 [tool.coverage.run]
 branch = true
-# plugins = django_coverage_plugin
+# plugins = ["django_coverage_plugin"]
 omit = [
   "*/config/*",
   "*/migrations/*",

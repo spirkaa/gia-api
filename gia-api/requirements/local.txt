@@ -5,8 +5,8 @@ Werkzeug[watchdog]==3.0.3
 ipdb==0.13.13
 
 # Django
-django-debug-toolbar==4.3.0
-django-browser-reload==1.12.1
+django-debug-toolbar==4.4.2
+django-browser-reload==1.13.0
 
 # Code quality
 pylint-django==2.5.5
