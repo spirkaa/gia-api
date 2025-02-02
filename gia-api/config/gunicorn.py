@@ -38,6 +38,6 @@ if settings.OTEL_TRACING_ENABLED and settings.OTEL_EXPORTER_OTLP_ENDPOINT:
         metrics.set_meter_provider(
             MeterProvider(
                 resource=resource,
-                metric_readers=[(PeriodicExportingMetricReader(OTLPMetricExporter()))],
+                metric_readers=[PeriodicExportingMetricReader(OTLPMetricExporter())],
             )
         )

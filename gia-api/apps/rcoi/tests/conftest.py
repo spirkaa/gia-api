@@ -30,7 +30,7 @@ DIFF_FILES = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def xlsx_file(settings):
     filename = "2020-06-13__11__.xlsx"
     return Path(settings.APPS_DIR) / "rcoi" / "tests" / "xlsx" / filename
@@ -46,13 +46,13 @@ def xlsx_file_bad(settings, request):
     return Path(settings.APPS_DIR) / "rcoi" / "tests" / "xlsx" / request.param
 
 
-@pytest.fixture()
+@pytest.fixture
 def xlsx_data(xlsx_file):
     # TODO: replace loading from xlsx file to generated data
     return xlsx_to_csv.load_sheet_data(xlsx_file)
 
 
-@pytest.fixture()
+@pytest.fixture
 def csv_headers():
     return [
         "datafile",
@@ -67,7 +67,7 @@ def csv_headers():
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def csv_data_row():
     return [
         "2020-06-13__11__.xlsx",
@@ -82,17 +82,17 @@ def csv_data_row():
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def exam_file():
     return EXAM_FILE
 
 
-@pytest.fixture()
+@pytest.fixture
 def exam_file_diff_date():
     return EXAM_FILE_DIFF_DATE
 
 
-@pytest.fixture()
+@pytest.fixture
 def exams_csv(csv_headers, csv_data_row):
     """
     csv file
@@ -105,7 +105,7 @@ def exams_csv(csv_headers, csv_data_row):
     return stream
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocker_xlsx_to_csv(mocker, exams_csv):
     """
     mock of 'apps.rcoi.xlsx_to_csv'
@@ -117,7 +117,7 @@ def mocker_xlsx_to_csv(mocker, exams_csv):
     mocker.resetall()
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocker_xlsx_to_csv_single_file(mocker, exams_csv):
     """
     mock of 'apps.rcoi.xlsx_to_csv'
@@ -129,7 +129,7 @@ def mocker_xlsx_to_csv_single_file(mocker, exams_csv):
     mocker.resetall()
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocker_xlsx_to_csv_simple(mocker, exams_csv):
     """
     mock of 'apps.rcoi.xlsx_to_csv'
@@ -143,7 +143,7 @@ def mocker_xlsx_to_csv_simple(mocker, exams_csv):
     mocker.resetall()
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocker_parse_sheet_data(mocker, csv_data_row):
     mocker.patch("apps.rcoi.xlsx_to_csv.load_sheet_data", return_value=["OK"])
     mocker.patch("apps.rcoi.xlsx_to_csv.parse_sheet_data", return_value=[csv_data_row])
@@ -151,7 +151,7 @@ def mocker_parse_sheet_data(mocker, csv_data_row):
     mocker.resetall()
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocker_rcoi_updater(mocker):
     """
     mock of 'apps.rcoi.models.RcoiUpdater'
@@ -162,7 +162,7 @@ def mocker_rcoi_updater(mocker):
     mocker.resetall()
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocker_exam_importer(mocker):
     """
     mock of 'apps.rcoi.models.RcoiUpdater'

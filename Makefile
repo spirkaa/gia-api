@@ -34,7 +34,7 @@ staging-runjobs:
 	@docker exec gia-api-django-staging-1 python /app/gia-api/manage.py invalidate all
 
 staging-test:
-	@docker compose -f docker-compose.staging.yml up -d
+	@docker compose -f docker-compose.staging.yml up -d --build
 	@docker exec gia-api-django-staging-1 pytest
 
 staging-down:
@@ -50,7 +50,7 @@ local-runjobs:
 	@docker exec gia-api-django-local-1 python /app/gia-api/manage.py runjobs hourly
 
 local-test:
-	@docker compose -f docker-compose.local.yml up -d
+	@docker compose -f docker-compose.local.yml up -d --build
 	@docker exec -it -e "DJANGO_DEBUG_TOOLBAR=False" gia-api-django-local-1 pytest -vv --cov-report html $(args)
 
 local-down:
