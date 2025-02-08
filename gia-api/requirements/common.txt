@@ -7,7 +7,7 @@ django-decorator-include==3.3
 django-extensions==3.2.3
 django-filter==24.3
 django-tables2==2.7.5
-django-allauth==65.3.1
+django-allauth==65.4.1
 django-minify-html==1.11.0
 djmail==2.0.0
 django-redis==5.4.0
