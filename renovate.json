@@ -1,29 +1,44 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "enabledManagers": ["pip_requirements", "pre-commit"],
+  "enabledManagers": [
+    "pip_requirements",
+    "pre-commit"
+  ],
   "pip_requirements": {
-    "fileMatch": ["requirements/.+\\.txt$"],
+    "fileMatch": [
+      "requirements/.+\\.txt$"
+    ],
     "packageRules": [
       {
         "description": "Group non-production dependencies",
-        "matchPaths": ["**/requirements.txt", "**/local.txt", "**/testing.txt"],
+        "matchFileNames": [
+          "**/requirements.txt",
+          "**/local.txt",
+          "**/testing.txt"
+        ],
         "groupName": "non-prod-deps"
       },
       {
         "description": "OpenTelemetry: include pre-release versions of instrumentation packages as these packages are tightly coupled with otel api and sdk.",
-        "matchPackagePrefixes": ["opentelemetry-"],
         "ignoreUnstable": false,
-        "groupName": "opentelemetry"
+        "groupName": "opentelemetry",
+        "matchPackageNames": [
+          "opentelemetry-{/,}**"
+        ]
       },
       {
-        "matchPackageNames": ["django"],
+        "matchPackageNames": [
+          "django"
+        ],
         "allowedVersions": "< 5"
       }
     ]
   },
   "packageRules": [
     {
-      "matchManagers": ["pre-commit"],
+      "matchManagers": [
+        "pre-commit"
+      ],
       "groupName": "pre-commit"
     }
   ]
