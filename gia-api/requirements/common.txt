@@ -1,6 +1,6 @@
 # Django
 django==4.2.18
-django-bootstrap3==24.3
+django-bootstrap3==25.1
 django-crispy-forms==2.3
 crispy-bootstrap3==2024.1
 django-decorator-include==3.3
