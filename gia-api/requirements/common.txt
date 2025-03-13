@@ -44,4 +44,4 @@ requests==2.32.3
 beautifulsoup4==4.12.3
 lxml==5.3.0
 openpyxl==3.1.5
-stamina==24.3.0
+stamina==25.1.0
