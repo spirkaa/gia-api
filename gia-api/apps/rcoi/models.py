@@ -562,19 +562,20 @@ class ExamImporter(RcoiUpdater):
             DataFile.objects.create(**datafile)
             datafile_updated = True
 
-        if datafile_updated:
-            tmp_path = tempfile.mkdtemp()
-            xlsx_to_csv.download_file(datafile["url"], datafile["name"], tmp_path)
-            csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
+        if not datafile_updated:
+            return None, None
 
-            data = defaultdict(list)
-            for row in csv.DictReader(csv_stream, delimiter="\t"):
-                for k, v in row.items():
-                    data[k].append(v)
-            logger.debug("cleanup downloaded files")
-            shutil.rmtree(tmp_path)
-            return data, [datafile]
-        return None, None
+        tmp_path = Path(tempfile.mkdtemp())
+        xlsx_to_csv.download_file(datafile["url"], datafile["name"], tmp_path)
+        csv_stream = xlsx_to_csv.save_to_stream(tmp_path)
+
+        data = defaultdict(list)
+        for row in csv.DictReader(csv_stream, delimiter="\t"):
+            for k, v in row.items():
+                data[k].append(v)
+        logger.debug("cleanup downloaded files")
+        shutil.rmtree(tmp_path)
+        return data, [datafile]
 
 
 def replace_items(s_list, s_dict):
