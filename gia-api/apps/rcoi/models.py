@@ -266,20 +266,21 @@ class RcoiUpdater:
         updated_files = []
         for file in files_info_flat:
             name = file["name"]
+            minutes_ago = datetime.datetime.now() - datetime.timedelta(minutes=5)
             try:
-                f = DataFile.objects.get(name=name)
-                if f.last_modified != file["last_modified"]:
-                    if f.modified >= datetime.datetime.now() - datetime.timedelta(
-                        minutes=5
-                    ):
-                        logger.error(
-                            "There are more than 1 file for exam date: %s", name
-                        )
-                        continue
-                    updated_files.append(file)
-                    logger.debug("%s: dates differ, DOWNLOAD", name)
-                else:
+                existing_file = DataFile.objects.get(name=name)
+                if existing_file.last_modified == file["last_modified"]:
                     logger.debug("%s: dates are the same, SKIP", name)
+                    continue
+                if existing_file.modified >= minutes_ago:
+                    logger.error(
+                        "There are more than 1 file for exam date. Existing file: %s. Other file: %s",
+                        existing_file.__dict__,
+                        file,
+                    )
+                    continue
+                logger.debug("%s: dates differ, DOWNLOAD", name)
+                updated_files.append(file)
             except DataFile.DoesNotExist:
                 logger.debug("%s: file not found, DOWNLOAD", name)
                 DataFile.objects.create(**file)

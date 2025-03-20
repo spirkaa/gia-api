@@ -47,7 +47,11 @@ def download_file(url: str, file_name: str, file_path: Path) -> None:
     logger.debug("download file %s as %s", url, file_name)
     f = file_path.joinpath(file_name)
     if f.exists():
-        logger.error("There are more than 1 file for exam date: %s", file_name)
+        logger.error(
+            "There are more than 1 file for exam date: %s. SKIP download %s",
+            file_name,
+            url,
+        )
         return
     with client.get(url, stream=True, timeout=5) as res:
         res.raise_for_status()
@@ -196,8 +200,8 @@ def parse_sheet_data(data: tuple, filename: str) -> list:
 
     result = []
     for row in data:
-        # process only rows where first cell (row counter) is int
-        if not isinstance(row[0].value, int):
+        # process only rows where first cell (row counter) is int (1, 2, 3...) or float (5.333, 8.833...)
+        if not isinstance(row[0].value, int | float):
             continue
         parsed_row = [filename, exam_date, exam_level]
         # skip first cell (row counter)
