@@ -33,11 +33,11 @@ django-prometheus==2.3.1
 psycopg[binary]==3.2.4
 
 # opentelemetry
-opentelemetry-sdk==1.29.0
-opentelemetry-exporter-otlp==1.29.0
-opentelemetry-instrumentation-django==0.50b0
-opentelemetry-instrumentation-psycopg==0.50b0
-opentelemetry-instrumentation-redis==0.50b0
+opentelemetry-sdk==1.31.1
+opentelemetry-exporter-otlp==1.31.1
+opentelemetry-instrumentation-django==0.52b1
+opentelemetry-instrumentation-psycopg==0.52b1
+opentelemetry-instrumentation-redis==0.52b1
 
 # Libs for parser
 requests==2.32.3
