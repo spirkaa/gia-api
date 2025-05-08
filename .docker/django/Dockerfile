@@ -16,7 +16,7 @@ RUN apt-get update \
         curl \
     && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-ARG UV_ARGS=""
+ARG UV_ARGS=--no-dev
 
 COPY pyproject.toml uv.lock /
 

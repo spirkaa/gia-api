@@ -180,7 +180,7 @@ pipeline {
                 --entrypoint='' \
                 --link ${db.id}:db"
                 ) {
-                  sh 'uv sync --locked --group=test'
+                  sh 'uv sync --locked --no-dev --group=test'
                   sh 'pytest --cov-report xml:reports/cobertura-coverage.xml --junitxml=reports/junit.xml'
               }
             }
