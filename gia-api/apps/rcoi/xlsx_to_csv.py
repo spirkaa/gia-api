@@ -37,8 +37,8 @@ COLUMN_HEADERS = [
 client = requests.Session()
 
 
-class InvalidFileException(Exception):
-    """Invalid file exception."""
+class InvalidFileError(Exception):
+    """Invalid file error."""
 
 
 @stamina.retry(on=requests.HTTPError, attempts=5)
@@ -69,8 +69,9 @@ def prepare_file_info(url: str, date: str, level: str) -> dict:
 
     res = client.head(url, stream=True, timeout=5)
     res.raise_for_status()
-    last_modified = datetime.strptime(
-        res.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
+    last_modified = datetime.strptime(  # noqa: DTZ007
+        res.headers["Last-Modified"],
+        "%a, %d %b %Y %H:%M:%S %Z",
     )
     return {
         "name": local_filename,
@@ -166,9 +167,12 @@ def format_org_name(value: str) -> str:
         "Государственное бюджетное общеобразовательное учреждение": "ГБОУ",
         "Государственное казенное общеобразовательное учреждение города Москвы": "ГКОУ",
         "Государственное автономное общеобразовательное учреждение города Москвы": "ГАОУ",
+        "Государственное автономное общеобразовательное учреждение дополнительного профессионального образования города Москвы": "ГАОУ ДПО",
         "Государственное автономное профессиональное общеобразовательное учреждение города Москвы": "ГАПОУ",
         "Государственное бюджетное профессиональное общеобразовательное учреждение города Москвы": "ГБПОУ",
+        "Государственное общеобразовательное учреждение города Москвы": "ГОУ",
         "Муниципальное автономное общеобразовательное учреждение": "МАОУ",
+        "Федеральное казенное учреждение": "ФКУ",
     }
     for name, abbreviation in org_names.items():
         value = value.replace(name, abbreviation)
@@ -222,10 +226,11 @@ def load_sheet_data(file_path: Path) -> tuple:
     sheet_count = 0
     for name in wb.sheetnames:
         if sheet_count > 0:
-            raise InvalidFileException(
+            msg = (
                 f"{file_path.name}: "
-                f"there are more than 1 sheet with {sheet_mark} in first row",
+                f"there are more than 1 sheet with {sheet_mark} in first row"
             )
+            raise InvalidFileError(msg)
 
         ws = wb[name]
         try:
@@ -236,8 +241,9 @@ def load_sheet_data(file_path: Path) -> tuple:
         if (first_cell := first_row[0].value) and sheet_mark in str(first_cell).lower():
             sheet_count += 1
 
-    if len(first_row) < 7:
-        raise InvalidFileException(f"{file_path.name}: wrong number of columns")
+    if len(first_row) < 7:  # noqa: PLR2004
+        msg = f"{file_path.name}: wrong number of columns"
+        raise InvalidFileError(msg)
 
     header_rows_count = 2
     sheet_data_without_headers = tuple(ws.iter_rows(min_row=1 + header_rows_count))

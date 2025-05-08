@@ -1,4 +1,5 @@
 import re
+from http import HTTPStatus
 
 import pytest
 from ddf import G
@@ -21,7 +22,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox, custom_site):
     }
     url = reverse("apiv1:rest_register")
     resp = client.post(url, data=data)
-    assert resp.status_code == 201
+    assert resp.status_code == HTTPStatus.CREATED
     assert "access" in resp.data
     assert len(mailoutbox) == 1
     assert data["email"] in mailoutbox[0].to
@@ -30,7 +31,7 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox, custom_site):
     # Logout
     logout_url = reverse("apiv1:rest_logout")
     logout_resp = client.post(logout_url)
-    assert logout_resp.status_code == 200
+    assert logout_resp.status_code == HTTPStatus.OK
     assert "Neither cookies or blacklist are enabled" in logout_resp.data["detail"]
 
     # Login with new account
@@ -40,17 +41,18 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox, custom_site):
     }
     auth_url = reverse("apiv1:rest_login")
     auth_resp = client.post(auth_url, data=auth_data)
-    assert auth_resp.status_code == 200
+    assert auth_resp.status_code == HTTPStatus.OK
     assert "access" in auth_resp.data
 
     # Verify mail
     mail_verify_link = re.search(
-        rf"(https://{custom_site['domain']}.*)(?:/)", mailoutbox[0].body
+        rf"(https://{custom_site['domain']}.*)(?:/)",
+        mailoutbox[0].body,
     ).group(0)
     data = {"key": mail_verify_link.split("/")[-2]}
     url = reverse("apiv1:rest_verify_email")
     resp = client.post(url, data=data)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert resp.data["detail"] == "ок"
 
     # Check mail is verified
@@ -60,7 +62,8 @@ def test_api_auth_register_and_mail_verify(client, mailoutbox, custom_site):
 
 
 @pytest.mark.parametrize(
-    ("pass1", "pass2"), [("password", "password"), ("n0tMatchPass", "pAss#0tMatch")]
+    ("pass1", "pass2"),
+    [("password", "password"), ("n0tMatchPass", "pAss#0tMatch")],
 )
 def test_api_auth_register_fail(client, pass1, pass2):
     """
@@ -75,7 +78,7 @@ def test_api_auth_register_fail(client, pass1, pass2):
             "password2": pass2,
         },
     )
-    assert resp.status_code == 400
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_api_auth_login_fail(client):
@@ -88,7 +91,7 @@ def test_api_auth_login_fail(client):
     }
     url = reverse("apiv1:rest_login")
     resp = client.post(url, data=data)
-    assert resp.status_code == 400
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_api_auth_user_details(client, authenticated_user):
@@ -99,7 +102,7 @@ def test_api_auth_user_details(client, authenticated_user):
     user = authenticated_user["user"]
     url = reverse("apiv1:rest_user_details")
     resp = client.get(url, HTTP_AUTHORIZATION=f"{auth_header}")
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert resp.data["username"] == user["username"]
     assert resp.data["email"] == user["email"]
 
@@ -120,7 +123,7 @@ def test_api_auth_user_details_update(client, authenticated_user):
         content_type="application/json",
         HTTP_AUTHORIZATION=f"{auth_header}",
     )
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert resp.data["first_name"] == data["first_name"]
     assert resp.data["last_name"] == data["last_name"]
 
@@ -137,7 +140,7 @@ def test_api_auth_password_change(client, authenticated_user):
     }
     url = reverse("apiv1:rest_password_change")
     resp = client.post(url, data=data, HTTP_AUTHORIZATION=f"{auth_header}")
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert resp.data["detail"] == "Новый пароль сохранён."
 
 
@@ -152,7 +155,7 @@ def test_api_auth_password_reset(client, mailoutbox, custom_site):
     G(models.User, **data)
     url = reverse("apiv1:rest_password_reset")
     resp = client.post(url, data=data)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert len(mailoutbox) == 1
     assert data["email"] in mailoutbox[0].to
     assert custom_site["name"] in mailoutbox[0].body
@@ -163,14 +166,15 @@ def test_api_auth_password_reset(client, mailoutbox, custom_site):
         "new_password2": "3HAK-T5eRq5L",
     }
     reset_link = re.search(
-        rf"(https://{custom_site['domain']}.*)(?:/)", mailoutbox[0].body
+        rf"(https://{custom_site['domain']}.*)(?:/)",
+        mailoutbox[0].body,
     ).group(0)
     uid, token = reset_link.split("/")[-3:-1]
     new_data["uid"] = uid
     new_data["token"] = token
     new_url = reverse("apiv1:rest_password_reset_confirm")
     new_resp = client.post(new_url, data=new_data)
-    assert new_resp.status_code == 200
+    assert new_resp.status_code == HTTPStatus.OK
     assert new_resp.data["detail"] == "Пароль изменён на новый."
 
     # New password should work
@@ -180,5 +184,5 @@ def test_api_auth_password_reset(client, mailoutbox, custom_site):
     }
     auth_url = reverse("apiv1:rest_login")
     auth_resp = client.post(auth_url, data=auth_data)
-    assert auth_resp.status_code == 200
+    assert auth_resp.status_code == HTTPStatus.OK
     assert "access" in auth_resp.data

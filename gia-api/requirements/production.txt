@@ -1,7 +1,0 @@
--r common.txt
-
-gunicorn==23.0.0
-whitenoise==6.8.2
-brotlipy==0.7.0
-django-brotli==0.3.0
-django-cacheops==7.1

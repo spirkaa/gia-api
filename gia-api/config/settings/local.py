@@ -3,7 +3,8 @@ from .common import *
 TIME_ZONE = env.str("TZ", default="Europe/Moscow")
 
 SECRET_KEY = env.str(
-    "DJANGO_SECRET_KEY", default="pdl(ek6_-@%=a!r^=vjbpagn+^duc6q7u4v#ye3j9yfj#=8(t0"
+    "DJANGO_SECRET_KEY",
+    default="pdl(ek6_-@%=a!r^=vjbpagn+^duc6q7u4v#ye3j9yfj#=8(t0",
 )
 
 DJMAIL_REAL_BACKEND = env.str(
@@ -17,7 +18,7 @@ REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
 ]
 
 if DEBUG:  # pragma: no cover
-    INTERNAL_IPS = type("c", (), {"__contains__": lambda *a: True})()
+    INTERNAL_IPS = type("c", (), {"__contains__": lambda *a: True})()  # noqa: ARG005
 
 if DEBUG and DEBUG_TOOLBAR:  # pragma: no cover
     # django-debug-toolbar
@@ -29,6 +30,7 @@ if DEBUG and DEBUG_TOOLBAR:  # pragma: no cover
     ]
 
     def show_toolbar(request):
+        """Show debug toolbar."""
         return True
 
     DEBUG_TOOLBAR_CONFIG = {

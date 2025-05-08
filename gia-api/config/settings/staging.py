@@ -13,7 +13,8 @@ STORAGES = {
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
 DJMAIL_REAL_BACKEND = env.str(
-    "DJANGO_DJMAIL_REAL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
+    "DJANGO_DJMAIL_REAL_BACKEND",
+    default="django.core.mail.backends.smtp.EmailBackend",
 )
 EMAIL_USE_TLS = env.bool("DJANGO_EMAIL_USE_TLS", default=True)
 EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
@@ -54,7 +55,7 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
         },
-    }
+    },
 }
 
 CACHEOPS_REDIS = env.str("DJANGO_CACHE_URL")

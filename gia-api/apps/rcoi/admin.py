@@ -10,53 +10,56 @@ from django.urls import path, reverse
 from . import models
 
 
+@admin.register(models.Date)
 class DateAdmin(admin.ModelAdmin):
+    """Date admin view."""
+
     list_display = ("date", "created", "modified", "id")
     list_filter = ("date", "created", "modified")
 
 
-admin.site.register(models.Date, DateAdmin)
-
-
+@admin.register(models.Level)
 class LevelAdmin(admin.ModelAdmin):
+    """Level admin view."""
+
     list_display = ("level", "created", "modified", "id")
     list_filter = ("level", "created", "modified")
 
 
-admin.site.register(models.Level, LevelAdmin)
-
-
+@admin.register(models.Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
+    """Organisation admin view."""
+
     list_display = ("name", "created", "modified", "id")
     list_filter = ("created", "modified")
     search_fields = ("name",)
     exclude = ("search_vector",)
 
 
-admin.site.register(models.Organisation, OrganisationAdmin)
-
-
+@admin.register(models.Position)
 class PositionAdmin(admin.ModelAdmin):
+    """Position admin view."""
+
     list_display = ("name", "created", "modified", "id")
     list_filter = ("created", "modified")
     search_fields = ("name",)
     exclude = ("search_vector",)
 
 
-admin.site.register(models.Position, PositionAdmin)
-
-
+@admin.register(models.Employee)
 class EmployeeAdmin(admin.ModelAdmin):
+    """Employee admin view."""
+
     list_display = ("name", "org", "created", "modified", "id")
     list_filter = ("created", "modified")
     search_fields = ("name", "org__name")
     exclude = ("search_vector",)
 
 
-admin.site.register(models.Employee, EmployeeAdmin)
-
-
+@admin.register(models.Place)
 class PlaceAdmin(admin.ModelAdmin):
+    """Place admin view."""
+
     list_display = (
         "code",
         "name",
@@ -70,72 +73,80 @@ class PlaceAdmin(admin.ModelAdmin):
     exclude = ("search_vector",)
 
 
-admin.site.register(models.Place, PlaceAdmin)
-
-
+@admin.register(models.DataSource)
 class DataSourceAdmin(admin.ModelAdmin):
+    """DataSource admin view."""
+
     list_display = ("name", "url", "created", "modified", "id")
     list_filter = ("name", "url", "created", "modified")
 
 
-admin.site.register(models.DataSource, DataSourceAdmin)
-
-
+@admin.register(models.DataFile)
 class DataFileAdmin(admin.ModelAdmin):
+    """DataFile admin view."""
+
     list_display = ("name", "size", "last_modified", "created", "modified", "id")
     list_filter = ("name", "created", "modified")
 
 
-admin.site.register(models.DataFile, DataFileAdmin)
-
-
+@admin.register(models.Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
+    """Subscription admin view."""
+
     list_display = ("user", "employee", "last_send", "created", "modified", "id")
 
 
-admin.site.register(models.Subscription, SubscriptionAdmin)
-
-
 def datafile_url_validator(value):
+    """Check that URL points to rcoi.mcko.ru and ends with .xlsx."""
     domain = "rcoi.mcko.ru"
     ext = ".xlsx"
     url = urlparse(value)
     if url.netloc != domain:
-        raise forms.ValidationError(f"Ссылка должна вести на сайт {domain}")
+        msg = f"Ссылка должна вести на сайт {domain}"
+        raise forms.ValidationError(msg)
     if not url.path.endswith(ext):
-        raise forms.ValidationError(f"Ссылка должна заканчиваться на {ext}")
+        msg = f"Ссылка должна заканчиваться на {ext}"
+        raise forms.ValidationError(msg)
 
 
 class ExamImportForm(forms.Form):
+    """Form for manual exam import."""
+
     date = forms.ModelChoiceField(
-        queryset=models.Date.objects.all(), help_text="Дата экзамена"
+        queryset=models.Date.objects.all(),
+        help_text="Дата экзамена",
     )
     level = forms.ModelChoiceField(
-        queryset=models.Level.objects.all(), help_text="Уровень экзамена"
+        queryset=models.Level.objects.all(),
+        help_text="Уровень экзамена",
     )
     datafile_url = forms.URLField(
         widget=forms.URLInput(attrs={"class": "vURLField"}),
         help_text="Ссылка с сайта rcoi.mcko.ru на файл в формате .xlsx",
         validators=[datafile_url_validator],
+        assume_scheme="https",
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["date"].widget = widgets.RelatedFieldWidgetWrapper(
             self.fields["date"].widget,
-            models.Exam._meta.get_field("date").remote_field,
+            models.Exam._meta.get_field("date").remote_field,  # noqa: SLF001
             admin.site,
             can_change_related=True,
         )
         self.fields["level"].widget = widgets.RelatedFieldWidgetWrapper(
             self.fields["level"].widget,
-            models.Exam._meta.get_field("level").remote_field,
+            models.Exam._meta.get_field("level").remote_field,  # noqa: SLF001
             admin.site,
             can_change_related=True,
         )
 
 
+@admin.register(models.Exam)
 class ExamAdmin(admin.ModelAdmin):
+    """Exam admin view."""
+
     list_display = (
         "datafile",
         "date",
@@ -159,12 +170,13 @@ class ExamAdmin(admin.ModelAdmin):
                 "import/",
                 self.admin_site.admin_view(self.exam_import),
                 name="exam_import",
-            )
+            ),
         ]
         return my_urls + urls
 
     def exam_import(self, request):
-        app_label, model_name = self.model._meta.app_label, self.model._meta.model_name
+        app_label = self.model._meta.app_label  # noqa: SLF001
+        model_name = self.model._meta.model_name  # noqa: SLF001
 
         if request.method == "POST":
             form = ExamImportForm(request.POST, request.FILES)
@@ -183,7 +195,7 @@ class ExamAdmin(admin.ModelAdmin):
                         request,
                         f"Файл {datafile_name} обработан",
                     )
-                except Exception:
+                except Exception:  # noqa: BLE001
                     self.message_user(request, sys.exc_info(), level=40)
 
                 return redirect(reverse(f"admin:{app_label}_{model_name}_changelist"))
@@ -211,6 +223,3 @@ class ExamAdmin(admin.ModelAdmin):
         context.update({"has_file_field": context["adminform"].form.is_multipart()})
 
         return render(request, "admin/exam_import_form.html", context)
-
-
-admin.site.register(models.Exam, ExamAdmin)

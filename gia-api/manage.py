@@ -14,6 +14,11 @@ def main():
 
         logging.getLogger("watchdog.observers.inotify_buffer").setLevel(logging.INFO)
 
+        if os.getenv("RUN_MAIN") or os.getenv("WERKZEUG_RUN_MAIN"):
+            import debugpy  # noqa: T100
+
+            debugpy.listen(("0.0.0.0", 5678))  # noqa: S104, T100
+
     if (
         settings.OTEL_TRACING_ENABLED
         and os.environ["DJANGO_SETTINGS_MODULE"] == "config.settings.local"
@@ -37,7 +42,7 @@ def main():
             attributes={
                 SERVICE_NAME: settings.OTEL_SERVICE_NAME,
                 DEPLOYMENT_ENVIRONMENT: settings.OTEL_DEPLOYMENT_ENVIRONMENT,
-            }
+            },
         )
 
         tracer_provider = TracerProvider(resource=resource)
@@ -50,11 +55,12 @@ def main():
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
-        raise ImportError(
+        msg = (
             "Couldn't import Django. Are you sure it's installed and "
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
-        ) from exc
+        )
+        raise ImportError(msg) from exc
     execute_from_command_line(sys.argv)
 
 

@@ -109,7 +109,7 @@ def test_rcoi_updater_same_file(mocker_xlsx_to_csv_single_file, exam_file):
 
     exam_file_diff_date = exam_file.copy()
     exam_file_diff_date.update(
-        {"last_modified": datetime.datetime(2020, 6, 1, 1, 1, 1)}
+        {"last_modified": datetime.datetime(2020, 6, 1, 1, 1, 1)},
     )
 
     G(models.DataSource)
@@ -173,7 +173,8 @@ def test_exam_importer(mocker_xlsx_to_csv_simple, exam_file_diff_date):
 
     # updated file
     mocker_xlsx_to_csv_simple.patch(
-        "apps.rcoi.xlsx_to_csv.prepare_file_info", return_value=exam_file_diff_date
+        "apps.rcoi.xlsx_to_csv.prepare_file_info",
+        return_value=exam_file_diff_date,
     )
     r3 = models.ExamImporter(exam_url, exam_date, exam_level)
     # because of mocker, after first read stream stays at the end

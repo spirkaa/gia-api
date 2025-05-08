@@ -17,7 +17,7 @@ def test_prepare_file_info():
     exam_level = "11"
     size = "1024000"
     last_modified = "Fri, 15 May 2020 16:23:42 GMT"
-    lm_dt = datetime.strptime(last_modified, "%a, %d %b %Y %H:%M:%S %Z")
+    lm_dt = datetime.strptime(last_modified, "%a, %d %b %Y %H:%M:%S %Z")  # noqa: DTZ007
 
     responses.add(
         responses.HEAD,
@@ -48,7 +48,7 @@ def test_get_files_info(level, filename):
     file_url = f"{fmt_url}{filename}"
     size = "1024000"
     last_modified = "Fri, 15 May 2020 16:23:42 GMT"
-    lm_dt = datetime.strptime(last_modified, "%a, %d %b %Y %H:%M:%S %Z")
+    lm_dt = datetime.strptime(last_modified, "%a, %d %b %Y %H:%M:%S %Z")  # noqa: DTZ007
 
     responses.add(
         responses.GET,
@@ -120,7 +120,7 @@ def test_load_sheet_data(xlsx_file):
 def test_load_sheet_data_if_file_is_bad(xlsx_file_bad):
     """Test Parser - Load Sheet Data if file is bad."""
 
-    with pytest.raises(xlsx_to_csv.InvalidFileException):
+    with pytest.raises(xlsx_to_csv.InvalidFileError):
         xlsx_to_csv.load_sheet_data(xlsx_file_bad)
 
 

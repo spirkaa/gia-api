@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: .docker/django/Dockerfile
       args:
-        - BUILD_ENVIRONMENT=staging
+        UV_ARGS: --dev --group=test
     command: >
       sh -c "python /app/gia-api/manage.py collectstatic --noinput
       && gunicorn config.wsgi -c /app/gia-api/config/gunicorn.py -b 0.0.0.0:5000 -w 4 -t 60 --chdir=/app"

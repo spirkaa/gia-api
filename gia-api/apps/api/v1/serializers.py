@@ -6,36 +6,48 @@ from apps.rcoi import models
 
 
 class DateSerializer(serializers.ModelSerializer):
+    """Serializer for Date model."""
+
     class Meta:
         model = models.Date
         fields = ("id", "date")
 
 
 class LevelSerializer(serializers.ModelSerializer):
+    """Serializer for Level model."""
+
     class Meta:
         model = models.Level
         fields = ("id", "level")
 
 
 class OrganisationSerializer(serializers.ModelSerializer):
+    """Serializer for Organisation model."""
+
     class Meta:
         model = models.Organisation
         fields = ("id", "name")
 
 
 class PositionSerializer(serializers.ModelSerializer):
+    """Serializer for Position model."""
+
     class Meta:
         model = models.Position
         fields = ("id", "name")
 
 
 class PlaceSerializer(serializers.ModelSerializer):
+    """Serializer for Place model."""
+
     class Meta:
         model = models.Place
         fields = ("id", "code", "name", "addr")
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
+    """Serializer for Employee model."""
+
     org = OrganisationSerializer()
 
     class Meta:
@@ -44,6 +56,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 
 class ExamSerializer(serializers.ModelSerializer):
+    """Serializer for Exam model."""
+
     date = DateSerializer()
     level = LevelSerializer()
     place = PlaceSerializer()
@@ -56,6 +70,8 @@ class ExamSerializer(serializers.ModelSerializer):
 
 
 class ExamFlatSerializer(serializers.ModelSerializer):
+    """Serializer for Exam model with fields flattened."""
+
     date = serializers.DateField(source="date.date")
     level = serializers.CharField(source="level.level")
     code = serializers.CharField(source="place.code")
@@ -71,6 +87,8 @@ class ExamFlatSerializer(serializers.ModelSerializer):
 
 
 class ExamFullSerializer(serializers.ModelSerializer):
+    """Serializer for Exam model with nested fields included."""
+
     class Meta:
         model = models.Exam
         fields = "__all__"
@@ -78,6 +96,8 @@ class ExamFullSerializer(serializers.ModelSerializer):
 
 
 class ExamForEmployeeSerializer(serializers.ModelSerializer):
+    """Serializer for Exam to be included in Employee."""
+
     date = DateSerializer()
     level = LevelSerializer()
     position = PositionSerializer()
@@ -89,6 +109,8 @@ class ExamForEmployeeSerializer(serializers.ModelSerializer):
 
 
 class EmployeeDetailSerializer(serializers.ModelSerializer):
+    """Serializer for Employee detail."""
+
     org = OrganisationSerializer()
     exams = ExamForEmployeeSerializer(many=True)
 
@@ -99,6 +121,8 @@ class EmployeeDetailSerializer(serializers.ModelSerializer):
 
 
 class EmployeeForOrgSerializer(serializers.Serializer):
+    """Serializer for Employee to be included in Organisation."""
+
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField()
     org = serializers.IntegerField(source="org_id")
@@ -107,6 +131,8 @@ class EmployeeForOrgSerializer(serializers.Serializer):
 
 
 class EmployeesAnnotatedField(serializers.Field):
+    """Annotated list of employees with exams."""
+
     def to_representation(self, value):
         s = (
             value.annotate(num_exams=Count("exams"))
@@ -124,6 +150,8 @@ class EmployeesAnnotatedField(serializers.Field):
 
 
 class OrganisationDetailSerializer(serializers.ModelSerializer):
+    """Serializer for Organisation detail."""
+
     employees = EmployeesAnnotatedField(read_only=True)
 
     class Meta:
@@ -132,26 +160,32 @@ class OrganisationDetailSerializer(serializers.ModelSerializer):
 
 
 class DataSourceSerializer(serializers.ModelSerializer):
+    """Serializer for DataSource model."""
+
     class Meta:
         model = models.DataSource
         exclude = ("created", "modified")
 
 
 class DataFileSerializer(serializers.ModelSerializer):
+    """Serializer for DataFile model."""
+
     class Meta:
         model = models.DataFile
         exclude = ("created", "modified")
 
 
 def limit_subscriptions(fields):
+    """Limit number of subscriptions per user."""
     limit = 100
     if fields["user"].subscriptions.count() == limit:
-        raise serializers.ValidationError(
-            f"У вас не может быть больше {limit} подписок"
-        )
+        msg = f"У вас не может быть больше {limit} подписок"
+        raise serializers.ValidationError(msg)
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
+    """Serializer for Subscription model."""
+
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -168,6 +202,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionListSerializer(serializers.ModelSerializer):
+    """Serializer for Subscription list."""
+
     employee = EmployeeSerializer()
 
     class Meta:
@@ -176,6 +212,8 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionDetailSerializer(serializers.ModelSerializer):
+    """Serializer for Subscription detail."""
+
     employee = EmployeeDetailSerializer()
 
     class Meta:

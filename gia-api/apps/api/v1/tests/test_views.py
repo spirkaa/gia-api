@@ -1,4 +1,5 @@
 import json
+from http import HTTPStatus
 
 import pytest
 from ddf import G
@@ -15,7 +16,7 @@ def test_api_view_root(client):
     """
     url = reverse("apiv1:api-root")
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_filter_employee_list(client):
@@ -31,7 +32,7 @@ def test_api_filter_employee_list(client):
         },
     )
     content = json.loads(resp.content)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert content["count"] == 3
 
 
@@ -57,7 +58,7 @@ def test_api_view_list(client, view_name):
     """
     url = reverse(f"apiv1:{view_name}-list")
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_date_view_detail(client):
@@ -72,7 +73,7 @@ def test_api_date_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_level_view_detail(client):
@@ -87,7 +88,7 @@ def test_api_level_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_organisation_view_detail(client):
@@ -102,7 +103,7 @@ def test_api_organisation_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_position_view_detail(client):
@@ -117,7 +118,7 @@ def test_api_position_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_employee_view_detail(client):
@@ -132,7 +133,7 @@ def test_api_employee_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_place_view_detail(client):
@@ -147,7 +148,7 @@ def test_api_place_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_exam_view_detail(client):
@@ -162,7 +163,7 @@ def test_api_exam_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_examflat_view_detail(client):
@@ -177,7 +178,7 @@ def test_api_examflat_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_examfull_view_detail(client):
@@ -192,7 +193,7 @@ def test_api_examfull_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_datasource_view_detail(client):
@@ -207,7 +208,7 @@ def test_api_datasource_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_api_datafile_view_detail(client):
@@ -222,4 +223,4 @@ def test_api_datafile_view_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK

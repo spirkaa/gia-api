@@ -1,6 +1,8 @@
+from http import HTTPStatus
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework_extensions.mixins import DetailSerializerMixin
@@ -12,7 +14,7 @@ from .permissions import IsOwner
 
 
 class DateViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the Date class"""
+    """ViewSet for the Date class."""
 
     queryset = models.Date.objects.all()
     serializer_class = serializers.DateSerializer
@@ -20,7 +22,7 @@ class DateViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the Level class"""
+    """ViewSet for the Level class."""
 
     queryset = models.Level.objects.all()
     serializer_class = serializers.LevelSerializer
@@ -28,7 +30,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class PositionViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the Position class"""
+    """ViewSet for the Position class."""
 
     queryset = models.Position.objects.all()
     serializer_class = serializers.PositionSerializer
@@ -36,7 +38,7 @@ class PositionViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class OrganisationViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the Organisation class"""
+    """ViewSet for the Organisation class."""
 
     queryset = models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
@@ -45,7 +47,7 @@ class OrganisationViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the Employee class"""
+    """ViewSet for the Employee class."""
 
     queryset = models.Employee.objects.select_related()
     queryset_detail = queryset.prefetch_related(
@@ -60,7 +62,7 @@ class EmployeeViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class PlaceViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the Place class"""
+    """ViewSet for the Place class."""
 
     queryset = models.Place.objects.select_related()
     serializer_class = serializers.PlaceSerializer
@@ -68,7 +70,7 @@ class PlaceViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ExamViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the Exam class"""
+    """ViewSet for the Exam class."""
 
     queryset = models.Exam.objects.select_related()
     serializer_class = serializers.ExamSerializer
@@ -76,7 +78,7 @@ class ExamViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ExamFlatViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the ExamFlat class"""
+    """ViewSet for the ExamFlat class."""
 
     queryset = models.Exam.objects.select_related()
     serializer_class = serializers.ExamFlatSerializer
@@ -84,7 +86,7 @@ class ExamFlatViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ExamFullViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the ExamFull class"""
+    """ViewSet for the ExamFull class."""
 
     queryset = models.Exam.objects.select_related()
     serializer_class = serializers.ExamFullSerializer
@@ -92,14 +94,14 @@ class ExamFullViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the DataSource class"""
+    """ViewSet for the DataSource class."""
 
     queryset = models.DataSource.objects.all()
     serializer_class = serializers.DataSourceSerializer
 
 
 class DataFileViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for the DataFile class"""
+    """ViewSet for the DataFile class."""
 
     queryset = models.DataFile.objects.all()
     serializer_class = serializers.DataFileSerializer
@@ -108,7 +110,7 @@ class DataFileViewSet(viewsets.ReadOnlyModelViewSet):
 # TODO: exclude from schema view
 @method_decorator(never_cache, name="dispatch")
 class SubscriptionViewSet(viewsets.GenericViewSet):
-    """ViewSet for managing User to Employee subscriptions"""
+    """ViewSet for managing User to Employee subscriptions."""
 
     serializer_class = serializers.SubscriptionSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
@@ -128,7 +130,9 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            serializer.data,
+            status=HTTPStatus.CREATED,
+            headers=headers,
         )
 
     def perform_create(self, serializer):
@@ -153,7 +157,7 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response({"detail": "ok"}, status=status.HTTP_200_OK)
+        return Response({"detail": "ok"}, status=HTTPStatus.OK)
 
     def perform_destroy(self, instance):
         instance.delete()

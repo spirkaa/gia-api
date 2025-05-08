@@ -19,34 +19,40 @@ User = get_user_model()
 
 
 class DataSource(TimeStampedModel):
+    """Data source."""
+
     name = models.CharField("Название", max_length=50)
     url = models.URLField("Ссылка на источник данных")
 
     class Meta:
-        ordering = ["-modified"]
+        ordering = ("-modified",)
 
     def __str__(self):
         return str(self.name)
 
 
 class DataFile(TimeStampedModel):
+    """Data file."""
+
     name = models.CharField("Имя файла", max_length=50, unique=True)
     url = models.URLField("Ссылка на файл", unique=True)
     size = models.IntegerField("Content-Length", blank=True, null=True)
     last_modified = models.DateTimeField("Last-Modified", blank=True, null=True)
 
     class Meta:
-        ordering = ["-last_modified"]
+        ordering = ("-last_modified",)
 
     def __str__(self):
         return str(self.name)
 
 
 class Date(TimeStampedModel):
+    """Date."""
+
     date = models.DateField("Дата экзамена", unique=True, db_index=True)
 
     class Meta:
-        ordering = ["-date"]
+        ordering = ("-date",)
 
     def __str__(self):
         return defaultfilters.date(self.date, "SHORT_DATE_FORMAT")
@@ -56,12 +62,17 @@ class Date(TimeStampedModel):
 
 
 class Level(TimeStampedModel):
+    """Level."""
+
     level = models.CharField(
-        "Уровень экзамена", max_length=3, unique=True, db_index=True
+        "Уровень экзамена",
+        max_length=3,
+        unique=True,
+        db_index=True,
     )
 
     class Meta:
-        ordering = ["level"]
+        ordering = ("level",)
 
     def __str__(self):
         return str(self.level)
@@ -71,11 +82,13 @@ class Level(TimeStampedModel):
 
 
 class Organisation(TimeStampedModel):
+    """Organisation."""
+
     name = models.CharField("Место работы", max_length=500, unique=True, db_index=True)
     search_vector = SearchVectorField(blank=True, null=True)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ("name",)
         indexes = [GinIndex(fields=["search_vector"])]
 
     def __str__(self):
@@ -86,13 +99,18 @@ class Organisation(TimeStampedModel):
 
 
 class Position(TimeStampedModel):
+    """Position."""
+
     name = models.CharField(
-        "Должность в ППЭ", max_length=100, unique=True, db_index=True
+        "Должность в ППЭ",
+        max_length=100,
+        unique=True,
+        db_index=True,
     )
     search_vector = SearchVectorField(blank=True, null=True)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ("name",)
         indexes = [GinIndex(fields=["search_vector"])]
 
     def __str__(self):
@@ -103,15 +121,19 @@ class Position(TimeStampedModel):
 
 
 class Employee(TimeStampedModel):
+    """Employee."""
+
     name = models.CharField("ФИО", max_length=150, db_index=True)
     org = models.ForeignKey(
-        Organisation, related_name="employees", on_delete=models.CASCADE
+        Organisation,
+        related_name="employees",
+        on_delete=models.CASCADE,
     )
     search_vector = SearchVectorField(blank=True, null=True)
 
     class Meta:
         unique_together = (("name", "org"),)
-        ordering = ["name"]
+        ordering = ("name",)
         indexes = [GinIndex(fields=["search_vector"])]
 
     def __str__(self):
@@ -122,6 +144,8 @@ class Employee(TimeStampedModel):
 
 
 class Place(TimeStampedModel):
+    """Place."""
+
     code = models.CharField("Код ППЭ", max_length=5, db_index=True)
     name = models.CharField("Наименование ППЭ", max_length=500, db_index=True)
     addr = models.CharField("Адрес ППЭ", max_length=255, db_index=True)
@@ -129,7 +153,7 @@ class Place(TimeStampedModel):
 
     class Meta:
         unique_together = (("code", "name", "addr"),)
-        ordering = ["name"]
+        ordering = ("name",)
         indexes = [GinIndex(fields=["search_vector"])]
 
     def __str__(self):
@@ -140,24 +164,32 @@ class Place(TimeStampedModel):
 
 
 class Exam(TimeStampedModel):
+    """Exam."""
+
     date = models.ForeignKey(Date, related_name="exams", on_delete=models.CASCADE)
     level = models.ForeignKey(Level, related_name="exams", on_delete=models.CASCADE)
     place = models.ForeignKey(Place, related_name="exams", on_delete=models.CASCADE)
     employee = models.ForeignKey(
-        Employee, related_name="exams", on_delete=models.CASCADE
+        Employee,
+        related_name="exams",
+        on_delete=models.CASCADE,
     )
     position = models.ForeignKey(
-        Position, related_name="exams", on_delete=models.CASCADE
+        Position,
+        related_name="exams",
+        on_delete=models.CASCADE,
     )
     datafile = models.ForeignKey(
-        DataFile, related_name="exams", on_delete=models.CASCADE
+        DataFile,
+        related_name="exams",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
         unique_together = (
             ("date", "level", "place", "employee", "position", "datafile"),
         )
-        ordering = ["date", "id"]
+        ordering = ("date", "id")
 
     def __str__(self):
         return str(self.date) + ", " + str(self.place) + ", " + str(self.employee)
@@ -167,27 +199,30 @@ class Exam(TimeStampedModel):
 
 
 class Subscription(TimeStampedModel):
+    """Subscription."""
+
     user = models.ForeignKey(
-        User, related_name="subscriptions", on_delete=models.CASCADE
+        User,
+        related_name="subscriptions",
+        on_delete=models.CASCADE,
     )
     employee = models.ForeignKey(
-        Employee, related_name="subscriptions", on_delete=models.CASCADE
+        Employee,
+        related_name="subscriptions",
+        on_delete=models.CASCADE,
     )
-    last_send = models.DateTimeField(default=datetime.datetime(2017, 5, 1))
+    last_send = models.DateTimeField(default=datetime.datetime(2017, 5, 1))  # noqa: DTZ001
 
     class Meta:
         unique_together = (("user", "employee"),)
-        ordering = ["employee"]
+        ordering = ("employee",)
 
     def __str__(self):
         return str(self.user) + " --> " + str(self.employee)
 
 
 def send_subscriptions():
-    """
-    Send email with updates in user subscriptions
-
-    """
+    """Send email with updates in user subscriptions."""
     from allauth.account.adapter import get_adapter
     from allauth.utils import build_absolute_uri
 
@@ -198,18 +233,17 @@ def send_subscriptions():
     subscriptions = Subscription.objects.all().select_related()
     send_queue = {}
     for sub in subscriptions:
-        new_exams = []
+        new_exams = [
+            exam for exam in sub.employee.exams.all() if exam.created > sub.last_send
+        ]
         context = {
             "exams": new_exams,
             "sub_page": f"{url}{sub.employee.id}",
             "employee": sub.employee.name,
         }
-        for exam in sub.employee.exams.all():
-            if exam.created > sub.last_send:
-                new_exams.append(exam)
         if new_exams:
             send_queue.setdefault(sub.user.email, []).append(context)
-            sub.last_send = datetime.datetime.now()
+            sub.last_send = datetime.datetime.now()  # noqa: DTZ005
             sub.save()
     if send_queue:
         adapter = get_adapter()
@@ -218,8 +252,7 @@ def send_subscriptions():
 
 
 class RcoiUpdater:
-    """
-    Data processing class
+    """Data processing class.
 
     :type data: dict
     :type updated_files: list
@@ -233,10 +266,7 @@ class RcoiUpdater:
             raise
 
     def run(self):
-        """
-        Run data processing
-
-        """
+        """Run data processing."""
         if self.data:
             try:
                 self.__update_simple_tables()
@@ -245,7 +275,7 @@ class RcoiUpdater:
                 self.__update_exam()
                 self.__update_datafile()
                 self.__cleanup()
-                return True
+                return True  # noqa: TRY300
             except Exception:
                 logger.exception("Update failed!")
                 raise
@@ -266,7 +296,7 @@ class RcoiUpdater:
         updated_files = []
         for file in files_info_flat:
             name = file["name"]
-            minutes_ago = datetime.datetime.now() - datetime.timedelta(minutes=5)
+            minutes_ago = datetime.datetime.now() - datetime.timedelta(minutes=5)  # noqa: DTZ005
             try:
                 existing_file = DataFile.objects.get(name=name)
                 if existing_file.last_modified == file["last_modified"]:
@@ -306,10 +336,7 @@ class RcoiUpdater:
 
     @staticmethod
     def __cleanup():
-        """
-        Cleanup tables after processing
-
-        """
+        """Cleanup tables after processing."""
         from django.core.cache import cache
 
         cache.clear()
@@ -317,7 +344,7 @@ class RcoiUpdater:
         logger.debug("cleanup unneeded exam rows from updated files")
         files = DataFile.objects.all()
         files_modified = files.filter(
-            modified__gte=datetime.datetime.now() - datetime.timedelta(minutes=5)
+            modified__gte=datetime.datetime.now() - datetime.timedelta(minutes=5),  # noqa: DTZ005
         )
         exams = Exam.objects.all()
         to_delete = []
@@ -333,8 +360,7 @@ class RcoiUpdater:
 
     @staticmethod
     def __sql_insert_or_update(table, columns, data, uniq):
-        """
-        Prepare raw SQL queries, then execute it with cursor
+        """Prepare raw SQL queries, then execute it with cursor.
 
         :param table: table name
         :type table: str
@@ -362,49 +388,43 @@ class RcoiUpdater:
         rows = sql.SQL(", ").join(placeholder * (len(data) // len(columns)))
         query = sql.SQL(
             "INSERT INTO {table_name} ({col_names}) VALUES {rows} "
-            "ON CONFLICT ({uniq_names}) DO UPDATE SET modified=excluded.modified;"
+            "ON CONFLICT ({uniq_names}) DO UPDATE SET modified=excluded.modified;",
         ).format(
-            table_name=table_name, col_names=col_names, rows=rows, uniq_names=uniq_names
+            table_name=table_name,
+            col_names=col_names,
+            rows=rows,
+            uniq_names=uniq_names,
         )
         with connection.cursor() as cursor:
             cursor.execute(query.as_string(cursor), data)
 
     def __update_datafile(self):
-        """
-        Update DataFile table
-
-        """
+        """Update DataFile table."""
         for file in self.updated_files:
             name = file["name"]
             logger.debug("update or create file: %s", name)
             DataFile.objects.update_or_create(name=name, defaults=file)
 
     def __update_simple_tables(self):
-        """
-        Update simple tables with one data column
-
-        """
+        """Update simple tables with one data column."""
         for key in ("date", "level", "position", "organisation"):
             values = sorted(set(self.data[key]))
             stream = timestamp_list(values)
             table = key
             col = "name"
-            if key == "date" or key == "level":
+            if key in {"date", "level"}:
                 col = key
             columns = (col, "created", "modified")
             logger.debug("processing model: %s", table)
             self.__sql_insert_or_update(table, columns, stream, col)
 
     def __update_employee(self):
-        """
-        Update Employee table
-
-        """
+        """Update Employee table."""
         organisation = Organisation.objects.all()
         organisation_db = {org.name: org.id for org in organisation}
 
         values = sorted(
-            set(zip(self.data["name"], self.data["organisation"], strict=True))
+            set(zip(self.data["name"], self.data["organisation"], strict=True)),
         )
         values_with_id = [[val[0], organisation_db.get(val[1])] for val in values]
         stream = timestamp_list(values_with_id)
@@ -414,18 +434,20 @@ class RcoiUpdater:
         self.__sql_insert_or_update(table, columns, stream, columns[:2])
 
     def __update_place(self):
-        """
-        Update Place table
-
-        """
+        """Update Place table."""
         ppe_code = self.data["ppe_code"][:]
         for i, _v in enumerate(ppe_code):
             ppe_code[i] = int(ppe_code[i])
 
         values = sorted(
             set(
-                zip(ppe_code, self.data["ppe_name"], self.data["ppe_addr"], strict=True)
-            )
+                zip(
+                    ppe_code,
+                    self.data["ppe_name"],
+                    self.data["ppe_addr"],
+                    strict=True,
+                ),
+            ),
         )
         stream = timestamp_list(values)
         table = "place"
@@ -434,10 +456,7 @@ class RcoiUpdater:
         self.__sql_insert_or_update(table, columns, stream, columns[:3])
 
     def __update_exam(self):
-        """
-        Update Exam table
-
-        """
+        """Update Exam table."""
         date = Date.objects.all()
         date_db = {str(d.date): d.id for d in date}
         date_id = self.data["date"][:]
@@ -461,14 +480,14 @@ class RcoiUpdater:
                 self.data["ppe_name"],
                 self.data["ppe_addr"],
                 strict=True,
-            )
+            ),
         )
         replace_items(place_id, place_db)
 
         employee = Employee.objects.all().select_related()
         employee_db = {(emp.name, emp.org.name): emp.id for emp in employee}
         employee_id = list(
-            zip(self.data["name"], self.data["organisation"], strict=True)
+            zip(self.data["name"], self.data["organisation"], strict=True),
         )
         replace_items(employee_id, employee_db)
 
@@ -487,8 +506,8 @@ class RcoiUpdater:
                     position_id,
                     datafile_id,
                     strict=True,
-                )
-            )
+                ),
+            ),
         )
 
         table = "exam"
@@ -510,15 +529,15 @@ class RcoiUpdater:
 
 
 class ExamImporter(RcoiUpdater):
-    """
-    Import exam data from single file url
+    """Import exam data from single file url.
 
     :type data: dict
     :type updated_files: list
     """
 
     def __init__(self, datafile_url, date, level):
-        """
+        """Initialize ExamImporter.
+
         :param datafile_url: url for file
         :type datafile_url: str
         :param date: exam date for file
@@ -536,8 +555,7 @@ class ExamImporter(RcoiUpdater):
             raise
 
     def __prepare_data(self):
-        """
-        Check if new data available and prepare it for processing
+        """Check if new data available and prepare it for processing.
 
         :return: data, updated files
         """
@@ -547,7 +565,9 @@ class ExamImporter(RcoiUpdater):
         from collections import defaultdict
 
         datafile = xlsx_to_csv.prepare_file_info(
-            self.datafile_url, self.date, self.level
+            self.datafile_url,
+            self.date,
+            self.level,
         )
         datafile_updated = False
         name = datafile["name"]
@@ -580,8 +600,7 @@ class ExamImporter(RcoiUpdater):
 
 
 def replace_items(s_list, s_dict):
-    """
-    Replace items in list with dict values (list item == dict key)
+    """Replace items in list with dict values (list item == dict key).
 
     s_list = ['a', 'b', 'c']
 
@@ -599,26 +618,24 @@ def replace_items(s_list, s_dict):
 
 
 def timestamp_list(data):
-    """
-    Convert iterable to list and add two timestamps
+    """Convert iterable to list and add two timestamps.
 
     :param data:
     :return: list of timestamped lists
     :rtype: list
     """
-    datetime_now = datetime.datetime.now()
+    datetime_now = datetime.datetime.now()  # noqa: DTZ005
     created = [datetime_now, datetime_now]
     data_list = []
     for row in data:
-        row = list(row) if isinstance(row, list | tuple | set) else [row]
-        row.extend(created)
-        data_list.extend(row)
+        row_ = list(row) if isinstance(row, list | tuple | set) else [row]
+        row_.extend(created)
+        data_list.extend(row_)
     return data_list
 
 
 def split_list(seq, chunks):
-    """
-    Convert list to list of lists of a given size
+    """Convert list to list of lists of a given size.
 
     :param seq: source list
     :type seq: list
@@ -637,13 +654,10 @@ def split_list(seq, chunks):
 
 
 def cursor_execute(sql):  # pragma: no cover
-    """
-    Execute raw SQL query with cursor
+    """Execute raw SQL query with cursor.
 
     :param sql: sql
     :type sql: str
     """
-    # sql = 'DROP TABLE rcoi_subscription;'
-    # sql = 'DELETE FROM rcoi_exam;'
     with connection.cursor() as cursor:
         cursor.execute(sql)

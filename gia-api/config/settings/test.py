@@ -1,6 +1,4 @@
-"""
-With these settings, tests run faster.
-"""
+"""With these settings, tests run faster."""
 
 from .common import *
 from .common import env
@@ -27,4 +25,4 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 # DEBUGGING FOR TEMPLATES
 # ------------------------------------------------------------------------------
-TEMPLATES[0]["OPTIONS"]["debug"] = True  # type: ignore # noqa F405
+TEMPLATES[0]["OPTIONS"]["debug"] = True

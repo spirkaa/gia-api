@@ -1,4 +1,5 @@
 import datetime
+from http import HTTPStatus
 
 import pytest
 from ddf import G
@@ -22,7 +23,7 @@ def test_exam_import_get(admin_client):
     resp = admin_client.get(url)
     content = resp.content
 
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert bytes(date.__str__(), "utf-8") in content
 
 
@@ -44,7 +45,7 @@ def test_exam_import_post(admin_client, mocker_exam_importer):
     resp = admin_client.post(url, data=data)
     all_messages = list(get_messages(resp.wsgi_request))
 
-    assert resp.status_code == 302
+    assert resp.status_code == HTTPStatus.FOUND
     assert all_messages[0].message == "Файл file_test.xlsx обработан"
     assert resp.url == reverse("admin:rcoi_exam_changelist")
 
@@ -57,7 +58,10 @@ def test_exam_import_post(admin_client, mocker_exam_importer):
     ],
 )
 def test_exam_import_post_fail(
-    admin_client, mocker_exam_importer, datafile_url, assertion
+    admin_client,
+    mocker_exam_importer,
+    datafile_url,
+    assertion,
 ):
     """
     Test Exam Import Admin View - post (form)
@@ -71,5 +75,5 @@ def test_exam_import_post_fail(
     data = {"date": date.pk, "level": level.pk, "datafile_url": datafile_url}
     resp = admin_client.post(url, data=data)
 
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert bytes(assertion, "utf-8") in resp.content

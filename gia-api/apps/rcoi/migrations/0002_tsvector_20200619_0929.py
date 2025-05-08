@@ -14,52 +14,60 @@ class Migration(migrations.Migration):
             model_name="employee",
             name="search_vector",
             field=django.contrib.postgres.search.SearchVectorField(
-                blank=True, null=True
+                blank=True,
+                null=True,
             ),
         ),
         migrations.AddField(
             model_name="organisation",
             name="search_vector",
             field=django.contrib.postgres.search.SearchVectorField(
-                blank=True, null=True
+                blank=True,
+                null=True,
             ),
         ),
         migrations.AddField(
             model_name="place",
             name="search_vector",
             field=django.contrib.postgres.search.SearchVectorField(
-                blank=True, null=True
+                blank=True,
+                null=True,
             ),
         ),
         migrations.AddField(
             model_name="position",
             name="search_vector",
             field=django.contrib.postgres.search.SearchVectorField(
-                blank=True, null=True
+                blank=True,
+                null=True,
             ),
         ),
         migrations.AddIndex(
             model_name="employee",
             index=django.contrib.postgres.indexes.GinIndex(
-                fields=["search_vector"], name="rcoi_employ_search__59ec46_gin"
+                fields=["search_vector"],
+                name="rcoi_employ_search__59ec46_gin",
             ),
         ),
         migrations.AddIndex(
             model_name="organisation",
             index=django.contrib.postgres.indexes.GinIndex(
-                fields=["search_vector"], name="rcoi_organi_search__216a23_gin"
+                fields=["search_vector"],
+                name="rcoi_organi_search__216a23_gin",
             ),
         ),
         migrations.AddIndex(
             model_name="place",
             index=django.contrib.postgres.indexes.GinIndex(
-                fields=["search_vector"], name="rcoi_place_search__4cdf62_gin"
+                fields=["search_vector"],
+                name="rcoi_place_search__4cdf62_gin",
             ),
         ),
         migrations.AddIndex(
             model_name="position",
             index=django.contrib.postgres.indexes.GinIndex(
-                fields=["search_vector"], name="rcoi_positi_search__f26330_gin"
+                fields=["search_vector"],
+                name="rcoi_positi_search__f26330_gin",
             ),
         ),
         migrations.AlterField(

@@ -4,6 +4,8 @@ from . import models
 
 
 class EmployeeTable(tables.Table):
+    """Table for employees."""
+
     name = tables.TemplateColumn(
         template_name="rcoi/cols/employee_name.html",
         verbose_name="ФИО",
@@ -22,6 +24,8 @@ class EmployeeTable(tables.Table):
 
 
 class OrganisationTable(tables.Table):
+    """Table for organisations."""
+
     name = tables.TemplateColumn(
         template_name="rcoi/cols/org_name.html",
         verbose_name="",
@@ -35,6 +39,8 @@ class OrganisationTable(tables.Table):
 
 
 class PlaceTable(tables.Table):
+    """Table for places."""
+
     place = tables.TemplateColumn(
         template_name="rcoi/cols/place.html",
         verbose_name="",
@@ -48,6 +54,8 @@ class PlaceTable(tables.Table):
 
 
 class ExamTable(tables.Table):
+    """Table for exams."""
+
     date = tables.TemplateColumn(
         template_name="rcoi/cols/date.html",
         verbose_name="Дата",
@@ -93,6 +101,8 @@ class ExamTable(tables.Table):
 
 
 class PlaceWithExamsTable(tables.Table):
+    """Table for places with exams."""
+
     date = tables.TemplateColumn(
         template_name="rcoi/cols/date.html",
         verbose_name="Дата",

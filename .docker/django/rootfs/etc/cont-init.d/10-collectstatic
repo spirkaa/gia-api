@@ -1,5 +1,0 @@
-#!/usr/bin/with-contenv sh
-
-if [ ! -d /app/staticfiles ]; then
-  exec python /app/manage.py collectstatic --noinput
-fi

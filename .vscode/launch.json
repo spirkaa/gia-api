@@ -1,6 +1,22 @@
 {
   "version": "0.2.0",
   "configurations": [
+    {
+      "name": "Debug Django (docker)",
+      "type": "debugpy",
+      "request": "attach",
+      "django": true,
+      "connect": {
+        "port": 5678,
+        "host": "127.0.0.1"
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/gia-api",
+          "remoteRoot": "/app/gia-api"
+        }
+      ]
+    },
     // https://github.com/microsoft/vscode-python/issues/693
     {
       "name": "Python: Debug Tests",
@@ -13,6 +29,6 @@
       "env": {
         "PYTEST_ADDOPTS": "--no-cov"
       }
-  }
+    }
   ]
 }

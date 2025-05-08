@@ -1,4 +1,5 @@
 import json
+from http import HTTPStatus
 
 import pytest
 from ddf import G
@@ -23,10 +24,12 @@ def test_api_subscription_add(client, authenticated_user):
 
     url = reverse("apiv1:subscription-list")
     resp = client.post(
-        url, data={"employee": employee.pk}, HTTP_AUTHORIZATION=f"{auth_header}"
+        url,
+        data={"employee": employee.pk},
+        HTTP_AUTHORIZATION=f"{auth_header}",
     )
     content = json.loads(resp.content)
-    assert resp.status_code == 201
+    assert resp.status_code == HTTPStatus.CREATED
     assert content["employee"] == employee.pk
 
 
@@ -46,10 +49,12 @@ def test_api_subscription_add_fail(client, authenticated_user):
 
     url = reverse("apiv1:subscription-list")
     resp = client.post(
-        url, data={"employee": employee.pk}, HTTP_AUTHORIZATION=f"{auth_header}"
+        url,
+        data={"employee": employee.pk},
+        HTTP_AUTHORIZATION=f"{auth_header}",
     )
     content = json.loads(resp.content)
-    assert resp.status_code == 400
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
     assert content["non_field_errors"] == ["Вы уже подписаны на этого сотрудника"]
 
 
@@ -69,10 +74,12 @@ def test_api_subscription_add_limit(client, authenticated_user):
 
     url = reverse("apiv1:subscription-list")
     resp = client.post(
-        url, data={"employee": employee.pk}, HTTP_AUTHORIZATION=f"{auth_header}"
+        url,
+        data={"employee": employee.pk},
+        HTTP_AUTHORIZATION=f"{auth_header}",
     )
     content = json.loads(resp.content)
-    assert resp.status_code == 400
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
     assert content["non_field_errors"] == ["У вас не может быть больше 100 подписок"]
 
 
@@ -98,7 +105,7 @@ def test_api_subscription_delete(client, authenticated_user):
     )
     resp = client.delete(url, HTTP_AUTHORIZATION=f"{auth_header}")
     content = json.loads(resp.content)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert content["detail"] == "ok"
 
 
@@ -122,7 +129,7 @@ def test_api_subscription_delete_fail(client, authenticated_user):
         ],
     )
     resp = client.delete(url, HTTP_AUTHORIZATION=f"{auth_header}")
-    assert resp.status_code == 404
+    assert resp.status_code == HTTPStatus.NOT_FOUND
 
 
 def test_api_subscription_view_list(client, authenticated_user):
@@ -142,7 +149,7 @@ def test_api_subscription_view_list(client, authenticated_user):
     url = reverse("apiv1:subscription-list")
     resp = client.get(url, HTTP_AUTHORIZATION=f"{auth_header}")
     content = json.loads(resp.content)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert len(content["results"]) == 1
 
 
@@ -152,4 +159,4 @@ def test_api_subscription_view_list_401(client):
     """
     url = reverse("apiv1:subscription-list")
     resp = client.get(url)
-    assert resp.status_code == 401
+    assert resp.status_code == HTTPStatus.UNAUTHORIZED

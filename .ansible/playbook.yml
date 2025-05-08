@@ -1,6 +1,0 @@
-- name: deploy app
-  hosts: all
-  gather_facts: no
-
-  roles:
-    - { role: deploy, tags: deploy }

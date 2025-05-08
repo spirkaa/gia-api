@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 import pytest
 from ddf import G
 from django.contrib.messages import get_messages
@@ -14,7 +16,7 @@ def test_view_home(client):
     """
     url = reverse("rcoi:home")
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 @pytest.mark.parametrize(
@@ -32,7 +34,7 @@ def test_view_model_list_custom(client, model_name):
     """
     url = reverse(f"rcoi:{model_name}")
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 @pytest.mark.parametrize(
@@ -49,7 +51,7 @@ def test_view_model_list_view(model_name, client):
     """
     url = reverse(f"rcoi:{model_name}_list")
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_view_date_detail(client):
@@ -64,7 +66,7 @@ def test_view_date_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_view_level_detail(client):
@@ -79,7 +81,7 @@ def test_view_level_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_view_organisation_detail(client):
@@ -94,7 +96,7 @@ def test_view_organisation_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_view_position_detail(client):
@@ -109,7 +111,7 @@ def test_view_position_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_view_employee_detail(client):
@@ -124,7 +126,7 @@ def test_view_employee_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_view_place_detail(client):
@@ -141,7 +143,7 @@ def test_view_place_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert bytes(name, "utf-8") in resp.content
     assert len(resp.context["table"].paginated_rows) == 1
 
@@ -157,7 +159,7 @@ def test_view_place_detail_404(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 404
+    assert resp.status_code == HTTPStatus.NOT_FOUND
 
 
 def test_view_exam_detail(client):
@@ -172,7 +174,7 @@ def test_view_exam_detail(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_view_admin_clear_caches_post(admin_client):
@@ -181,7 +183,7 @@ def test_view_admin_clear_caches_post(admin_client):
     """
     url = reverse("rcoi:clear_caches")
     resp = admin_client.post(url)
-    assert resp.status_code == 302
+    assert resp.status_code == HTTPStatus.FOUND
     assert resp.url == reverse("admin:index")
 
 
@@ -191,7 +193,7 @@ def test_view_admin_clear_caches_get(admin_client):
     """
     url = reverse("rcoi:clear_caches")
     resp = admin_client.get(url)
-    assert resp.status_code == 302
+    assert resp.status_code == HTTPStatus.FOUND
     assert resp.url == reverse("admin:index")
 
 
@@ -209,7 +211,7 @@ def test_view_admin_update_db_post(admin_client, mocker, return_value, message):
     resp = admin_client.post(url)
     all_messages = list(get_messages(resp.wsgi_request))
     assert all_messages[0].message == message
-    assert resp.status_code == 302
+    assert resp.status_code == HTTPStatus.FOUND
     assert resp.url == reverse("admin:index")
     mocker.resetall()
 
@@ -220,7 +222,7 @@ def test_view_admin_update_db_get(admin_client):
     """
     url = reverse("rcoi:update_db")
     resp = admin_client.get(url)
-    assert resp.status_code == 302
+    assert resp.status_code == HTTPStatus.FOUND
     assert resp.url == reverse("admin:index")
 
 
@@ -230,7 +232,7 @@ def test_view_robotstxt(client):
     """
     url = reverse("rcoi:robotstxt")
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert b"Sitemap:" in resp.content
 
 
@@ -242,7 +244,7 @@ def test_view_sitemap_index(mocker, client):
     G(models.Employee, n=2)
     url = reverse("rcoi:sitemap")
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert b"p=2" in resp.content
 
 
@@ -259,7 +261,7 @@ def test_view_sitemap_section(client, section):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
 
 def test_view_sitemap_section_404(client):
@@ -273,7 +275,7 @@ def test_view_sitemap_section_404(client):
         ],
     )
     resp = client.get(url)
-    assert resp.status_code == 404
+    assert resp.status_code == HTTPStatus.NOT_FOUND
 
 
 @pytest.mark.parametrize("page_num", [100, "one"])
@@ -288,4 +290,4 @@ def test_view_sitemap_section_page_404(client, page_num):
         ],
     )
     resp = client.get(url, {"p": page_num})
-    assert resp.status_code == 404
+    assert resp.status_code == HTTPStatus.NOT_FOUND

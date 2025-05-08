@@ -6,8 +6,7 @@ register = template.Library()
 
 @register.simple_tag
 def navactive(request, urls):
-    """
-    Check if url presents in request path.
+    """Check if url presents in request path.
 
     :type request: request
     :param request: request

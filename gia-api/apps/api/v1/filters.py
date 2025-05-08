@@ -5,10 +5,12 @@ from apps.rcoi.filters import SearchVectorFilter
 
 
 class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
-    pass
+    """Filter that allows filtering by a list of numbers."""
 
 
 class DateFilter(filters.FilterSet):
+    """Filter for dates."""
+
     date = filters.CharFilter(lookup_expr="icontains", label="Дата экзамена")
 
     class Meta:
@@ -17,6 +19,8 @@ class DateFilter(filters.FilterSet):
 
 
 class LevelFilter(filters.FilterSet):
+    """Filter for levels."""
+
     level = filters.CharFilter(lookup_expr="icontains", label="Уровень")
 
     class Meta:
@@ -25,9 +29,13 @@ class LevelFilter(filters.FilterSet):
 
 
 class OrganisationFilter(filters.FilterSet):
+    """Filter for organisations."""
+
     name = filters.CharFilter(lookup_expr="icontains", label="Место работы")
     search = SearchVectorFilter(
-        search_fields=["search_vector"], label="Поиск", help_text="Full Text Search"
+        search_fields=["search_vector"],
+        label="Поиск",
+        help_text="Full Text Search",
     )
 
     class Meta:
@@ -36,9 +44,13 @@ class OrganisationFilter(filters.FilterSet):
 
 
 class PositionFilter(filters.FilterSet):
+    """Filter for positions."""
+
     name = filters.CharFilter(lookup_expr="icontains", label="Должность в ППЭ")
     search = SearchVectorFilter(
-        search_fields=["search_vector"], label="Поиск", help_text="Full Text Search"
+        search_fields=["search_vector"],
+        label="Поиск",
+        help_text="Full Text Search",
     )
 
     class Meta:
@@ -47,12 +59,16 @@ class PositionFilter(filters.FilterSet):
 
 
 class EmployeeFilter(filters.FilterSet):
+    """Filter for employees."""
+
     id = NumberInFilter(field_name="id", lookup_expr="in")
 
     name = filters.CharFilter(lookup_expr="icontains", label="ФИО сотрудника")
     org_id = filters.CharFilter(field_name="org__id", label="id места работы")
     org_name = filters.CharFilter(
-        field_name="org__name", lookup_expr="icontains", label="Место работы"
+        field_name="org__name",
+        lookup_expr="icontains",
+        label="Место работы",
     )
     search = SearchVectorFilter(
         search_fields=["search_vector", "org__search_vector"],
@@ -66,12 +82,16 @@ class EmployeeFilter(filters.FilterSet):
 
 
 class PlaceFilter(filters.FilterSet):
+    """Filter for places."""
+
     id = NumberInFilter(field_name="id", lookup_expr="in")
 
     name = filters.CharFilter(lookup_expr="icontains", label="Наименование ППЭ")
     addr = filters.CharFilter(lookup_expr="icontains", label="Адрес ППЭ")
     search = SearchVectorFilter(
-        search_fields=["search_vector"], label="Поиск", help_text="Full Text Search"
+        search_fields=["search_vector"],
+        label="Поиск",
+        help_text="Full Text Search",
     )
 
     class Meta:
@@ -80,34 +100,51 @@ class PlaceFilter(filters.FilterSet):
 
 
 class ExamFilter(filters.FilterSet):
+    """Filter for exams."""
+
     id = NumberInFilter(field_name="id", lookup_expr="in")
 
     date = filters.DateFilter(
-        field_name="date__date", lookup_expr="icontains", label="Дата экзамена"
+        field_name="date__date",
+        lookup_expr="icontains",
+        label="Дата экзамена",
     )
     level = filters.CharFilter(
-        field_name="level__level", lookup_expr="icontains", label="Уровень"
+        field_name="level__level",
+        lookup_expr="icontains",
+        label="Уровень",
     )
     pos = filters.CharFilter(
-        field_name="position__name", lookup_expr="icontains", label="Должность в ППЭ"
+        field_name="position__name",
+        lookup_expr="icontains",
+        label="Должность в ППЭ",
     )
     p_id = filters.CharFilter(field_name="place__id", label="id ППЭ")
     p_code = filters.CharFilter(field_name="place__code", label="Код ППЭ")
     p_name = filters.CharFilter(
-        field_name="place__name", lookup_expr="icontains", label="Наименование ППЭ"
+        field_name="place__name",
+        lookup_expr="icontains",
+        label="Наименование ППЭ",
     )
     p_addr = filters.CharFilter(
-        field_name="place__addr", lookup_expr="icontains", label="Адрес ППЭ"
+        field_name="place__addr",
+        lookup_expr="icontains",
+        label="Адрес ППЭ",
     )
     emp_id = filters.CharFilter(field_name="employee__id", label="id сотрудника")
     emp_name = filters.CharFilter(
-        field_name="employee__name", lookup_expr="icontains", label="ФИО сотрудника"
+        field_name="employee__name",
+        lookup_expr="icontains",
+        label="ФИО сотрудника",
     )
     emp_org_id = filters.CharFilter(
-        field_name="employee__org__id", label="id места работы"
+        field_name="employee__org__id",
+        label="id места работы",
     )
     emp_org_name = filters.CharFilter(
-        field_name="employee__org__name", lookup_expr="icontains", label="Место работы"
+        field_name="employee__org__name",
+        lookup_expr="icontains",
+        label="Место работы",
     )
     search = SearchVectorFilter(
         search_fields=[

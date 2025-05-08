@@ -1,5 +1,4 @@
-"""
-Django settings for gia-api project.
+"""Django settings for gia-api project.
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
@@ -111,7 +110,7 @@ ADMINS = env.list(
         (
             env.str("DJANGO_ADMIN_NAME", default="admin"),
             env.str("DJANGO_ADMIN_MAIL", default="admin@example.com"),
-        )
+        ),
     ],
 )
 
@@ -125,7 +124,8 @@ DATABASES = {
     "default": env.db_url(
         "DJANGO_DATABASE_URL",
         engine=env.str(
-            "DJANGO_DATABASE_ENGINE", default="django_prometheus.db.backends.postgresql"
+            "DJANGO_DATABASE_ENGINE",
+            default="django_prometheus.db.backends.postgresql",
         ),
     ),
 }
@@ -243,7 +243,7 @@ LOGGING = {
     "filters": {
         "require_debug_false": {
             "()": "django.utils.log.RequireDebugFalse",
-        }
+        },
     },
     "handlers": {
         "null": {
@@ -334,12 +334,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 ACCOUNT_ADAPTER = "apps.api.v1.account.adapter.SitesDomainAccountAdapter"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_EMAIL_VERIFICATION = "optional"
-ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = False
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_FIELDS = ["username", "email*", "password1*", "password2*"]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = "bootstrap3"

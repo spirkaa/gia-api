@@ -31,19 +31,23 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 (
                     "date",
                     models.DateField(
-                        db_index=True, unique=True, verbose_name="Дата экзамена"
+                        db_index=True,
+                        unique=True,
+                        verbose_name="Дата экзамена",
                     ),
                 ),
             ],
@@ -66,13 +70,15 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 (
@@ -104,13 +110,15 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 (
@@ -142,13 +150,15 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 (
@@ -180,31 +190,39 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 (
                     "code",
                     models.CharField(
-                        db_index=True, max_length=5, verbose_name="Код ППЭ"
+                        db_index=True,
+                        max_length=5,
+                        verbose_name="Код ППЭ",
                     ),
                 ),
                 (
                     "name",
                     models.CharField(
-                        db_index=True, max_length=500, verbose_name="Наименование ППЭ"
+                        db_index=True,
+                        max_length=500,
+                        verbose_name="Наименование ППЭ",
                     ),
                 ),
                 (
                     "addr",
                     models.CharField(
-                        db_index=True, max_length=255, verbose_name="Адрес ППЭ"
+                        db_index=True,
+                        max_length=255,
+                        verbose_name="Адрес ППЭ",
                     ),
                 ),
             ],
@@ -228,13 +246,15 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 (
@@ -270,13 +290,15 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 ("name", models.CharField(max_length=50, verbose_name="Имя файла")),
@@ -284,13 +306,17 @@ class Migration(migrations.Migration):
                 (
                     "size",
                     models.IntegerField(
-                        blank=True, null=True, verbose_name="Content-Length"
+                        blank=True,
+                        null=True,
+                        verbose_name="Content-Length",
                     ),
                 ),
                 (
                     "last_modified",
                     models.DateTimeField(
-                        blank=True, null=True, verbose_name="Last-Modified"
+                        blank=True,
+                        null=True,
+                        verbose_name="Last-Modified",
                     ),
                 ),
             ],
@@ -313,13 +339,15 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 ("name", models.CharField(max_length=50, verbose_name="Название")),
@@ -346,18 +374,20 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 (
                     "last_send",
-                    models.DateTimeField(default=datetime.datetime(2017, 5, 1, 0, 0)),
+                    models.DateTimeField(default=datetime.datetime(2017, 5, 1, 0, 0)),  # noqa: DTZ001
                 ),
                 (
                     "employee",
@@ -396,13 +426,15 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     django_extensions.db.fields.CreationDateTimeField(
-                        auto_now_add=True, verbose_name="created"
+                        auto_now_add=True,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     django_extensions.db.fields.ModificationDateTimeField(
-                        auto_now=True, verbose_name="modified"
+                        auto_now=True,
+                        verbose_name="modified",
                     ),
                 ),
                 (
@@ -458,7 +490,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["date", "id"],
                 "unique_together": {
-                    ("date", "level", "place", "employee", "position", "datafile")
+                    ("date", "level", "place", "employee", "position", "datafile"),
                 },
             },
         ),

@@ -13,7 +13,9 @@ class Migration(migrations.Migration):
             model_name="datafile",
             name="name",
             field=models.CharField(
-                max_length=50, unique=True, verbose_name="Имя файла"
+                max_length=50,
+                unique=True,
+                verbose_name="Имя файла",
             ),
         ),
     ]

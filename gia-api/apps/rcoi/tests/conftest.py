@@ -40,7 +40,7 @@ def xlsx_file(settings):
     params=[
         "2020-06-13__11__bad_many_data_sheets.xlsx",
         "2020-06-13__11__bad_missing_column.xlsx",
-    ]
+    ],
 )
 def xlsx_file_bad(settings, request):
     return Path(settings.APPS_DIR) / "rcoi" / "tests" / "xlsx" / request.param

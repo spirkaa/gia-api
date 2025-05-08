@@ -9,7 +9,8 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(
-    ("name", "query"), [("первая", "первый"), ("проверка", "успешные проверки функций")]
+    ("name", "query"),
+    [("первая", "первый"), ("проверка", "успешные проверки функций")],
 )
 def test_search_vector_filter(name, query):
     """

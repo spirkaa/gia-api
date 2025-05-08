@@ -41,10 +41,13 @@ from .tables import (
 
 
 class TemplateViewWithContext(TemplateView):
+    """Base template view that provides additional context data for templates."""
+
     model = None
     template_name = None
 
     def get_context_data(self, **kwargs):
+        """Get the context data for the template, including data sources, last update, and link relation."""
         context = super().get_context_data(**kwargs)
         context["sources"] = DataSource.objects.all()
         try:
@@ -58,10 +61,14 @@ class TemplateViewWithContext(TemplateView):
 
 
 class HomeView(TemplateViewWithContext):
+    """Home page view."""
+
     template_name = "rcoi/home.html"
 
 
 class FilteredSingleTableView(TemplateViewWithContext):
+    """Base view for table with filtered data."""
+
     table_class = None
     paginate_by = 50
     filter_class = None
@@ -71,17 +78,17 @@ class FilteredSingleTableView(TemplateViewWithContext):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        filter = self.filter_class(
+        filter_ = self.filter_class(
             data=self.request.GET,
             request=self.request,
             queryset=self.get_queryset(**kwargs),
         )
-        filter.form.helper = self.filter_class().helper
-        table = self.table_class(filter.qs)
+        filter_.form.helper = self.filter_class().helper
+        table = self.table_class(filter_.qs)
         RequestConfig(self.request, paginate={"per_page": self.paginate_by}).configure(
-            table
+            table,
         )
-        context["filter"] = filter
+        context["filter"] = filter_
         context["table"] = table
         with contextlib.suppress(MultiValueDictKeyError):
             context["table_sort"] = self.request.GET["sort"]
@@ -90,6 +97,8 @@ class FilteredSingleTableView(TemplateViewWithContext):
 
 
 class EmployeeTableView(FilteredSingleTableView):
+    """Table view for employees."""
+
     model = Employee
     table_class = EmployeeTable
     filter_class = EmployeeFilter
@@ -97,6 +106,8 @@ class EmployeeTableView(FilteredSingleTableView):
 
 
 class OrganisationTableView(FilteredSingleTableView):
+    """Table view for organisations."""
+
     model = Organisation
     table_class = OrganisationTable
     filter_class = OrganisationFilter
@@ -104,6 +115,8 @@ class OrganisationTableView(FilteredSingleTableView):
 
 
 class PlaceTableView(FilteredSingleTableView):
+    """Table view for places."""
+
     model = Place
     table_class = PlaceTable
     filter_class = PlaceFilter
@@ -111,6 +124,8 @@ class PlaceTableView(FilteredSingleTableView):
 
 
 class ExamTableView(FilteredSingleTableView):
+    """Table view for exams."""
+
     model = Exam
     table_class = ExamTable
     filter_class = ExamFilter
@@ -118,6 +133,8 @@ class ExamTableView(FilteredSingleTableView):
 
 
 class DetailViewWithContext(DetailView):
+    """Base detail view that provides additional context data for templates."""
+
     model = None
 
     def get_context_data(self, **kwargs):
@@ -134,6 +151,8 @@ class DetailViewWithContext(DetailView):
 
 
 class OrganisationDetailView(DetailViewWithContext):
+    """Detail view for organisation."""
+
     model = Organisation
 
     def get_context_data(self, **kwargs):
@@ -154,7 +173,7 @@ class OrganisationDetailView(DetailViewWithContext):
                     exam.date_id
                     for employee in context["employees"]
                     for exam in employee.exams.all()
-                ]
+                ],
             )
             .distinct()
             .order_by("-date")
@@ -163,6 +182,8 @@ class OrganisationDetailView(DetailViewWithContext):
 
 
 class EmployeeDetailView(DetailViewWithContext):
+    """Detail view for employee."""
+
     model = Employee
 
     def get_queryset(self):
@@ -175,6 +196,8 @@ class EmployeeDetailView(DetailViewWithContext):
 
 
 class PlaceDetailView(FilteredSingleTableView):
+    """Detail view for place."""
+
     model = Exam
     table_class = PlaceWithExamsTable
     filter_class = PlaceWithExamsFilter
@@ -196,35 +219,50 @@ class PlaceDetailView(FilteredSingleTableView):
 
 
 class DateListView(ListView):
+    """List view for dates."""
+
     model = Date
 
 
 class DateDetailView(DetailView):
+    """Detail view for a date."""
+
     model = Date
 
 
 class LevelListView(ListView):
+    """List view for levels."""
+
     model = Level
 
 
 class LevelDetailView(DetailView):
+    """Detail view for a level."""
+
     model = Level
 
 
 class PositionListView(ListView):
+    """List view for positions."""
+
     model = Position
 
 
 class PositionDetailView(DetailView):
+    """Detail view for a position."""
+
     model = Position
 
 
 class ExamDetailView(DetailView):
+    """Detail view for an exam."""
+
     model = Exam
 
 
 @staff_member_required
 def update_db_view(request):
+    """Update database."""
     if request.method == "POST":
         # noinspection PyBroadException
         try:
@@ -233,13 +271,14 @@ def update_db_view(request):
                 messages.info(request, "База данных обновлена!")
             else:
                 messages.info(request, "Изменений нет!")
-        except Exception:
+        except Exception:  # noqa: BLE001
             messages.error(request, sys.exc_info())
     return redirect(reverse("admin:index"))
 
 
 @staff_member_required
 def clear_caches_view(request):
+    """Clear all caches."""
     if request.method == "POST":
         # noinspection PyBroadException
         try:
@@ -247,6 +286,6 @@ def clear_caches_view(request):
 
             res = cache.clear()
             messages.info(request, f"Кэш очищен! Удалено ключей: {res}")
-        except Exception:
+        except Exception:  # noqa: BLE001
             messages.error(request, sys.exc_info())
     return redirect(reverse("admin:index"))

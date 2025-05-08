@@ -22,13 +22,14 @@ if settings.OTEL_TRACING_ENABLED and settings.OTEL_EXPORTER_OTLP_ENDPOINT:
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
     def post_fork(_, worker):
+        """Configure opentelemetry after forking worker processes."""
         resource = Resource.create(
             attributes={
                 SERVICE_NAME: settings.OTEL_SERVICE_NAME,
                 DEPLOYMENT_ENVIRONMENT: settings.OTEL_DEPLOYMENT_ENVIRONMENT,
                 SERVICE_INSTANCE_ID: str(uuid4()),
                 "worker": worker.pid,
-            }
+            },
         )
 
         tracer_provider = TracerProvider(resource=resource)
@@ -39,5 +40,5 @@ if settings.OTEL_TRACING_ENABLED and settings.OTEL_EXPORTER_OTLP_ENDPOINT:
             MeterProvider(
                 resource=resource,
                 metric_readers=[PeriodicExportingMetricReader(OTLPMetricExporter())],
-            )
+            ),
         )

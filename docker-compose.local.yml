@@ -19,11 +19,12 @@ services:
       context: .
       dockerfile: .docker/django/Dockerfile
       args:
-        - BUILD_ENVIRONMENT=local
+        UV_ARGS: --dev --group=test
     command: >
-      python /app/gia-api/manage.py runserver_plus 0.0.0.0:8000
+      python -Xfrozen_modules=off /app/gia-api/manage.py runserver_plus 0.0.0.0:8000
     ports:
       - "8000:8000"
+      - "5678:5678"  # debugpy
     volumes:
       - ".:/app:z"
     depends_on:

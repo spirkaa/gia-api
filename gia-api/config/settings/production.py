@@ -21,11 +21,13 @@ STORAGES = {
 # https://docs.djangoproject.com/en/dev/howto/deployment/checklist/#run-manage-py-check-deploy
 USE_X_FORWARDED_HOST = env.bool("DJANGO_USE_X_FORWARDED_HOST", default=False)
 SECURE_PROXY_SSL_HEADER = env.tuple(
-    "DJNAGO_SECURE_PROXY_SSL_HEADER", default=("HTTP_X_FORWARDED_PROTO", "https")
+    "DJNAGO_SECURE_PROXY_SSL_HEADER",
+    default=("HTTP_X_FORWARDED_PROTO", "https"),
 )
 SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=False)
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
-    "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True
+    "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF",
+    default=True,
 )
 SECURE_BROWSER_XSS_FILTER = env.bool("DJANGO_SECURE_BROWSER_XSS_FILTER", default=True)
 SESSION_COOKIE_SECURE = env.bool("DJANGO_SESSION_COOKIE_SECURE", default=True)
@@ -37,7 +39,8 @@ X_FRAME_OPTIONS = env.str("DJNAGO_X_FRAME_OPTIONS", default="DENY")
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
 DJMAIL_REAL_BACKEND = env.str(
-    "DJANGO_DJMAIL_REAL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
+    "DJANGO_DJMAIL_REAL_BACKEND",
+    default="django.core.mail.backends.smtp.EmailBackend",
 )
 EMAIL_USE_TLS = env.bool("DJANGO_EMAIL_USE_TLS", default=True)
 EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
@@ -69,7 +72,7 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
         },
-    }
+    },
 }
 
 CACHEOPS_REDIS = env.str("DJANGO_CACHE_URL")
@@ -90,5 +93,6 @@ CACHE_MIDDLEWARE_SECONDS = 60 * 60 * 24
 RESPONSE_CACHE_SECONDS = 60 * 10
 
 OTEL_DEPLOYMENT_ENVIRONMENT = env.str(
-    "OTEL_DEPLOYMENT_ENVIRONMENT", default="production"
+    "OTEL_DEPLOYMENT_ENVIRONMENT",
+    default="production",
 )

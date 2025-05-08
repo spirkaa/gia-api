@@ -4,8 +4,10 @@ from django.urls import reverse
 
 
 class SitesDomainAccountAdapter(DefaultAccountAdapter):
+    """Account adapter with support for custom domains."""
+
     def get_email_confirmation_url(self, request, emailconfirmation):
-        """Constructs the email confirmation (activation) url.
+        """Construct the email confirmation (activation) url.
 
         Note that if you have architected your system such that email
         confirmations are sent outside of the request context `request`
