@@ -34,7 +34,7 @@ dependencies = [
   "gunicorn==23.0.0",
   "hiredis==3.1.0",
   "lxml==5.4.0",
-  "minify-html==0.15.0",                           # https://github.com/wilsonzlin/minify-html/issues/225
+  "minify-html==0.16.4",                           # https://github.com/wilsonzlin/minify-html/issues/225
   "openpyxl==3.1.5",
   "opentelemetry-exporter-otlp==1.32.1",
   "opentelemetry-instrumentation-django==0.53b1",

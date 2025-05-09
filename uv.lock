@@ -695,7 +695,7 @@ requires-dist = [
     { name = "gunicorn", specifier = "==23.0.0" },
     { name = "hiredis", specifier = "==3.1.0" },
     { name = "lxml", specifier = "==5.4.0" },
-    { name = "minify-html", specifier = "==0.15.0" },
+    { name = "minify-html", specifier = "==0.16.4" },
     { name = "openpyxl", specifier = "==3.1.5" },
     { name = "opentelemetry-exporter-otlp", specifier = "==1.32.1" },
     { name = "opentelemetry-instrumentation-django", specifier = "==0.53b1" },
@@ -1015,9 +1015,16 @@ wheels = [
 
 [[package]]
 name = "minify-html"
-version = "0.15.0"
+version = "0.16.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0b/8a/c921cd4b3e364c871be418c1694b315e5fa823eb8180d89f99d9a61aa8fe/minify_html-0.15.0.tar.gz", hash = "sha256:cf4c36b6f9af3b0901bd2a0a29db3b09c0cdf0c38d3dde28e6835bce0f605d37", size = 96948, upload-time = "2023-12-24T09:47:27.877Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/97/3dcc995a2b84b04826160b4918c21cf77a735aa336d8b3137f613430995f/minify_html-0.16.4.tar.gz", hash = "sha256:dd48c8ff9661a1034762402a7411b3168867a973f8fc78b09f67e81820b64d22", size = 92052, upload-time = "2025-03-22T15:29:11.877Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d5/fb/ecf699bc514c3778db34cdabd50481af7b8fa52273ca252efdd978069b86/minify_html-0.16.4-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:070301c99a5200098b587d31358944da8e67af1d6891f2601c4f7c1c6ccc7aa8", size = 2369967, upload-time = "2025-03-22T15:56:55.274Z" },
+    { url = "https://files.pythonhosted.org/packages/77/3b/994668484ed677b09b3bbe2ce29faa9ac9b9d6ff77db565cd2b7f83ab260/minify_html-0.16.4-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:fdd88cfcbe5fe3f7a5a0d606190391050085d033c52a48faf343f8689e412e73", size = 2172423, upload-time = "2025-03-22T15:39:43.504Z" },
+    { url = "https://files.pythonhosted.org/packages/e0/37/e233e7c0e999539efd3597be46443fc5e42b9cb10fa0d35a096ff710c606/minify_html-0.16.4-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ce449bcdb8fd7894503bf88b676629c40cc257882adacf2e5b08b67134590db4", size = 2223115, upload-time = "2025-03-22T15:29:30.517Z" },
+    { url = "https://files.pythonhosted.org/packages/d3/2b/f2b4de849fdb257d669b2593e8071aed793fedb7340412c0a472a75db70f/minify_html-0.16.4-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:37f7c61cb332bf23254598644d54a34af0fb54fd043aec361eb86c7c537c7020", size = 2460819, upload-time = "2025-03-22T15:31:11.027Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/4c/f6488f87431442e5f5e4dadc64ab1f64d72aa107a303aaa7599063e46d65/minify_html-0.16.4-cp313-cp313-win_amd64.whl", hash = "sha256:8cdc3bdc15fc74910aea5ea428fc5c89664a7d3d91c03ae1763761a4442b8a81", size = 2443987, upload-time = "2025-03-22T15:36:36.741Z" },
+]
 
 [[package]]
 name = "nodeenv"
