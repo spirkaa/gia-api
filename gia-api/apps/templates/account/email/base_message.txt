@@ -1,5 +1,5 @@
 {% load i18n %}{% autoescape off %}
-{% block content %}{% endblock %}
+{% block content %}{% endblock content %}
 
 {{ current_site.name }}
 {% endautoescape %}

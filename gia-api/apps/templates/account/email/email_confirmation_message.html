@@ -3,4 +3,5 @@
 {% load i18n %}
 {% block title %}Пожалуйста подтвердите ваш e-mail адрес{% endblock %}
 {% block content %}{% autoescape off %}<p>Вы получили это письмо, потому что кто-то указал этот адрес электронной почты при регистрации.</p>
-        <p>Чтобы подтвердить его, перейдите по ссылке <a href="{{ activate_url }}">{{ activate_url }}</a></p>{% endautoescape %}{% endblock %}
+        <p>{% if code %}{% blocktranslate %}Your email verification code is listed below. Please enter it in your open browser window.{% endblocktranslate %}
+        <p>{{ code }}</p>{% else %}Чтобы подтвердить его, перейдите по ссылке <a href="{{ activate_url }}">{{ activate_url }}</a></p>{% endif %}{% endautoescape %}{% endblock content %}
