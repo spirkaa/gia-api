@@ -41,7 +41,7 @@ dependencies = [
   "opentelemetry-instrumentation-psycopg==0.54b0",
   "opentelemetry-instrumentation-redis==0.54b0",
   "opentelemetry-sdk==1.33.0",
-  "psycopg[binary]==3.2.7",
+  "psycopg[binary]==3.2.9",
   "redis==6.0.0",
   "requests==2.32.3",
   "stamina==25.1.0",
