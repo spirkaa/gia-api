@@ -224,14 +224,8 @@ def load_sheet_data(file_path: Path) -> tuple:
     wb = load_workbook(file_path)
     sheet_mark = "список"
     sheet_count = 0
+    sheet_name = ""
     for name in wb.sheetnames:
-        if sheet_count > 0:
-            msg = (
-                f"{file_path.name}: "
-                f"there are more than 1 sheet with {sheet_mark} in first row"
-            )
-            raise InvalidFileError(msg)
-
         ws = wb[name]
         try:
             first_row = next(ws.rows)
@@ -240,6 +234,18 @@ def load_sheet_data(file_path: Path) -> tuple:
             continue
         if (first_cell := first_row[0].value) and sheet_mark in str(first_cell).lower():
             sheet_count += 1
+            sheet_name = name
+
+    if sheet_count > 1:
+        msg = f"{file_path.name}: there are more than 1 sheet with '{sheet_mark}' in first row"
+        raise InvalidFileError(msg)
+
+    if not sheet_name:
+        msg = f"{file_path.name}: there is no sheet with '{sheet_mark}' in first row"
+        raise InvalidFileError(msg)
+
+    ws = wb[sheet_name]
+    first_row = next(ws.rows)
 
     if len(first_row) < 7:  # noqa: PLR2004
         msg = f"{file_path.name}: wrong number of columns"

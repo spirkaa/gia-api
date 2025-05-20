@@ -38,8 +38,9 @@ def xlsx_file(settings):
 
 @pytest.fixture(
     params=[
-        "2020-06-13__11__bad_many_data_sheets.xlsx",
         "2020-06-13__11__bad_missing_column.xlsx",
+        "2020-06-13__11__bad_missing_data.xlsx",
+        "2020-06-13__11__bad_many_data_sheets.xlsx",
     ],
 )
 def xlsx_file_bad(settings, request):
