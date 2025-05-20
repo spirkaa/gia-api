@@ -114,7 +114,10 @@ def test_load_sheet_data(xlsx_file):
     """Test Parser - Load Sheet Data."""
 
     res = xlsx_to_csv.load_sheet_data(xlsx_file)
-    assert isinstance(res[0][0].value, int)
+    # column header
+    assert isinstance(res[0][0].value, str)
+    # row counter
+    assert isinstance(res[1][0].value, int)
 
 
 def test_load_sheet_data_if_file_is_bad(xlsx_file_bad):

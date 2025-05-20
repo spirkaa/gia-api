@@ -30,10 +30,14 @@ DIFF_FILES = [
 ]
 
 
-@pytest.fixture
-def xlsx_file(settings):
-    filename = "2020-06-13__11__.xlsx"
-    return Path(settings.APPS_DIR) / "rcoi" / "tests" / "xlsx" / filename
+@pytest.fixture(
+    params=[
+        "2020-06-13__11__good.xlsx",
+        "2020-06-13__11__good_msu.xlsx",
+    ],
+)
+def xlsx_file(settings, request):
+    return Path(settings.APPS_DIR) / "rcoi" / "tests" / "xlsx" / request.param
 
 
 @pytest.fixture(

@@ -23,6 +23,15 @@ SPACES = re.compile(r"(?<=[.,:;!№?])(?![.,:;!№?\s])|(?<=\w)(?=№)|\s+")
 """regexp for (after punctuation marks | before "№" | whitespace chars)"""
 
 COLUMN_HEADERS = [
+    "№ п/п",
+    "код ппэ",
+    "наименование ппэ",
+    "адрес ппэ",
+    "должность в ппэ",
+    "ф. и. о.",
+    "место работы",
+]
+COLUMN_HEADERS_CSV = [
     "datafile",
     "date",
     "level",
@@ -179,15 +188,29 @@ def format_org_name(value: str) -> str:
     return value
 
 
-def format_cell(cell_num: int, cell_value: str) -> str:
-    """Format cell value."""
-    cell_org_name = (2, 6)
-    cell_employee_name = (5,)
+def format_cell(col_name: str, cell_value: str) -> str:
+    """Format cell value based on logical column name."""
+    org_columns = {"наименование ппэ", "место работы"}
+    employee_columns = {"ф. и. о."}
     result = cleanup_value(cell_value)
-    if cell_num in cell_org_name:
+    if col_name in org_columns:
         result = format_org_name(result)
-    if cell_num in cell_employee_name:
+    if col_name in employee_columns:
         result = format_employee_name(result)
+    return result
+
+
+def get_cell_indexes(header_row: tuple) -> dict:
+    """Map COLUMN_HEADERS to actual column indexes in the sheet."""
+    header_map = {
+        cleanup_value(cell.value).lower(): idx for idx, cell in enumerate(header_row)
+    }
+    result = {}
+    for col in COLUMN_HEADERS:
+        for key, idx in header_map.items():
+            if col in key:
+                result[col] = idx
+                break
     return result
 
 
@@ -202,17 +225,21 @@ def parse_sheet_data(data: tuple, filename: str) -> list:
         len(data),
     )
 
+    header_row = data[0]
+    cell_indexes = get_cell_indexes(header_row)
+
     result = []
-    for row in data:
+    for row in data[1:]:
         # process only rows where first cell (row counter) is int (1, 2, 3...) or float (5.333, 8.833...)
         if not isinstance(row[0].value, int | float):
             continue
         parsed_row = [filename, exam_date, exam_level]
         # skip first cell (row counter)
-        for cell_num in range(1, len(row)):
-            cell = row[cell_num].value
+        for col in COLUMN_HEADERS[1:]:
+            idx = cell_indexes.get(col)
+            cell = row[idx].value if idx is not None else None
             if cell:
-                cell = format_cell(cell_num, cell)
+                cell = format_cell(col, cell)
             # append any cell values, including None
             parsed_row.append(cell)
         result.append(parsed_row)
@@ -245,22 +272,21 @@ def load_sheet_data(file_path: Path) -> tuple:
         raise InvalidFileError(msg)
 
     ws = wb[sheet_name]
-    first_row = next(ws.rows)
 
+    first_row = next(ws.rows)
     if len(first_row) < 7:  # noqa: PLR2004
         msg = f"{file_path.name}: wrong number of columns"
         raise InvalidFileError(msg)
 
-    header_rows_count = 2
-    sheet_data_without_headers = tuple(ws.iter_rows(min_row=1 + header_rows_count))
-    return sheet_data_without_headers  # noqa: RET504
+    sheet_data_without_title = tuple(ws.iter_rows(min_row=2))
+    return sheet_data_without_title  # noqa: RET504
 
 
 def save_to_csv(csv_file: Path) -> None:
     """Save list of rows to CSV in local file."""
     with csv_file.open("w+", newline="", encoding="utf-8") as fp:
         a = csv.writer(fp, delimiter=";")
-        a.writerow(COLUMN_HEADERS)
+        a.writerow(COLUMN_HEADERS_CSV)
 
     parent_dir = Path(csv_file).parent
     for exam_file in parent_dir.glob("*.xlsx"):
@@ -277,7 +303,7 @@ def save_to_stream(path: Path) -> StringIO:
     """Save list of rows to CSV in string buffer (memory file)."""
     stream = StringIO()
     writer = csv.writer(stream, delimiter="\t", quotechar="'")
-    writer.writerow(COLUMN_HEADERS)
+    writer.writerow(COLUMN_HEADERS_CSV)
 
     for exam_file in path.glob("*.xlsx"):
         if not (sheet_data := load_sheet_data(exam_file)):
