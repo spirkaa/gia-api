@@ -31,21 +31,21 @@ CACHE_MIDDLEWARE = [
     "django_brotli.middleware.BrotliMiddleware",
     "django.middleware.http.ConditionalGetMiddleware",
 ]
-MIDDLEWARE = MIDDLEWARE[:2] + CACHE_MIDDLEWARE + MIDDLEWARE[2:]
+MIDDLEWARE = [*MIDDLEWARE[:2], *CACHE_MIDDLEWARE, *MIDDLEWARE[2:]]
 
 if DEBUG and DEBUG_TOOLBAR:
     # django-debug-toolbar must be after all cache
-    MIDDLEWARE = (
-        MIDDLEWARE[:-2]
-        + ["django.middleware.cache.FetchFromCacheMiddleware"]
-        + MIDDLEWARE[-2:]
-    )
+    MIDDLEWARE = [
+        *MIDDLEWARE[:-2],
+        "django.middleware.cache.FetchFromCacheMiddleware",
+        *MIDDLEWARE[-2:],
+    ]
 else:
-    MIDDLEWARE = (
-        MIDDLEWARE[:-1]
-        + ["django.middleware.cache.FetchFromCacheMiddleware"]
-        + MIDDLEWARE[-1:]
-    )
+    MIDDLEWARE = [
+        *MIDDLEWARE[:-1],
+        "django.middleware.cache.FetchFromCacheMiddleware",
+        *MIDDLEWARE[-1:],
+    ]
 
 CACHES = {
     "default": {
