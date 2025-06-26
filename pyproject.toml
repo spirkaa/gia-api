@@ -22,7 +22,7 @@ dependencies = [
   "django-extensions==4.1",
   "django-filter==25.1",
   "django-minify-html==1.12.0",
-  "django-prometheus==2.4.0",
+  "django-prometheus==2.4.1",
   "django-redis==6.0.0",
   "django-tables2==2.7.5",
   "djangorestframework==3.16.0",
