@@ -27,7 +27,7 @@ dependencies = [
   "django-tables2==2.7.5",
   "djangorestframework==3.16.0",
   "djangorestframework-filters==1.0.0.dev2",
-  "djangorestframework-simplejwt==5.5.0",
+  "djangorestframework-simplejwt==5.5.1",
   "djmail==2.0.0",
   "drf-extensions==0.8.0",
   "drf-spectacular==0.28.0",
