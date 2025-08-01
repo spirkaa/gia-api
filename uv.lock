@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 
 [[package]]
@@ -281,14 +281,14 @@ sdist = { url = "https://files.pythonhosted.org/packages/9d/a3/00aa9d5bb5df4f746
 
 [[package]]
 name = "django-bootstrap3"
-version = "25.1"
+version = "25.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/90/24/22bf685630175f239e8dcb55a69f364cbd65389677eea9f5960ae2b97e8d/django_bootstrap3-25.1.tar.gz", hash = "sha256:56374e185915e20733df98cb9fae0291c9e0fae3d06e1421dd85b6a7546ce6f2", size = 107440, upload-time = "2025-02-28T10:08:45.026Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/27/8b/a62a53b53275ff9b7e8c207a1dffafbfb6727d9f55fcbc0b37abede95ea7/django_bootstrap3-25.2.tar.gz", hash = "sha256:79b886c1dbd6600650bc5bc046e532c98887c19ea1de8b7138a00fcfeb74a500", size = 112399, upload-time = "2025-07-31T06:49:51.24Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/dd/827554687745f932c734b84da8ea759e17f70cfeb37697c4c81538a30074/django_bootstrap3-25.1-py3-none-any.whl", hash = "sha256:6a5d7f4159488a48b172512237eb7de46bf54d193f379d6a014650d0d5cea066", size = 24107, upload-time = "2025-02-28T10:08:42.878Z" },
+    { url = "https://files.pythonhosted.org/packages/a4/52/630b2d5458a0e4e6a415e98ac6a713676bd9f648bf91b0e023bff3ae4133/django_bootstrap3-25.2-py3-none-any.whl", hash = "sha256:314ee145a69af5d52f77e41a67a6d93dcb30870454e34858ca74bd42f789fb06", size = 24292, upload-time = "2025-07-31T06:49:49.385Z" },
 ]
 
 [[package]]
@@ -663,7 +663,7 @@ requires-dist = [
     { name = "dj-rest-auth", specifier = "==7.0.1" },
     { name = "django", specifier = "==5.2.3" },
     { name = "django-allauth", specifier = "==65.9.0" },
-    { name = "django-bootstrap3", specifier = "==25.1" },
+    { name = "django-bootstrap3", specifier = "==25.2" },
     { name = "django-brotli", specifier = "==0.3.0" },
     { name = "django-cacheops", specifier = "==7.2" },
     { name = "django-cors-headers", specifier = "==4.7.0" },
