@@ -50,7 +50,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "debugpy==1.8.14",
+  "debugpy==1.8.16",
   "django-browser-reload==1.18.0",
   "django-debug-toolbar==5.2.0",
   "ipdb==0.13.13",
