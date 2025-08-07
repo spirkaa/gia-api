@@ -10,7 +10,7 @@ dependencies = [
   "brotlipy==0.7.0",
   "crispy-bootstrap3==2024.1",
   "dj-rest-auth==7.0.1",
-  "django==5.2.3",
+  "django==5.2.5",
   "django-allauth==65.9.0",
   "django-bootstrap3==25.1",
   "django-brotli==0.3.0",
