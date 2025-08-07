@@ -25,7 +25,7 @@ dependencies = [
   "django-prometheus==2.4.0",
   "django-redis==6.0.0",
   "django-tables2==2.7.5",
-  "djangorestframework==3.16.0",
+  "djangorestframework==3.16.1",
   "djangorestframework-filters==1.0.0.dev2",
   "djangorestframework-simplejwt==5.5.0",
   "djmail==2.0.0",
