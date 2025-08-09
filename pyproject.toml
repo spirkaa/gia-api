@@ -68,7 +68,7 @@ test = [
   "pytest-randomly==3.16.0",
   "pytest-responses==0.5.1",
   "pytest-sugar==1.0.0",
-  "responses==0.25.7",
+  "responses==0.25.8",
 ]
 
 [tool.pytest.ini_options]
