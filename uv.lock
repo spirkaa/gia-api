@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 
 [[package]]
@@ -271,13 +271,13 @@ wheels = [
 
 [[package]]
 name = "django-allauth"
-version = "65.9.0"
+version = "65.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9d/a3/00aa9d5bb5df4f7464495675074dc11107c08b3eea3462fb3edc059d71e1/django_allauth-65.9.0.tar.gz", hash = "sha256:a06bca9974df44321e94c33bcf770bb6f924d1a44b57defbce4d7ec54a55483e", size = 1710514, upload-time = "2025-06-01T19:21:07.771Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ba/7a/29d515bc66f13bdbe0d52ee93a384f47d863010cd1a750fed6c928e5d85c/django_allauth-65.11.0.tar.gz", hash = "sha256:d08ee0b60a1a54f84720bb749518628c517c9af40b6cfb3bc980206e182745ab", size = 1914618, upload-time = "2025-08-15T10:10:38.318Z" }
 
 [[package]]
 name = "django-bootstrap3"
@@ -662,7 +662,7 @@ requires-dist = [
     { name = "crispy-bootstrap3", specifier = "==2024.1" },
     { name = "dj-rest-auth", specifier = "==7.0.1" },
     { name = "django", specifier = "==5.2.3" },
-    { name = "django-allauth", specifier = "==65.9.0" },
+    { name = "django-allauth", specifier = "==65.11.0" },
     { name = "django-bootstrap3", specifier = "==25.1" },
     { name = "django-brotli", specifier = "==0.3.0" },
     { name = "django-cacheops", specifier = "==7.2" },
