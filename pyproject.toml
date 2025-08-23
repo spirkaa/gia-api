@@ -33,7 +33,7 @@ dependencies = [
   "drf-spectacular==0.28.0",
   "gunicorn==23.0.0",
   "hiredis==3.2.1",
-  "lxml==5.4.0",
+  "lxml==6.0.1",
   "minify-html==0.15.0",                           # https://github.com/wilsonzlin/minify-html/issues/225
   "openpyxl==3.1.5",
   "opentelemetry-exporter-otlp==1.34.1",
