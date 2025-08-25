@@ -6,7 +6,7 @@ requires-python = ">=3.13"
 dynamic = ["version"]
 
 dependencies = [
-  "beautifulsoup4==4.13.4",
+  "beautifulsoup4==4.13.5",
   "brotlipy==0.7.0",
   "crispy-bootstrap3==2024.1",
   "dj-rest-auth==7.0.1",
