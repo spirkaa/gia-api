@@ -10,20 +10,11 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 
 SHELL [ "/bin/bash", "-euxo", "pipefail", "-c" ]
 
-# https://github.com/wilsonzlin/minify-html/issues/225
-RUN apt-get update \
-    && apt-get install -y --no-install-suggests --no-install-recommends \
-        curl \
-    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
 ARG UV_ARGS=--no-dev
 
 COPY pyproject.toml uv.lock /
 
-# https://github.com/wilsonzlin/minify-html/issues/225
-# hadolint ignore=SC1091
-RUN . "/root/.cargo/env" \
-    && uv sync --locked ${UV_ARGS}
+RUN uv sync --locked ${UV_ARGS}
 
 
 FROM ${RUNTIME_IMAGE} AS runtime
