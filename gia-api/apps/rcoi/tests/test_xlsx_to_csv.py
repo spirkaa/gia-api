@@ -10,7 +10,7 @@ from apps.rcoi import xlsx_to_csv
 
 def test_prepare_file_info():
     """Test Parser - Prepare File Info."""
-    url = "http://rcoi.mcko.ru/"
+    url = "https://rcoi.mcko.ru/"
     filename = "rab_ppe_test.xlsx"
     exam_url = f"{url}/{filename}"
     exam_date = str(date(2020, 6, 1))
@@ -43,7 +43,7 @@ def test_prepare_file_info():
 )
 def test_get_files_info(level, filename):
     """Test Parser - Get Files Info."""
-    url = "http://rcoi.mcko.ru/"
+    url = "https://rcoi.mcko.ru/"
     fmt_url = f"{url}{level}/"
     file_url = f"{fmt_url}{filename}"
     size = "1024000"

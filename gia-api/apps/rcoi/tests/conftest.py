@@ -10,7 +10,7 @@ from apps.rcoi import xlsx_to_csv
 
 EXAM_FILE = {
     "name": "2020-06-13__11__.xlsx",
-    "url": "http://rcoi.mcko.ru/2020-06-13__11__rab_ppe_test.xlsx",
+    "url": "https://rcoi.mcko.ru/2020-06-13__11__rab_ppe_test.xlsx",
     "size": "1024000",
     "last_modified": datetime.datetime(2020, 5, 15, 16, 23, 42),
 }
@@ -23,7 +23,7 @@ DIFF_FILES = [
     EXAM_FILE,
     {
         "name": "2020-06-14__11__.xlsx",
-        "url": "http://rcoi.mcko.ru/2020-06-14__11__rab_ppe_test.xlsx",
+        "url": "https://rcoi.mcko.ru/2020-06-14__11__rab_ppe_test.xlsx",
         "size": "2048000",
         "last_modified": datetime.datetime(2020, 5, 16, 0, 0, 0),
     },

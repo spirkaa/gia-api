@@ -40,7 +40,7 @@ def test_exam_import_post(admin_client, mocker_exam_importer):
     data = {
         "date": date.pk,
         "level": level.pk,
-        "datafile_url": "http://rcoi.mcko.ru/file_test.xlsx",
+        "datafile_url": "https://rcoi.mcko.ru/file_test.xlsx",
     }
     resp = admin_client.post(url, data=data)
     all_messages = list(get_messages(resp.wsgi_request))
@@ -53,7 +53,7 @@ def test_exam_import_post(admin_client, mocker_exam_importer):
 @pytest.mark.parametrize(
     ("datafile_url", "assertion"),
     [
-        ("http://rcoi.mcko.ru/wrong_ext.zip", "Ссылка должна заканчиваться"),
+        ("https://rcoi.mcko.ru/wrong_ext.zip", "Ссылка должна заканчиваться"),
         ("http://test.com/file_test.xlsx", "Ссылка должна вести на сайт"),
     ],
 )

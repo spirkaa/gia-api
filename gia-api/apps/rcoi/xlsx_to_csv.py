@@ -321,12 +321,12 @@ def main():
     path.mkdir(parents=True, exist_ok=True)
     csv_file = path.joinpath(f"{path}.csv")
     urls = [
-        "http://rcoi.mcko.ru/organizers/schedule/oge/?period=1",
-        "http://rcoi.mcko.ru/organizers/schedule/ege/?period=1",
-        "http://rcoi.mcko.ru/organizers/schedule/oge/?period=2",
-        "http://rcoi.mcko.ru/organizers/schedule/ege/?period=2",
-        "http://rcoi.mcko.ru/organizers/schedule/oge/?period=3",
-        "http://rcoi.mcko.ru/organizers/schedule/ege/?period=3",
+        "https://rcoi.mcko.ru/organizers/schedule/oge/?period=1",
+        "https://rcoi.mcko.ru/organizers/schedule/ege/?period=1",
+        "https://rcoi.mcko.ru/organizers/schedule/oge/?period=2",
+        "https://rcoi.mcko.ru/organizers/schedule/ege/?period=2",
+        "https://rcoi.mcko.ru/organizers/schedule/oge/?period=3",
+        "https://rcoi.mcko.ru/organizers/schedule/ege/?period=3",
     ]
     with ThreadPool(4) as pool:
         files_info = pool.map(get_files_info, urls)
