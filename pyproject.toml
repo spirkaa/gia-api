@@ -33,7 +33,7 @@ dependencies = [
   "drf-spectacular==0.29.0",
   "gunicorn==23.0.0",
   "hiredis==3.3.0",
-  "lxml==6.0.2",
+  "lxml==6.1.0",
   "openpyxl==3.1.5",
   "opentelemetry-exporter-otlp==1.38.0",
   "opentelemetry-instrumentation-django==0.59b0",
