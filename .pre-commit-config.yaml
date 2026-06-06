@@ -18,11 +18,11 @@ repos:
       - id: check-json
         exclude: .vscode
   - repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.29.1
+    rev: 1.30.0
     hooks:
       - id: django-upgrade
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.3
+    rev: v0.15.16
     hooks:
       - id: ruff-check
         args: [--fix, --exit-non-zero-on-fix]
