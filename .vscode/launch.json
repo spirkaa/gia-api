@@ -27,7 +27,8 @@
       "console": "integratedTerminal",
       "justMyCode": true,
       "env": {
-        "PYTEST_ADDOPTS": "--no-cov"
+        "PYTEST_ADDOPTS": "--no-cov",
+        "DJANGO_DEBUG_TOOLBAR": "False"
       }
     }
   ]
