@@ -1,7 +1,7 @@
 # hadolint global ignore=DL3006,DL3008,DL3013
 
-ARG BUILD_IMAGE=ghcr.io/astral-sh/uv:python3.13-bookworm
-ARG RUNTIME_IMAGE=ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+ARG BUILD_IMAGE=ghcr.io/astral-sh/uv:python3.13-trixie
+ARG RUNTIME_IMAGE=ghcr.io/astral-sh/uv:python3.13-trixie-slim
 
 FROM ${BUILD_IMAGE} AS build
 
