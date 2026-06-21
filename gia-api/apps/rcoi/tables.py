@@ -45,6 +45,7 @@ class PlaceTable(tables.Table):
         template_name="rcoi/cols/place.html",
         verbose_name="",
         attrs={"td": {"data-title": "ППЭ"}},
+        order_by="name",
     )
 
     class Meta:

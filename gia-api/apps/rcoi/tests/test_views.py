@@ -162,6 +162,17 @@ def test_view_place_detail_404(client):
     assert resp.status_code == HTTPStatus.NOT_FOUND
 
 
+def test_view_place_sort_by_place_column(client):
+    """
+    Test View - Place - sort by template column doesn't raise FieldError
+    """
+    G(models.Place, name="Place A")
+    G(models.Place, name="Place B")
+    url = reverse("rcoi:place")
+    resp = client.get(url, {"sort": "place"})
+    assert resp.status_code == HTTPStatus.OK
+
+
 def test_view_exam_detail(client):
     """
     Test View - Exam - Detail
