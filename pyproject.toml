@@ -58,7 +58,7 @@ dev = [
   "werkzeug[watchdog]==3.1.8",
 ]
 test = [
-  "coverage==7.14.2",
+  "coverage==7.14.3",
   "django-dynamic-fixture==4.0.1",
   "pytest==9.1.1",
   "pytest-cov==7.1.0",
