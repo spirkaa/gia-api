@@ -20,7 +20,7 @@ dependencies = [
   "django-decorator-include==3.3",
   "django-environ==0.14.0",
   "django-extensions==4.1",
-  "django-filter==25.2",
+  "django-filter==26.1",
   "django-minify-html==1.14.0",
   "django-prometheus==2.5.0",
   "django-redis==7.0.0",
