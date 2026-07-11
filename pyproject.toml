@@ -54,7 +54,7 @@ dev = [
   "django-debug-toolbar==7.0.0",
   "ipdb==0.13.13",
   "pre-commit==4.6.0",
-  "pylint-django==2.7.0",
+  "pylint-django==2.8.0",
   "werkzeug[watchdog]==3.1.8",
 ]
 test = [
