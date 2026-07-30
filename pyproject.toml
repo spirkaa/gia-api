@@ -16,7 +16,7 @@ dependencies = [
   "django-brotli==0.4.0",
   "django-cacheops==7.2",
   "django-cors-headers==4.9.0",
-  "django-crispy-forms==2.6",
+  "django-crispy-forms==2.7",
   "django-decorator-include==3.3",
   "django-environ==0.14.0",
   "django-extensions==4.1",
