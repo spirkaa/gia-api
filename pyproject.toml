@@ -53,7 +53,7 @@ dev = [
   "django-browser-reload==1.21.0",
   "django-debug-toolbar==7.0.0",
   "ipdb==0.13.13",
-  "pre-commit==4.6.0",
+  "pre-commit==4.6.2",
   "pylint-django==2.7.0",
   "werkzeug[watchdog]==3.1.8",
 ]
