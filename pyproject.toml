@@ -24,7 +24,7 @@ dependencies = [
   "django-minify-html==1.14.0",
   "django-prometheus==2.5.0",
   "django-redis==7.0.0",
-  "django-tables2==3.0.0",
+  "django-tables2==3.0.1",
   "djangorestframework==3.17.1",
   "djangorestframework-filters==1.0.0.dev2",
   "djangorestframework-simplejwt==5.5.1",
