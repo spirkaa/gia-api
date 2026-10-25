@@ -39,7 +39,7 @@ pipeline {
   }
 
   stages {
-    stage('Run pre-commit and uv audit') {
+    stage('Run pre-commit') {
       agent {
         docker {
           image env.ANSIBLE_IMAGE
@@ -69,15 +69,6 @@ pipeline {
               exit 1
             }
           '''
-        }
-        script {
-          docker.image('ghcr.io/astral-sh/uv:python3.13-trixie-slim').withRun('-e UV_PYTHON_DOWNLOADS=never') { uvAudit ->
-            uvAudit.inside {
-              warnError {
-                sh 'uv audit --preview-features audit-command'
-              }
-            }
-          }
         }
       }
     }
@@ -203,6 +194,34 @@ pipeline {
         success {
           junit 'reports/junit.xml'
           recordCoverage tools: [[parser: 'COBERTURA', pattern: 'reports/cobertura-coverage.xml']]
+        }
+      }
+    }
+
+    stage('uv audit') {
+      when {
+        beforeAgent true
+        not {
+          anyOf {
+            expression { params.DEPLOY }
+            expression { params.BUMP_HELM }
+            tag ''
+          }
+        }
+      }
+      agent {
+        docker {
+          image 'ghcr.io/astral-sh/uv:python3.13-trixie-slim'
+          alwaysPull true
+          reuseNode true
+          args '-e UV_PYTHON_DOWNLOADS=never'
+        }
+      }
+      steps {
+        script {
+          warnError {
+            sh 'uv audit --preview-features audit-command'
+          }
         }
       }
     }
