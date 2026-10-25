@@ -219,12 +219,8 @@ pipeline {
       }
       steps {
         script {
-          def status = sh(
-            script: 'uv audit --preview-features audit-command',
-            returnStatus: true
-          )
-          if (status != 0) {
-            unstable('uv audit: known vulnerabilities found in uv.lock — build marked yellow')
+          warnError {
+            sh 'uv audit --preview-features audit-command'
           }
         }
       }
