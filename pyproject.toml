@@ -111,6 +111,8 @@ ignore = [
   "TD002",   # todo
   "TD003",   # todo
   "FIX002",  # todo
+  "CPY001",  # no per-file copyright headers in this project
+  "ICN001",  # import aliases
 ]
 
 [tool.ruff.lint.per-file-ignores]
