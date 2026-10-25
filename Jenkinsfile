@@ -219,7 +219,7 @@ pipeline {
       }
       steps {
         script {
-          warnError {
+          warnError(message: 'uv audit: known vulnerabilities found in uv.lock (details in stage log)') {
             sh 'uv audit --preview-features audit-command'
           }
         }
