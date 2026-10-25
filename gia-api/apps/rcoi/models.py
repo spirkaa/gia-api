@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import logging
 from pathlib import Path
 
@@ -211,7 +211,7 @@ class Subscription(TimeStampedModel):
         related_name="subscriptions",
         on_delete=models.CASCADE,
     )
-    last_send = models.DateTimeField(default=datetime.datetime(2017, 5, 1))  # noqa: DTZ001
+    last_send = models.DateTimeField(default=dt.datetime(2017, 5, 1))  # noqa: DTZ001
 
     class Meta:
         unique_together = (("user", "employee"),)
@@ -243,7 +243,7 @@ def send_subscriptions():
         }
         if new_exams:
             send_queue.setdefault(sub.user.email, []).append(context)
-            sub.last_send = datetime.datetime.now()  # noqa: DTZ005
+            sub.last_send = dt.datetime.now()  # noqa: DTZ005
             sub.save()
     if send_queue:
         adapter = get_adapter()
@@ -296,7 +296,7 @@ class RcoiUpdater:
         updated_files = []
         for file in files_info_flat:
             name = file["name"]
-            minutes_ago = datetime.datetime.now() - datetime.timedelta(minutes=5)  # noqa: DTZ005
+            minutes_ago = dt.datetime.now() - dt.timedelta(minutes=5)  # noqa: DTZ005
             try:
                 existing_file = DataFile.objects.get(name=name)
                 if existing_file.last_modified == file["last_modified"]:
@@ -344,12 +344,12 @@ class RcoiUpdater:
         logger.debug("cleanup unneeded exam rows from updated files")
         files = DataFile.objects.all()
         files_modified = files.filter(
-            modified__gte=datetime.datetime.now() - datetime.timedelta(minutes=5),  # noqa: DTZ005
+            modified__gte=dt.datetime.now() - dt.timedelta(minutes=5),  # noqa: DTZ005
         )
         exams = Exam.objects.all()
         to_delete = []
         for file in files_modified:
-            modified = file.modified - datetime.timedelta(minutes=5)
+            modified = file.modified - dt.timedelta(minutes=5)
             filtered = exams.filter(modified__lt=modified, datafile_id=file.id)
             if filtered.count() > 0:
                 to_delete.append(filtered)
@@ -624,7 +624,7 @@ def timestamp_list(data):
     :return: list of timestamped lists
     :rtype: list
     """
-    datetime_now = datetime.datetime.now()  # noqa: DTZ005
+    datetime_now = dt.datetime.now()  # noqa: DTZ005
     created = [datetime_now, datetime_now]
     data_list = []
     for row in data:

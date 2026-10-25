@@ -4,7 +4,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
-import datetime
+import datetime as dt
 
 import environ
 
@@ -324,7 +324,7 @@ REST_AUTH = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": dt.timedelta(days=7),
     "AUTH_HEADER_TYPES": (
         "JWT",
         "Bearer",

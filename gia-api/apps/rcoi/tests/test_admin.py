@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from http import HTTPStatus
 
 import pytest
@@ -18,7 +18,7 @@ def test_exam_import_get(admin_client):
     :param mocker_exam_importer:
     :return:
     """
-    date = G(models.Date, date=datetime.date(2019, 6, 5))
+    date = G(models.Date, date=dt.date(2019, 6, 5))
     url = reverse("admin:exam_import")
     resp = admin_client.get(url)
     content = resp.content
@@ -34,7 +34,7 @@ def test_exam_import_post(admin_client, mocker_exam_importer):
     :param mocker_exam_importer:
     :return:
     """
-    date = G(models.Date, date=datetime.date(2020, 6, 1))
+    date = G(models.Date, date=dt.date(2020, 6, 1))
     level = G(models.Level, level=123)
     url = reverse("admin:exam_import")
     data = {
@@ -69,7 +69,7 @@ def test_exam_import_post_fail(
     :param mocker_exam_importer:
     :return:
     """
-    date = G(models.Date, date=datetime.date(2020, 6, 1))
+    date = G(models.Date, date=dt.date(2020, 6, 1))
     level = G(models.Level, level=123)
     url = reverse("admin:exam_import")
     data = {"date": date.pk, "level": level.pk, "datafile_url": datafile_url}

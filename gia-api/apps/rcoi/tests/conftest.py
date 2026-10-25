@@ -1,5 +1,5 @@
 import csv
-import datetime
+import datetime as dt
 from io import StringIO
 from pathlib import Path
 
@@ -12,10 +12,10 @@ EXAM_FILE = {
     "name": "2020-06-13__11__.xlsx",
     "url": "https://rcoi.mcko.ru/2020-06-13__11__rab_ppe_test.xlsx",
     "size": "1024000",
-    "last_modified": datetime.datetime(2020, 5, 15, 16, 23, 42),
+    "last_modified": dt.datetime(2020, 5, 15, 16, 23, 42),
 }
 EXAM_FILE_DIFF_DATE = EXAM_FILE.copy()
-EXAM_FILE_DIFF_DATE.update({"last_modified": datetime.datetime(2020, 6, 1, 1, 1, 1)})
+EXAM_FILE_DIFF_DATE.update({"last_modified": dt.datetime(2020, 6, 1, 1, 1, 1)})
 
 SAME_FILE_DIFF_DATE = [EXAM_FILE, EXAM_FILE_DIFF_DATE]
 
@@ -25,7 +25,7 @@ DIFF_FILES = [
         "name": "2020-06-14__11__.xlsx",
         "url": "https://rcoi.mcko.ru/2020-06-14__11__rab_ppe_test.xlsx",
         "size": "2048000",
-        "last_modified": datetime.datetime(2020, 5, 16, 0, 0, 0),
+        "last_modified": dt.datetime(2020, 5, 16, 0, 0, 0),
     },
 ]
 

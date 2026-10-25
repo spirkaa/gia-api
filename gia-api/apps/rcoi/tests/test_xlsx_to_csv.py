@@ -96,17 +96,17 @@ def test_download_file(mocker):
     mocker.resetall()
 
 
-@pytest.mark.skip("need to fix")
 def test_download_file_if_exists(mocker):
     """Test Parser - Download File if exists."""
     url = "http://url"
     name = "name"
     path = Path("path")
+    get = mocker.patch.object(xlsx_to_csv.client, "get")
     mocker.patch.object(Path, "exists", return_value=True)
 
-    with pytest.raises(NotImplementedError):
-        xlsx_to_csv.download_file(url, name, path)
+    xlsx_to_csv.download_file(url, name, path)
 
+    get.assert_not_called()
     mocker.resetall()
 
 

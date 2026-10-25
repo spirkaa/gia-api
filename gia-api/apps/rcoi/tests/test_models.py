@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 from ddf import G
@@ -32,7 +32,7 @@ def test_date_str():
     """
     Test Model - Date - String representation
     """
-    test = datetime.datetime(2017, 5, 1)
+    test = dt.datetime(2017, 5, 1)
     obj = G(models.Date, date=test)
     assert obj.__str__() == defaultfilters.date(test, "SHORT_DATE_FORMAT")
 
@@ -87,7 +87,7 @@ def test_exam_str():
     """
     Test Model - Exam - String representation
     """
-    date = datetime.datetime(2017, 5, 1)
+    date = dt.datetime(2017, 5, 1)
     place = "school"
     employee = "test"
     test_str = (
