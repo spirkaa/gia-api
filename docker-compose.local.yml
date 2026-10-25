@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - "postgres_data_local:/var/lib/postgresql/data"
+      - "postgres_data_local:/var/lib/postgresql"
       - "postgres_backups_local:/backups"
     env_file: .env.local
 

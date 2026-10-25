@@ -19,7 +19,7 @@ services:
       context: .docker/postgres
       dockerfile: Dockerfile
     volumes:
-      - postgres_data_staging:/var/lib/postgresql/data
+      - postgres_data_staging:/var/lib/postgresql
       - postgres_backups_staging:/backups
     env_file: .env.staging
     restart: unless-stopped
