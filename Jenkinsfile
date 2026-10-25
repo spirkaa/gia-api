@@ -73,6 +73,34 @@ pipeline {
       }
     }
 
+    stage('uv audit') {
+      when {
+        beforeAgent true
+        not {
+          anyOf {
+            expression { params.DEPLOY }
+            expression { params.BUMP_HELM }
+            tag ''
+          }
+        }
+      }
+      agent {
+        docker {
+          image 'ghcr.io/astral-sh/uv:python3.13-trixie-slim'
+          alwaysPull true
+          reuseNode true
+          args '-e UV_PYTHON_DOWNLOADS=never'
+        }
+      }
+      steps {
+        script {
+          warnError(message: 'uv audit: known vulnerabilities found in uv.lock (details in stage log)') {
+            sh 'uv audit --preview-features audit-command'
+          }
+        }
+      }
+    }
+
     stage('Build') {
       parallel {
         stage('Build api image (k8s)') {
@@ -194,34 +222,6 @@ pipeline {
         success {
           junit 'reports/junit.xml'
           recordCoverage tools: [[parser: 'COBERTURA', pattern: 'reports/cobertura-coverage.xml']]
-        }
-      }
-    }
-
-    stage('uv audit') {
-      when {
-        beforeAgent true
-        not {
-          anyOf {
-            expression { params.DEPLOY }
-            expression { params.BUMP_HELM }
-            tag ''
-          }
-        }
-      }
-      agent {
-        docker {
-          image 'ghcr.io/astral-sh/uv:python3.13-trixie-slim'
-          alwaysPull true
-          reuseNode true
-          args '-e UV_PYTHON_DOWNLOADS=never'
-        }
-      }
-      steps {
-        script {
-          warnError(message: 'uv audit: known vulnerabilities found in uv.lock (details in stage log)') {
-            sh 'uv audit --preview-features audit-command'
-          }
         }
       }
     }
