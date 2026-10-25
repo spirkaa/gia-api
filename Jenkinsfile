@@ -198,6 +198,38 @@ pipeline {
       }
     }
 
+    stage('uv audit') {
+      when {
+        beforeAgent true
+        not {
+          anyOf {
+            expression { params.DEPLOY }
+            expression { params.BUMP_HELM }
+            tag ''
+          }
+        }
+      }
+      agent {
+        docker {
+          image 'ghcr.io/astral-sh/uv:python3.13-trixie-slim'
+          alwaysPull true
+          reuseNode true
+          args '-e UV_PYTHON_DOWNLOADS=never'
+        }
+      }
+      steps {
+        script {
+          def status = sh(
+            script: 'uv audit --preview-features audit-command',
+            returnStatus: true
+          )
+          if (status != 0) {
+            unstable('uv audit: known vulnerabilities found in uv.lock — build marked yellow')
+          }
+        }
+      }
+    }
+
     stage('Bump Helm chart version') {
       when {
         anyOf {
