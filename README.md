@@ -8,7 +8,7 @@ UI и парсер таблиц Excel с сайта РЦОИ г. Москвы с
 
 ```shell
 uv sync --dev --group=test
-pre-commit install
+prek install
 ```
 
 ### CI/CD (Jenkinsfile по-русски)

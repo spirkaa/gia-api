@@ -29,73 +29,73 @@ pipeline {
 
     GPG_KEY_CREDS_ID = 'jenkins-gpg-key'
     HELM_CHART_GIT_URL = 'https://git.devmem.ru/projects/helm-charts.git'
-
-    ANSIBLE_IMAGE = "${REGISTRY}/${IMAGE_OWNER}/ansible:base"
   }
 
   parameters {
     booleanParam(name: 'BUMP_HELM', defaultValue: false, description: 'Bump Helm chart version?')
-    booleanParam(name: 'REBUILD', defaultValue: false, description: 'Reduild this revision image?')
+    booleanParam(name: 'REBUILD', defaultValue: false, description: 'Rebuild this revision image?')
   }
 
   stages {
-    stage('Run pre-commit') {
-      agent {
-        docker {
-          image env.ANSIBLE_IMAGE
-          registryUrl env.REGISTRY_URL
-          registryCredentialsId env.REGISTRY_CREDS_ID
-          alwaysPull true
-          reuseNode true
-          args '-v /tmp/.cache:/tmp/.cache'
-        }
-      }
-      when {
-        beforeAgent true
-        not {
-          anyOf {
-            expression { params.DEPLOY }
-            expression { params.BUMP_HELM }
-            tag ''
-          }
-        }
-      }
-      steps {
-        cache(path: "/tmp/.cache/pre-commit", key: "pre-commit-${hashFiles('**/.pre-commit-config.yaml')}") {
-          sh '''#!/bin/bash
-            export PRE_COMMIT_HOME=/tmp/.cache/pre-commit
-            pre-commit run --all-files --show-diff-on-failure --verbose --color always || {
-              cat ${PRE_COMMIT_HOME}/pre-commit.log 2>/dev/null || true
-              exit 1
+    stage('Pre') {
+      parallel {
+        stage('Run prek (pre-commit)') {
+          agent {
+            docker {
+              image 'ghcr.io/j178/prek:alpine'
+              alwaysPull true
+              reuseNode true
+              args '-v /tmp/.cache:/tmp/.cache --entrypoint=""'
             }
-          '''
-        }
-      }
-    }
-
-    stage('uv audit') {
-      when {
-        beforeAgent true
-        not {
-          anyOf {
-            expression { params.DEPLOY }
-            expression { params.BUMP_HELM }
-            tag ''
+          }
+          when {
+            beforeAgent true
+            not {
+              anyOf {
+                expression { params.DEPLOY }
+                expression { params.BUMP_HELM }
+                tag ''
+              }
+            }
+          }
+          steps {
+            cache(path: "/tmp/.cache/prek", key: "prek-${hashFiles('**/.pre-commit-config.yaml')}") {
+              sh '''
+                export PREK_HOME=/tmp/.cache/prek
+                if ! prek run --all-files --show-diff-on-failure --verbose --color always; then
+                  [ -r "${PREK_HOME}/prek.log" ] && cat "${PREK_HOME}/prek.log"
+                  exit 1
+                fi
+              '''
+            }
           }
         }
-      }
-      agent {
-        docker {
-          image 'ghcr.io/astral-sh/uv:python3.13-trixie-slim'
-          alwaysPull true
-          reuseNode true
-          args '-e UV_PYTHON_DOWNLOADS=never'
-        }
-      }
-      steps {
-        script {
-          warnError(message: 'uv audit: known vulnerabilities found in uv.lock (details in stage log)') {
-            sh 'uv audit --preview-features audit-command'
+
+        stage('Run uv audit') {
+          when {
+            beforeAgent true
+            not {
+              anyOf {
+                expression { params.DEPLOY }
+                expression { params.BUMP_HELM }
+                tag ''
+              }
+            }
+          }
+          agent {
+            docker {
+              image 'ghcr.io/astral-sh/uv:python3.13-trixie-slim'
+              alwaysPull true
+              reuseNode true
+              args '-e UV_PYTHON_DOWNLOADS=never'
+            }
+          }
+          steps {
+            script {
+              warnError(message: 'uv audit: known vulnerabilities found in uv.lock (details in stage log)') {
+                sh 'uv audit --preview-features audit-command'
+              }
+            }
           }
         }
       }

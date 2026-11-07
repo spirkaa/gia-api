@@ -8,7 +8,7 @@
 - Use `uv` for dependency management
 - Use `pytest` for testing
 - Use `ruff` for linting and formatting
-- Use `pre-commit` for linting
+- Use `prek` for linting
 
 ## Documentation
 
