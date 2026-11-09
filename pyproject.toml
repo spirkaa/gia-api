@@ -63,7 +63,7 @@ test = [
   "pytest-cov==7.1.0",
   "pytest-django==4.14.0",
   "pytest-mock==3.17.0",
-  "pytest-randomly==5.0.0",
+  "pytest-randomly==5.1.0",
   "pytest-responses==0.6.0",
   "pytest-sugar==1.1.1",
   "responses==0.26.3",
