@@ -42,7 +42,7 @@ dependencies = [
   "psycopg[binary]==3.3.6",
   "redis==8.1.0",
   "requests==2.34.2",
-  "stamina==26.1.0",
+  "stamina==26.2.0",
   "whitenoise==6.12.0",
 ]
 

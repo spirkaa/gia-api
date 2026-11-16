@@ -827,7 +827,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.6" },
     { name = "redis", specifier = "==8.1.0" },
     { name = "requests", specifier = "==2.34.2" },
-    { name = "stamina", specifier = "==26.1.0" },
+    { name = "stamina", specifier = "==26.2.0" },
     { name = "whitenoise", specifier = "==6.12.0" },
 ]
 
@@ -2196,14 +2196,14 @@ wheels = [
 
 [[package]]
 name = "stamina"
-version = "26.1.0"
+version = "26.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "tenacity" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/80/bd/b2f71ae14368a066f103d182f25bbc6c3bf4aa695889f3ed3cba026d6f36/stamina-26.1.0.tar.gz", hash = "sha256:0214d05fdf5102c518194a4aac7520ce53cf660550ae3b940701aad88cf50c17", size = 568171, upload-time = "2026-04-13T17:44:31.012Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4e/46/e5491b7985761f6870bf11af1c461f57102f564686f2fe7b8637ebcbb0f9/stamina-26.2.0.tar.gz", hash = "sha256:c81efa445d6cd6f898584faa7556df09f6e4d25c16e219914b6422eeb3372985", size = 670204, upload-time = "2026-11-15T12:58:06.696Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1d/f0/1ff90a1d1dd02de23feafdf9dffaecef3958348be5c192df56670ccb4f86/stamina-26.1.0-py3-none-any.whl", hash = "sha256:62e06829bec87c06d4cafde520b32a6097d1017c378a9eb63253c5bf5ebbbb88", size = 18508, upload-time = "2026-04-13T17:44:29.545Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/14/ff4255606425fb66f0f4e0f5ac30e98c87a1895df615fe97ce662c551e52/stamina-26.2.0-py3-none-any.whl", hash = "sha256:4c9688f204d90544cd0c5bdd2a66fd82c6e7cb8248d70687ac69da3e7f5434f6", size = 23326, upload-time = "2026-11-15T12:58:04.938Z" },
 ]
 
 [[package]]
