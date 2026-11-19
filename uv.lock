@@ -434,15 +434,15 @@ wheels = [
 
 [[package]]
 name = "django-brotli"
-version = "0.4.0"
+version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "brotli" },
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/25/1f/797b163de39783744c5ab25a03e423342ef298f19d2cb0d24409be31aa9a/django_brotli-0.4.0.tar.gz", hash = "sha256:5c445660049edfc159382899cb84598c406cb693877d3ab82669304105155b52", size = 6707, upload-time = "2025-12-07T21:11:21.542Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3f/09/ccb8d2e49770118789ccedfdc8ea071db4e0290629593b58e6e3fe1156f1/django_brotli-0.5.0.tar.gz", hash = "sha256:776ae4a7549bdd80fa5ed8900efc04e9ecffe66a4f7c26e0a21579c103e12679", size = 7850, upload-time = "2026-11-18T21:04:07.176Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/38/d5/cce277130e9ea39ff0386f95daca507427c12a33b608cc94d2958b06d3b2/django_brotli-0.4.0-py3-none-any.whl", hash = "sha256:2f8cdfc9de0948891e513258e3e918328b31a3d2509a59445d42a01fa4c308a3", size = 5243, upload-time = "2025-12-07T21:11:20.396Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/f6/283388efa0a03692534edaa33ddcea3cd08acee7d38a242b29eb9bda0104/django_brotli-0.5.0-py3-none-any.whl", hash = "sha256:c4b5fd774b5bf508b9b3126c478a520018f66b91f82b3a28a6a5f2494d5f629c", size = 5703, upload-time = "2026-11-18T21:04:05.561Z" },
 ]
 
 [[package]]
@@ -797,7 +797,7 @@ requires-dist = [
     { name = "django", specifier = "==5.2.18" },
     { name = "django-allauth", specifier = "==65.20.1" },
     { name = "django-bootstrap3", specifier = "==26.3" },
-    { name = "django-brotli", specifier = "==0.4.0" },
+    { name = "django-brotli", specifier = "==0.5.0" },
     { name = "django-cacheops", specifier = "==7.2" },
     { name = "django-cors-headers", specifier = "==4.9.0" },
     { name = "django-crispy-forms", specifier = "==2.7" },
